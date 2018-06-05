@@ -3,7 +3,6 @@
     <tr>
       <th>Match</th>
       <th>Start Time</th>
-      <th>Your Prediction</th>
     </tr>
   </thead>
   <tbody>
@@ -11,11 +10,6 @@
       <tr>
         <td><a href="{% url 'matches:single_match' match.match_id %}">{{ match }}</a></td>
         <td>{{ match.start_time|date:"d-m-Y H:i" }}</td>
-        {% if prediction %}
-          <td><a href="{% url 'predictions:single_coef' match.match_id %}">{{ prediction.score }}</a></td>
-        {% else %}
-          <td><a href="{% url 'predictions:details' match.match_id %}" class="btn btn-primary">Make prediction</a></td>
-        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

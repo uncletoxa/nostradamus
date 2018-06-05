@@ -27,44 +27,4 @@
     No more bets.<br>
     But you can check your <a href="{% url 'predictions:details' coef.match_id_id  %}">prediction history</a>
   {% endif %}
-
-
-  <table class="table">
-    <thead class="thead-dark">
-      <tr>
-        <th>Event</th>
-        <th>Odd</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Home win</td>
-        <td class="align-middle"> {{ coef.home_win }} </td>
-      </tr>
-      <tr>
-        <td>Tie</td>
-        <td class="align-middle"> {{ coef.tie }} </td>
-      </tr>
-      <tr>
-        <td>Guest win</td>
-        <td class="align-middle"> {{ coef.guest_win }} </td>
-      </tr>
-    </tbody>
-  </table>
-  <table class="table">
-    <thead class="thead-dark">
-      <tr>
-        <th>Score</th>
-        <th>Odd</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for score, odd in coef.score.items %}
-      <tr>
-        <td>{{ score }}</td>
-        <td class="align-middle"> {{ odd }} </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
 {% endblock %}

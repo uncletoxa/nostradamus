@@ -7,12 +7,18 @@
 {% endblock %}
 
 {% block content %}
-<h3>
-  <small class="text-muted"><a href={% url 'results:results_index' %}>standings</a></small>
-</h3>
-  {% cup_standings matches_queryset %}
-<h3>
-  <small class="text-muted"><a href={% url 'matches:matches_index' %}>next matches</a></small>
-</h3>
-  {% next_matches user %}
+  <div class="row">
+    <div class="col-5">
+      <h3>
+        <small class="text-muted"><a href={% url 'results:results_index' %}>standings</a></small>
+      </h3>
+        {% cup_standings matches_queryset %}
+    </div>
+    <div class="col-7">
+      <h3>
+        <small class="text-muted"><a href={% url 'matches:matches_index' %}>next matches</a></small>
+      </h3>
+        {% next_matches user %}
+    </div>
+  </div>
 {% endblock %}
