@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
+  <li class="breadcrumb-item active">Predictions</li>
+{% endblock %}
+
+{% block content %}
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th>Available Matches</th>
+        <th>Last Prediction</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for coef in avail_coefs %}
+        <tr>
+          <td> <a href="{% url 'predictions:single_coef' coef.match_id %}">
+            {{ coef.match_id__home_team }} — {{ coef.match_id__guest_team }}
+          </a></td>
+          <td>
+          {% if coef.match_id__prediction__submit_time and coef.match_id__prediction__user_id == request.user.id %}
+              {{ coef.match_id__prediction__home_score }} — {{ coef.match_id__prediction__guest_score }}
+          {% else %}
+            No score submission yet
+          {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th>Past Matches</th>
+        <th>Last Prediction</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for coef in not_avail_coefs %}
+        <tr>
+          <td> <a href="{% url 'predictions:single_coef' coef.match_id %}">
+            {{ coef.match_id__home_team }} — {{ coef.match_id__guest_team }}
+          </a></td>
+          <td>
+          {% if coef.match_id__prediction__submit_time and coef.match_id__prediction__user_id == request.user.id %}
+              {{ coef.match_id__prediction__home_score }} — {{ coef.match_id__prediction__guest_score }}
+          {% else %}
+            No score submission
+          {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

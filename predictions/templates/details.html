@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
+  <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">Predictions</a></li>
+  <li class="breadcrumb-item"> <a href="{% url 'predictions:single_coef' match.match_id %}"> {{ match }} </a></li>
+  <li class="breadcrumb-item active">New prediction</li>
+{% endblock %}
+
+{% block content %}
+  {% if match.start_time > cur_time %}
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-success">Predict</button>
+    </form>
+  {% else %}
+    No more predictions available
+  {% endif %}
+  Previous predictions:
+  {% if user_predictions %}
+  {% for prediction in user_predictions %}
+    <div class="card-body p-3">
+      <div class="row mb-3">
+        <div class="col-6">
+            {{ prediction.match_id.home_team }}
+          <strong class="text-muted">{{ prediction.home_score }} — {{ prediction.guest_score }}</strong>
+            {{ prediction.match_id.guest_team }}
+          <br>
+          <small class="text-muted">{{ prediction.submit_time|naturaltime }}</small>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+    {% else %}
+    no predictions
+  {% endif %}
+{% endblock %}

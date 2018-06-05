@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% load mathfilters %}
+{% load extensible_blocks %}
+
+{% block title %}
+    Results — {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+  <li class="breadcrumb-item">Results</li>
+{% endblock %}
+
+{% block content %}
+  {% cup_standings matches_queryset %}
+{% endblock %}

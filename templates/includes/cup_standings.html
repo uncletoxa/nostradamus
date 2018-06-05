@@ -1,0 +1,16 @@
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th>User</th>
+      <th>Points</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user, total_points in results.items %}
+      <tr>
+        <td><a href="{% url 'results:user_results' user.id %}">{{ user.username }}</a></td>
+        <td>{{ total_points }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% load extensible_blocks %}
+{% load mathfilters %}
+
+{% block title %}
+    {{ match.name }} - {{ block.super }}
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'matches:matches_index' %}">Matches</a></li>
+  <li class="breadcrumb-item active">{{ match }}</li>
+{% endblock %}
+
+{% block content %}
+  <h1>{{ match.result }}</h1>
+  <h2>{{ match }}</h2>
+  <h4>{{ match.start_time|date:"d-m-Y H:i" }}</h4>
+
+  {% if match.home_score %}
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th>User</th>
+          <th>Prediction</th>
+          <th>Result Points</th>
+          <th>Score Points</th>
+          <th>Total Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user, user_result in users_results.items %}
+          {% for _, match in user_result.items %}
+            <tr>
+              <td> <a href="{% url 'results:user_results' user.id %}"> {{ user }} </a></td>
+              {% if match %}
+                <td>{{ match.match_prediction }}</td>
+                <td>{{ match.result_bet }}</td>
+                <td>{{ match.score_bet }}</td>
+                <td>{{ match.result_bet|addition:match.score_bet }}</td>
+              {% else %}
+                <td>No prediction given</td>
+                <td>No prediction given</td>
+                <td>No prediction given</td>
+                <td>No prediction given</td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <h3>No prediction table available until match start.</h3>
+  {% endif %}
+{% endblock %}

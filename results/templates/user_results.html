@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% load mathfilters %}
+
+{% block title %}
+    Results: {{ user_data.username }} — {{ block.super }}
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'results:results_index' %}">Results</a></li>
+  <li class="breadcrumb-item active">{{ user_data.username }}</li>
+{% endblock %}
+
+{% block content %}
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th>Match</th>
+        <th>Result</th>
+        <th>Prediction</th>
+        <th>Result Points</th>
+        <th>Score Points</th>
+        <th>Total Points</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for match in user_results.values %}
+        <tr>
+          <td>{{ match.match_name }}</td>
+          <td>{{ match.match_score }}</td>
+          {% if match.match_prediction %}
+            <td>{{ match.match_prediction }}</td>
+            <td>{{ match.result_bet }}</td>
+            <td>{{ match.score_bet }}</td>
+            <td>{{ match.result_bet|addition:match.score_bet }}</td>
+          {% else %}
+            <td>No prediction given</td>
+            <td>No prediction given</td>
+            <td>No prediction given</td>
+            <td>No prediction given</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
