@@ -23,8 +23,7 @@ class Prediction(models.Model):
     guest_score = models.PositiveSmallIntegerField()
     match_id = models.ForeignKey('matches.Match', models.SET_NULL, null=True)
     user_id = models.ForeignKey(User, models.CASCADE, related_name='predictions')
-    submit_time = models.DateTimeField()
-    coef_id = models.ForeignKey(Coefficient, models.CASCADE)
+    submit_time = models.DateTimeField(auto_now=True, auto_now_add=True)
 
     def score(self):
         return '{}:{}'.format(self.home_score, self.guest_score)
