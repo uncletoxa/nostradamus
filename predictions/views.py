@@ -52,6 +52,7 @@ def single_coefficient(request, match_id):
                   {'coef': coef, 'result': result, 'match': match,
                    'cur_time': now()})
 
+
 @login_required
 def new_prediction(request, match_id):
     match_data = Match.objects.get(match_id=match_id)
