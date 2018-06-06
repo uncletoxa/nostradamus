@@ -25,7 +25,7 @@ def cup_standings(matches_queryset):
 
 
 @register.inclusion_tag('includes/next_matches.html')
-def next_matches(cur_user):
+def next_matches():
     predictions = {}
     matches = Match.objects.filter(start_time__range=(
         datetime.datetime.now(pytz.UTC),
@@ -33,8 +33,7 @@ def next_matches(cur_user):
     ))
     for match in matches:
         last_pred = last_prediction(
-            Prediction.objects.filter(match_id_id=match.match_id,
-                                      user_id=cur_user))
+            Prediction.objects.filter(match_id_id=match.match_id))
         predictions.update({match: next(iter(last_pred), None)})
 
     return {'predictions': predictions, 'cur_time': datetime.datetime.now()}
