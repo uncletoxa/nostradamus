@@ -4,7 +4,7 @@
 {% load mathfilters %}
 
 {% block title %}
-    {{ match.name }} - {{ block.super }}
+    {{ match }} - {{ block.super }}
 {% endblock %}
 
 
@@ -32,6 +32,9 @@
           <th>Total Points</th>
         </tr>
       </thead>
+
+    'result_points': 0, '': 0, 'high_score_points': 0,
+             'block_bonus_points': 0
       <tbody>
         {% for user, user_result in users_results.items %}
           {% for _, match in user_result.items %}
