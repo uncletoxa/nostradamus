@@ -4,6 +4,7 @@ from django.db import models
 class Team(models.Model):
     team_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
+    code = models.CharField(max_length=3)
     emoji_symbol = models.CharField(max_length=30)
     power_group = models.SmallIntegerField()
 
