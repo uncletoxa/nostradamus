@@ -19,7 +19,9 @@ def cup_standings(matches_queryset):
         results_data = get_user_results_by_matches(user.id, matches_queryset)
         for match_data in results_data.values():
             total_points += sum(list(filter(
-                None, [match_data['result_bet'], match_data['score_bet']])))
+                None, [match_data['result_points'],
+                       match_data['score_points'],
+                       match_data['high_score_points']])))
         standings.update({user: total_points})
     return {'results': standings}
 

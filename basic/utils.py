@@ -26,7 +26,9 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
         match_goals_scored = match.home_score + match.guest_score
         user_result_data.update({match.match_id: {}})
         user_result_data[match.match_id].update(
-            {'match_name': match, 'match_score': match_score})
+            {'match_name': match, 'match_score': match_score,
+             'result_points': 0, 'score_points': 0, 'high_score_points': 0,
+             'block_bonus_points': 0})
         try:
             prediction = (Prediction.objects
                           .filter(match_id=match.match_id, user_id=user_id)
@@ -47,10 +49,7 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
                     if match_goals_scored >= 4:
                         user_result_data[match.match_id].update(
                             {'high_score_points': 3})
-            else:
-                user_result_data[match.match_id].update(
-                    {'result_points': 0, 'score_points': 0,
-                     'high_score_points': 0, 'block_bonus_points': 0})
+
         except ObjectDoesNotExist:
             user_result_data[match.match_id].update(
                 {'prediction': None, 'result_points': None, 'score_points': None,
