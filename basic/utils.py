@@ -1,4 +1,3 @@
-import csv
 from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -58,15 +57,3 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
             user_result_data[match.match_id].update(
                 {'prediction': None, 'result_bet': None, 'score_bet': None})
     return user_result_data
-
-
-def load_matches(path):
-    with open(path) as f:
-        reader = csv.reader(f)
-        bulk = []
-        for row in reader:
-            bulk.append(
-                Match(home_team=row[1],
-                      guest_team=row[2],
-                      start_time=datetime.strptime(row[0], '%d/%m/%Y %H:%M')))
-    Match.objects.bulk_create(bulk)
