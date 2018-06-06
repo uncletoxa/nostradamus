@@ -22,6 +22,8 @@
         <th>Prediction</th>
         <th>Result Points</th>
         <th>Score Points</th>
+        <th>High Score Points</th>
+        <th>Block Bonus Points</th>
         <th>Total Points</th>
       </tr>
     </thead>
@@ -32,10 +34,14 @@
           <td>{{ match.match_score }}</td>
           {% if match.match_prediction %}
             <td>{{ match.match_prediction }}</td>
-            <td>{{ match.result_bet }}</td>
-            <td>{{ match.score_bet }}</td>
-            <td>{{ match.result_bet|addition:match.score_bet }}</td>
+            <td>{{ match.result_points }}</td>
+            <td>{{ match.score_points }}</td>
+            <td>{{ match.high_score_points }}</td>
+            <td>{{ match.block_bonus_points }}</td>
+            <td>{{ match.result_points|addition:match.score_points|addition:match.high_score_points|addition:match.block_bonus_points }}</td>
           {% else %}
+            <td>No prediction given</td>
+            <td>No prediction given</td>
             <td>No prediction given</td>
             <td>No prediction given</td>
             <td>No prediction given</td>
