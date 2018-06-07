@@ -1,10 +1,6 @@
-import csv
-from datetime import datetime
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
-from predictions.models import Prediction, Coefficient
-from matches.models import Match
+from predictions.models import Prediction
 
 
 def get_result(home_team: int, guest_team: int) -> str:
@@ -21,6 +17,8 @@ def last_prediction(queryset: QuerySet) -> QuerySet:
 def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
     """Get prediction results for given user for given matches."""
     user_result_data = {}
+    win_block_bonus_map = {1: 0, 2: 1, 3: 2, 4: 3, 5: 5}
+    tie_block_bonus_map = {1: 0, 2: 0, 3: 1, 4: 2, 5: 2}
     for match in matches:
         if (match.home_score and match.guest_score) is None:
             user_result_data.update(
@@ -48,6 +46,23 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
 
             if prediction_result == match_result:
                 user_result_data[match.match_id].update({'result_points': 1})
+
+                if match_result == 'home_win':
+                    home_power_bonus = win_block_bonus_map[match.home_team.power_group]
+                    guest_power_bonus = win_block_bonus_map[match.home_team.power_group]
+                    power_bonus = home_power_bonus - guest_power_bonus
+                elif match_result == 'guest_win':
+                    home_power_bonus = win_block_bonus_map[match.home_team.power_group]
+                    guest_power_bonus = win_block_bonus_map[match.home_team.power_group]
+                    power_bonus = guest_power_bonus - home_power_bonus
+                elif match_result == 'tie':
+                    home_power_bonus = tie_block_bonus_map[match.home_team.power_group]
+                    guest_power_bonus = tie_block_bonus_map[match.home_team.power_group]
+                    power_bonus = abs(guest_power_bonus - home_power_bonus)
+
+                user_result_data[match.match_id].update({
+                    'block_bonus_points': power_bonus if power_bonus >= 0 else 0})
+
                 if predicted_score == match_score:
                     user_result_data[match.match_id].update({'score_points': 4})
                     if match_goals_scored >= 4:
