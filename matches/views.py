@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.models import User
 from django.views.generic import ListView
 from basic.utils import get_user_results_by_matches
-from .models import Match
+from matches.models import Match
 
 
 class MatchListView(ListView):

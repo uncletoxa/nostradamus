@@ -22,7 +22,7 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
     """Get prediction results for given user for given matches."""
     user_result_data = {}
     for match in matches:
-        if (match.home_score or match.guest_score) is not None:
+        if (match.home_score and match.guest_score) is None:
             user_result_data.update(
                 {match.match_id: {'match_name': match, 'match_score': None}})
         else:
