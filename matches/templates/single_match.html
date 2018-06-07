@@ -15,11 +15,15 @@
 {% endblock %}
 
 {% block content %}
-  <h1>{{ match.result }}</h1>
+  {% if match.match_result %}
+    <h1>{{ match.result }}</h1>
+  {% else %}
+    <h1>No result yet.</h1>
+  {% endif %}
   <h2>{{ match }}</h2>
   <h4>{{ match.start_time|date:"d-m-Y H:i" }}</h4>
 
-  {% if match.match_score %}
+  {% if match.match_result %}
     <table class="table">
       <thead class="thead-dark">
         <tr>

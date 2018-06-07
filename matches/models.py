@@ -27,4 +27,4 @@ class Match(models.Model):
         if self.home_score and self.guest_score:
             return '{}:{}'.format(self.home_score, self.guest_score)
         else:
-            return 'No result yet'
+            return None
