@@ -13,13 +13,13 @@ class MatchListView(ListView):
 
 
 def single_match(request, match_id):
-match = get_object_or_404(Match, match_id=match_id)
-match_queryset = Match.objects.filter(match_id=match_id)
-users = User.objects.filter(is_staff=False)
-users_results = {}
-for user in users:
-    users_results.update({user: get_user_results_by_matches(
-        user.id, match_queryset)})
+    match = get_object_or_404(Match, match_id=match_id)
+    match_queryset = Match.objects.filter(match_id=match_id)
+    users = User.objects.filter(is_staff=False)
+    users_results = {}
+    for user in users:
+        users_results.update({user: get_user_results_by_matches(
+            user.id, match_queryset)})
     return render(request, 'single_match.html',
                   {'match': match,
                    'users_results': users_results})
