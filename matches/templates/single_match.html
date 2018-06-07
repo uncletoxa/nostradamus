@@ -19,7 +19,7 @@
   <h2>{{ match }}</h2>
   <h4>{{ match.start_time|date:"d-m-Y H:i" }}</h4>
 
-  {% if match.home_score %}
+  {% if match.match_score %}
     <table class="table">
       <thead class="thead-dark">
         <tr>
@@ -58,6 +58,6 @@
       </tbody>
     </table>
   {% else %}
-    <h3>No prediction table available until match start.</h3>
+    <h3>No prediction table available.</h3>
   {% endif %}
 {% endblock %}
