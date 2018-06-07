@@ -25,8 +25,8 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
         if (match.home_score and match.guest_score) is None:
             user_result_data.update(
                 {match.match_id: {'match_name': match, 'match_score': None}})
-        else:
-            match_score = '{}-{}'.format(match.home_score, match.guest_score)
+            break
+        match_score = '{}-{}'.format(match.home_score, match.guest_score)
         match_goals_scored = match.home_score + match.guest_score
         user_result_data.update({match.match_id: {}})
         user_result_data[match.match_id].update(
