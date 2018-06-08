@@ -20,6 +20,8 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
     win_block_bonus_map = {1: 0, 2: 1, 3: 2, 4: 3, 5: 5}
     tie_block_bonus_map = {1: 0, 2: 0, 3: 1, 4: 2, 5: 2}
     for match in matches:
+        if (match.home_score and match.guest_score) is None:
+            continue
         match_score = '{}-{}'.format(match.home_score, match.guest_score)
         match_goals_scored = match.home_score + match.guest_score
         user_result_data.update({match.match_id: {}})
@@ -45,15 +47,15 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
 
                 if match_result == 'home_win':
                     home_power_bonus = win_block_bonus_map[match.home_team.power_group]
-                    guest_power_bonus = win_block_bonus_map[match.home_team.power_group]
+                    guest_power_bonus = win_block_bonus_map[match.guest_team.power_group]
                     power_bonus = home_power_bonus - guest_power_bonus
                 elif match_result == 'guest_win':
                     home_power_bonus = win_block_bonus_map[match.home_team.power_group]
-                    guest_power_bonus = win_block_bonus_map[match.home_team.power_group]
+                    guest_power_bonus = win_block_bonus_map[match.guest_team.power_group]
                     power_bonus = guest_power_bonus - home_power_bonus
                 elif match_result == 'tie':
                     home_power_bonus = tie_block_bonus_map[match.home_team.power_group]
-                    guest_power_bonus = tie_block_bonus_map[match.home_team.power_group]
+                    guest_power_bonus = tie_block_bonus_map[match.guest_team.power_group]
                     power_bonus = abs(guest_power_bonus - home_power_bonus)
 
                 user_result_data[match.match_id].update({

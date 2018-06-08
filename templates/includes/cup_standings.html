@@ -2,14 +2,26 @@
   <thead class="thead-dark">
     <tr>
       <th>User</th>
-      <th>Points</th>
+      <th>Total Points</th>
+      {% if long_standings %}
+        <th>Result Points</th>
+        <th>Score Points</th>
+        <th>High Score Points</th>
+        <th>Block Bonus Points</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
-    {% for user, total_points in results.items %}
+    {% for user, points in results.items %}
       <tr>
         <td><a href="{% url 'results:user_results' user.id %}">{{ user.username }}</a></td>
-        <td>{{ total_points }}</td>
+        <td>{{ points.total_points }}</td>
+        {% if long_standings %}
+          <td>{{ points.result_points }}</td>
+          <td>{{ points.score_points }}</td>
+          <td>{{ points.high_score_points }}</td>
+          <td>{{ points.block_bonus_points }}</td>
+      {% endif %}
       </tr>
     {% endfor %}
   </tbody>

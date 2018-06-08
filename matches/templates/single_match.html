@@ -13,9 +13,8 @@
   <li class="breadcrumb-item"><a href="{% url 'matches:matches_index' %}">Matches</a></li>
   <li class="breadcrumb-item active">{{ match }}</li>
 {% endblock %}
-
 {% block content %}
-  {% if match.match_result %}
+  {% if match.result %}
     <h1>{{ match.result }}</h1>
   {% else %}
     <h1>No result yet.</h1>
@@ -23,7 +22,7 @@
   <h2>{{ match }}</h2>
   <h4>{{ match.start_time|date:"d-m-Y H:i" }}</h4>
 
-  {% if match.match_result %}
+  {% if match.result %}
     <table class="table">
       <thead class="thead-dark">
         <tr>

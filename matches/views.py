@@ -9,7 +9,7 @@ class MatchListView(ListView):
     model = Match
     context_object_name = 'matches'
     template_name = 'matches_index.html'
-    paginate_by = 3
+    paginate_by = 10
 
 
 def single_match(request, match_id):
