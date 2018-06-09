@@ -7,7 +7,8 @@ from basic.utils import get_user_results_by_matches
 def results(request):
     matches = (Match.objects.filter(home_score__isnull=False) |
                Match.objects.filter(guest_score__isnull=False))
-    return render(request, 'results_index.html', {'matches_queryset': matches})
+    return render(request, 'results_index.html', {'matches_queryset': matches,
+                                                  'long_standings': True})
 
 
 def user_result(request, user_id):
