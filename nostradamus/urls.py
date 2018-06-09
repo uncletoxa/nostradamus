@@ -7,7 +7,6 @@ from basic import views as basic_views
 
 urlpatterns = [
     path('matches/', include('matches.urls')),
-    path('predictions/', include('predictions.urls')),
     path('results/', include('results.urls')),
     url(r'^$', basic_views.home, name='home'),
     url(r'^admin/', admin.site.urls),
