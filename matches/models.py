@@ -19,6 +19,7 @@ class Match(models.Model):
     start_time = models.DateTimeField()
     home_score = models.SmallIntegerField(default=None, null=True, blank=True)
     guest_score = models.SmallIntegerField(default=None, null=True, blank=True)
+    fixture_id = models.IntegerField(default=None, null=True, blank=True)
 
     def __str__(self):
         return '{} — {}'.format(self.home_team, self.guest_team)
