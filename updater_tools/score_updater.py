@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import http.client
 import json
 import os
@@ -16,26 +17,39 @@ from matches.models import Match
 from django.utils.timezone import now
 
 
-logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=logging.INFO)
+def update_scores(matches):
+    LIVE_RESULTS_API_TOKEN = config('LIVE_RESULTS_API_TOKEN')
+    connection = http.client.HTTPConnection('api.football-data.org')
+    headers = {'X-Auth-Token': LIVE_RESULTS_API_TOKEN, 'X-Response-Control': 'minified' }
 
-LIVE_RESULTS_API_TOKEN = config('LIVE_RESULTS_API_TOKEN')
-connection = http.client.HTTPConnection('api.football-data.org')
-headers = {'X-Auth-Token': LIVE_RESULTS_API_TOKEN, 'X-Response-Control': 'minified' }
+    for match in matches:
+        connection.request('GET', '/v1/fixtures/{}'.format(match.fixture_id),
+                           None, headers)
+        response = connection.getresponse()
+        logging.info('Running request for match {}'.format(match))
+        if response.status == 200:
+            resp = json.loads(response.read().decode())
+            logging.info('Loading results: {}'.format(resp))
+            match.home_score = resp['fixture']['result']['goalsHomeTeam']
+            match.guest_score = resp['fixture']['result']['goalsAwayTeam']
+            match.save()
+        else:
+            logging.warning('Invalid request. Status: {}. Reason: {}.'.format(
+                response.status, response.reason))
 
-live_matches = Match.objects.filter(
-    start_time__range=(now() - datetime.timedelta(hours=2), now()))
 
-for match in live_matches:
-    connection.request('GET', '/v1/fixtures/{}'.format(match.fixture_id),
-                       None, headers)
-    response = connection.getresponse()
-    logging.info('Running request for match {}'.format(match))
-    if response.status == 200:
-        resp = json.loads(response.read().decode())
-        logging.info('Loading results: {}'.format(resp))
-        match.home_score = resp['fixture']['result']['goalsHomeTeam']
-        match.guest_score = resp['fixture']['result']['goalsAwayTeam']
-        match.save()
+def main():
+    live_matches = Match.objects.filter(
+        start_time__range=(now() - datetime.timedelta(hours=2), now()))
+
+    if len(live_matches) == 0:
+        logging.info('Nothing to update.')
     else:
-        logging.warning('Invalid request. Status: {}. Reason: {}.'.format(
-            response.status, response.reason))
+        update_scores(live_matches)
+
+
+if __name__ == '__main__':
+    logging.basicConfig(filename='score_updater.log',
+                        format='%(asctime)s | %(levelname)s | %(message)s',
+                        level=logging.INFO)
+    main()
