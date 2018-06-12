@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
+from matches.models import Team
 
 
 class Coefficient(models.Model):
@@ -40,3 +41,11 @@ class OddMap(models.Model):
 
     def __str__(self):
         return '{}'.format(self.match_id)
+
+
+class WinnerPrediction(models.Model):
+    user_id = models.OneToOneField(User, models.CASCADE, related_name='winner_prediction', unique=True)
+    team_id = models.ForeignKey(Team, models.CASCADE, related_name='winner_team_prediction')
+
+    def __str__(self):
+        return '{}: {}'.format(self.user_id, self.team_id)

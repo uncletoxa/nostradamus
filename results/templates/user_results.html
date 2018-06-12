@@ -14,6 +14,11 @@
 {% endblock %}
 
 {% block content %}
+
+  <nav class="navbar navbar-light bg-light">
+  <span class="navbar-brand mb-0 h1">{{ user_data.username }} chose {{ user_champion.team_id }} as a champion.</span>
+  </nav>
+
   <table class="table">
     <thead class="thead-dark">
       <tr>
