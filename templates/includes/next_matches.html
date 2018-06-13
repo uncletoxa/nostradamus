@@ -7,16 +7,18 @@
     </tr>
   </thead>
   <tbody>
-    {% for match, prediction in predictions.items %}
-      <tr>
-        <td><a href="{% url 'matches:single_match' match.match_id %}">{{ match }}</a></td>
-        <td>{{ match.start_time|date:"d-m-Y H:i" }}</td>
-        {% if prediction %}
-          <td><a href="{% url 'predictions:single_coef' match.match_id %}">{{ prediction.score }}</a></td>
-        {% else %}
-          <td><a href="{% url 'predictions:details' match.match_id %}" class="btn btn-primary">Make prediction</a></td>
-        {% endif %}
-      </tr>
+    {% for element in predictions %}
+      {% for match, prediction in predictions.items %}
+        <tr>
+          <td><a href="{% url 'matches:single_match' match.match_id %}">{{ match }}</a></td>
+          <td>{{ match.start_time|date:"d-m-Y H:i" }}</td>
+          {% if prediction %}
+            <td><a href="{% url 'predictions:single_coef' match.match_id %}">{{ prediction.score }}</a></td>
+          {% else %}
+            <td><a href="{% url 'predictions:details' match.match_id %}" class="btn btn-primary">Make prediction</a></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
     {% endfor %}
   </tbody>
 </table>
