@@ -6,11 +6,13 @@
     </tr>
   </thead>
   <tbody>
-    {% for match, prediction in predictions.items %}
-      <tr>
-        <td><a href="{% url 'matches:single_match' match.match_id %}">{{ match }}</a></td>
-        <td>{{ match.start_time|date:"d-m-Y H:i" }}</td>
-      </tr>
+    {% for element in predictions %}
+      {% for match, prediction in element.items %}
+        <tr>
+          <td><a href="{% url 'matches:single_match' match.match_id %}">{{ match }}</a></td>
+          <td>{{ match.start_time|date:"d-m-Y H:i" }}</td>
+        </tr>
+      {% endfor %}
     {% endfor %}
   </tbody>
 </table>
