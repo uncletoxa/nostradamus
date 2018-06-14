@@ -25,7 +25,7 @@ class Match(models.Model):
         return '{} — {}'.format(self.home_team, self.guest_team)
 
     def result(self):
-        if self.home_score and self.guest_score:
+        if (self.home_score and self.guest_score) is not None:
             return '{}:{}'.format(self.home_score, self.guest_score)
         else:
             return None

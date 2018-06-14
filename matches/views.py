@@ -10,6 +10,7 @@ class MatchListView(ListView):
     context_object_name = 'matches'
     template_name = 'matches_index.html'
     paginate_by = 10
+    ordering = ['start_time']
 
 
 def single_match(request, match_id):

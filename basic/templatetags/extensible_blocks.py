@@ -17,10 +17,12 @@ def champ_standings():
 
 
 @register.inclusion_tag('includes/cup_standings.html')
-def cup_standings(matches_queryset, long_standings=False):
+def cup_standings(long_standings=False):
     def zero_if_none(val):
         return val if val is not None else 0
     users = User.objects.filter(is_staff=False)
+    matches_queryset = (Match.objects.filter(home_score__isnull=False) |
+                        Match.objects.filter(guest_score__isnull=False))
     standings = {}
 
     for user in users:
