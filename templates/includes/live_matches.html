@@ -1,0 +1,14 @@
+{% if live_matches %}
+  <span class="badge badge-danger">Live Results</span><small >&nbsp;&nbsp;&nbsp;powered by <a href="https://www.football-data.org">football-data.org</a></small>
+    <div class="card-deck">
+      {% for live_match in live_matches %}
+        <div class="card w-25">
+          <div class="card-header"><a href="{% url 'matches:single_match' live_match.match_id %}">{{ live_match }}</a></div>
+          <div class="card-body">
+            <h3 class="card-title">{{ live_match.result }}</h3>
+            <a class="text-muted">start time: {{ live_match.start_time|date:"d-m-Y H:i" }}</a></p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+{% endif %}

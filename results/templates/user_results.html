@@ -14,35 +14,47 @@
 {% endblock %}
 
 {% block content %}
-  <table class="table">
-    <thead class="thead-dark">
+<div class="alert alert-info" role="alert">
+  {{ user_data.username }}'s champion: {{ user_champion.team_id }}
+</div>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th>Match</th>
+      <th>Result</th>
+      <th>Prediction</th>
+      <th>Result Points</th>
+      <th>Score Points</th>
+      <th>High Score Points</th>
+      <th>Block Bonus Points</th>
+      <th>Penalty Points</th>
+      <th>Total Points</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for match in user_results.values %}
       <tr>
-        <th>Match</th>
-        <th>Result</th>
-        <th>Prediction</th>
-        <th>Result Points</th>
-        <th>Score Points</th>
-        <th>Total Points</th>
+        <td><a href="{% url 'matches:single_match' match.match_name.match_id %}">{{ match.match_name }}</a></td>
+        <td>{{ match.match_score }}</td>
+        {% if match.match_prediction %}
+          <td>{{ match.match_prediction }}</td>
+          <td>{{ match.result_points }}</td>
+          <td>{{ match.score_points }}</td>
+          <td>{{ match.high_score_points }}</td>
+          <td>{{ match.block_bonus_points }}</td>
+          <td>{{ match.penalty_points }}</td>
+          <td>{{ match.result_points|addition:match.score_points|addition:match.high_score_points|addition:match.block_bonus_points|addition:match.penalty_points }}</td>
+        {% else %}
+          <td>No prediction given</td>
+          <td>No prediction given</td>
+          <td>No prediction given</td>
+          <td>No prediction given</td>
+          <td>No prediction given</td>
+          <td>No prediction given</td>
+          <td>No prediction given</td>
+        {% endif %}
       </tr>
-    </thead>
-    <tbody>
-      {% for match in user_results.values %}
-        <tr>
-          <td>{{ match.match_name }}</td>
-          <td>{{ match.match_score }}</td>
-          {% if match.match_prediction %}
-            <td>{{ match.match_prediction }}</td>
-            <td>{{ match.result_bet }}</td>
-            <td>{{ match.score_bet }}</td>
-            <td>{{ match.result_bet|addition:match.score_bet }}</td>
-          {% else %}
-            <td>No prediction given</td>
-            <td>No prediction given</td>
-            <td>No prediction given</td>
-            <td>No prediction given</td>
-          {% endif %}
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}

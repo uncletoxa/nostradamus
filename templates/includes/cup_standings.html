@@ -8,6 +8,7 @@
         <th>Score Points</th>
         <th>High Score Points</th>
         <th>Block Bonus Points</th>
+        <th>Penalty Points</th>
       {% endif %}
     </tr>
   </thead>
@@ -21,6 +22,7 @@
           <td>{{ points.score_points }}</td>
           <td>{{ points.high_score_points }}</td>
           <td>{{ points.block_bonus_points }}</td>
+          <td>{{ points.penalty_points }}</td>
       {% endif %}
       </tr>
     {% endfor %}

@@ -32,6 +32,7 @@
           <th>Score Points</th>
           <th>High Score Points</th>
           <th>Block Bonus Points</th>
+          <th>Penalty Points</th>
           <th>Total Points</th>
         </tr>
       </thead>
@@ -46,8 +47,10 @@
                 <td>{{ match.score_points }}</td>
                 <td>{{ match.high_score_points }}</td>
                 <td>{{ match.block_bonus_points }}</td>
-                <td>{{ match.result_points|addition:match.score_points|addition:match.high_score_points|addition:match.block_bonus_points }}</td>
+                <td>{{ match.penalty_points }}</td>
+                <td>{{ match.result_points|addition:match.score_points|addition:match.high_score_points|addition:match.block_bonus_points|addition:match.penalty_points }}</td>
               {% else %}
+                <td>No prediction given</td>
                 <td>No prediction given</td>
                 <td>No prediction given</td>
                 <td>No prediction given</td>

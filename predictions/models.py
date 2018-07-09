@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
+from matches.models import Team
 
 
 class Coefficient(models.Model):
@@ -23,11 +24,18 @@ class Prediction(models.Model):
     guest_score = models.PositiveSmallIntegerField()
     match_id = models.ForeignKey('matches.Match', models.SET_NULL, null=True)
     user_id = models.ForeignKey(User, models.CASCADE, related_name='predictions')
-    submit_time = models.DateTimeField()
-    coef_id = models.ForeignKey(Coefficient, models.CASCADE)
+    submit_time = models.DateTimeField(auto_now=True)
+    penalty_winner = models.ForeignKey(Team, models.CASCADE, related_name='pred_penalty_winner_team',
+                                       default=None, null=True, blank=True)
+    penalty_home_winner = models.NullBooleanField(default=None, null=True, blank=True)
 
     def score(self):
-        return '{}:{}'.format(self.home_score, self.guest_score)
+        if self.penalty_home_winner == True:
+            return '*{}:{}'.format(self.home_score, self.guest_score)
+        elif self.penalty_home_winner == False:
+            return '{}:{}*'.format(self.home_score, self.guest_score)
+        else:
+            return '{}:{}'.format(self.home_score, self.guest_score)
 
     def __str__(self):
         return '{} {}'.format(self.match_id, self.score())
@@ -41,3 +49,11 @@ class OddMap(models.Model):
 
     def __str__(self):
         return '{}'.format(self.match_id)
+
+
+class WinnerPrediction(models.Model):
+    user_id = models.OneToOneField(User, models.CASCADE, related_name='winner_prediction', unique=True)
+    team_id = models.ForeignKey(Team, models.CASCADE, related_name='winner_team_prediction')
+
+    def __str__(self):
+        return '{}: {}'.format(self.user_id, self.team_id)

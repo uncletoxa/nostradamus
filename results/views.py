@@ -5,15 +5,12 @@ from basic.utils import get_user_results_by_matches
 
 
 def results(request):
-    matches = (Match.objects.filter(home_score__isnull=False) |
-               Match.objects.filter(guest_score__isnull=False))
-    return render(request, 'results_index.html', {'matches_queryset': matches,
-                                                  'long_standings': True})
+    return render(request, 'results_index.html')
 
 
 def user_result(request, user_id):
     matches = (Match.objects.filter(home_score__isnull=False) |
-               Match.objects.filter(guest_score__isnull=False))
+               Match.objects.filter(guest_score__isnull=False)).order_by('-start_time')
     user_data = get_object_or_404(User, pk=user_id)
     user_results_data = get_user_results_by_matches(user_id, matches)
     return render(request, 'user_results.html',
