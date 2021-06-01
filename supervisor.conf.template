@@ -1,0 +1,7 @@
+[program:nostradamus]
+command=/home/USERNAME/gunicorn_start.sh
+user=USERNAME
+autostart=true
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/home/USERNAME/logs/gunicorn.log

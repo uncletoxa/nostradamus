@@ -1,19 +1,19 @@
 upstream app_server {
-    server unix:/home/nostradamus/run/gunicorn.sock fail_timeout=0;
+    server unix:/home/USERNAME/run/gunicorn.sock fail_timeout=0;
 }
 
 server {
     listen 80;
-    server_name nostradamus.ml;  # here can also be the IP address of the server
+    server_name DOMAIN www.DOMAIN;
 
     keepalive_timeout 5;
     client_max_body_size 4G;
 
-    access_log /home/nostradamus/logs/nginx-access.log;
-    error_log /home/nostradamus/logs/nginx-error.log;
+    access_log /home/USERNAME/logs/nginx-access.log;
+    error_log /home/USERNAME/logs/nginx-error.log;
 
     location /static/ {
-        alias /home/nostradamus/staticfiles/;
+        alias /home/USERNAME/staticfiles/;
     }
 
     # checks for static file, if not found proxy to app
