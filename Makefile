@@ -49,7 +49,7 @@ cert-setup: nginx-setup
 	sudo apt purge certbot
 	sudo snap install --classic certbot
 	sudo ln -s /snap/bin/certbot /usr/bin/certbot
-	sudo certbot --nginx -n --agree-tos --domains $(domain)
+	sudo certbot --nginx --domains $(domain)
 
 
 db-clean:
