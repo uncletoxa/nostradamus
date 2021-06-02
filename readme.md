@@ -23,4 +23,4 @@ For example: ```make domain="nostradamus.ml" db_password="my_super_password"```
 
 ### Acknowledgements
 
-@vitorfs for brilliant [Djange guide](https://simpleisbetterthancomplex.com/series/beginners-guide)
+[@vitorfs](https://github.com/vitorfs) for brilliant [Djange guide](https://simpleisbetterthancomplex.com/series/beginners-guide)
