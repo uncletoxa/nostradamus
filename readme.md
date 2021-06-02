@@ -20,3 +20,7 @@ For example: ```make domain="nostradamus.ml" db_password="my_super_password"```
 ## Cleaning
 
 `make clean -i` to clean everything that's got installed during deployment.
+
+### Acknowledgements
+
+@vitorfs for brilliant [Djange guide](https://simpleisbetterthancomplex.com/series/beginners-guide)

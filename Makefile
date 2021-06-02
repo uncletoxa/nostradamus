@@ -21,6 +21,7 @@ venv-setup: system-setup
 
 django-setup: venv-setup # make sure .env file settings are set up
 	. venv/bin/activate && ( \
+	python manage.py makemigrations matches predictions results; \
 	python manage.py migrate; \
 	python manage.py collectstatic --noinput; \
 	python manage.py createsuperuser; )
