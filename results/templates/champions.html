@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% load extensible_blocks %}
+
+{% block title %}
+    Results: Champions — {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'results:results_index' %}">Results</a></li>
+  <li class="breadcrumb-item">Champions</li>
+{% endblock %}
+
+{% block content %}
+  {% champ_standings %}
+{% endblock %}

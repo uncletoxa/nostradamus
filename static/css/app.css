@@ -1,5 +1,13 @@
+body {
+  background-image: url(../img/sports.png);
+}
+
 .navbar-brand {
   font-family: 'Comfortaa', cursive;
+}
+
+.alert {
+  display:inline-block;
 }
 
 .logo {

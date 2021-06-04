@@ -1,0 +1,16 @@
+<table class="table table-hover">
+  <thead class="thead-dark">
+    <tr>
+      <th>User</th>
+      <th>Champion</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for prediction in champ_predictions %}
+      <tr>
+        <td><a href="{% url 'results:user_results' prediction.user_id.id %}">{{ prediction.user_id }}</a></td>
+        <td>{{ prediction.team_id }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
