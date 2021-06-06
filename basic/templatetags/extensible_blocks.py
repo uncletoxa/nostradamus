@@ -36,16 +36,17 @@ def cup_standings(long_standings=False):
 
 
 @register.inclusion_tag('includes/next_matches.html')
-def next_matches():
-    predictions = []
+def next_matches(cur_user):
+    predictions = {}
     matches = Match.objects.filter(start_time__range=(
         datetime.datetime.now(pytz.UTC),
         datetime.datetime.now(pytz.UTC) + datetime.timedelta(days=30)
-    )).order_by('start_time')
+    ))
     for match in matches:
         last_pred = last_prediction(
-            Prediction.objects.filter(match_id_id=match.match_id))
-        predictions.append({match: next(iter(last_pred), None)})
+            Prediction.objects.filter(match_id_id=match.match_id,
+                                      user_id=cur_user))
+        predictions.update({match: next(iter(last_pred), None)})
 
     return {'predictions': predictions, 'cur_time': datetime.datetime.now()}
 

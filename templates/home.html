@@ -18,7 +18,7 @@
       <h3>
         <small class="text-muted"><a href={% url 'matches:matches_index' %}>next matches</a></small>
       </h3>
-        {% next_matches %}
+        {% next_matches user %}
     </div>
   </div>
 {% endblock %}
