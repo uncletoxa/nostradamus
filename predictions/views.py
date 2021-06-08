@@ -56,6 +56,7 @@ def single_coefficient(request, match_id):
 @login_required
 def new_prediction(request, match_id):
     match_data = Match.objects.get(match_id=match_id)
+    score_coef_data = Coefficient.objects.get(match_id=match_id)
     user_predictions = (Prediction.objects
                         .filter(match_id=match_id, user_id=request.user.id)
                         .order_by('-submit_time'))
@@ -77,4 +78,4 @@ def new_prediction(request, match_id):
         frm = NewPredictionForm()
     return render(request, 'details.html',
                   {'form': frm, 'match': match_data, 'user_predictions': user_predictions,
-                   'cur_time': now()})
+                   'score_coef': score_coef_data, 'cur_time': now()})
