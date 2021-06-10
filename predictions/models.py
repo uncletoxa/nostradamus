@@ -18,6 +18,14 @@ class Coefficient(models.Model):
         return '{}'.format(self.match_id)
 
 
+class WinnerPredictionCoef(models.Model):
+    team_id = models.ForeignKey(Team, models.CASCADE, related_name='winner_team')
+    coef = models.FloatField(default=1.0)
+
+    def __str__(self):
+        return '{}: {}'.format(self.team_id, self.coef)
+
+
 class Prediction(models.Model):
     prediction_id = models.AutoField(primary_key=True)
     home_score = models.PositiveSmallIntegerField()

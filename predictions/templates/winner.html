@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Prediction: Cup Winner
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">Predictions</a></li>
+  <li class="breadcrumb-item active">Cup Winner</li>
+{% endblock %}
+
+{% block content %}
+ <h2>Winner of Euro-2020</h2>
+  <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-success">Predict</button>
+    </form>
+
+  <table>
+    {% for item in winner_coef %}
+      <tr>
+        <td> {{ item }} </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

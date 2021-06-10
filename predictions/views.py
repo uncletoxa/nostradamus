@@ -6,9 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.timezone import localtime, now
 
 from basic.utils import get_result, last_prediction
-from predictions.models import Prediction, Coefficient
-from matches.models import Match
-from predictions.forms import NewPredictionForm
+from predictions.models import Prediction, Coefficient, WinnerPrediction, WinnerPredictionCoef
+from matches.models import Match, Team
+from predictions.forms import NewPredictionForm, WinnerPredictionForm
 
 
 def available_coefficients(request):
@@ -79,3 +79,21 @@ def new_prediction(request, match_id):
     return render(request, 'details.html',
                   {'form': frm, 'match': match_data, 'user_predictions': user_predictions,
                    'score_coef': score_coef_data, 'cur_time': now()})
+
+
+@login_required
+def winner_prediction(request):
+    winner_coef_data = WinnerPredictionCoef.objects.all()
+    if request.method == 'POST':
+        frm = WinnerPredictionForm(request.POST)
+        team_id = request.POST['team_id']
+        if frm.is_valid():
+            WinnerPrediction.objects.update_or_create(
+                user_id=request.user,
+                defaults={'team_id': Team(team_id=team_id)}
+            )
+            return redirect('home')
+    else:
+        frm = WinnerPredictionForm()
+    return render(request, 'winner.html',
+                  {'winner_coef': winner_coef_data, 'form': frm})
