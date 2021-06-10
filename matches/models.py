@@ -6,7 +6,6 @@ class Team(models.Model):
     name = models.CharField(max_length=30)
     code = models.CharField(max_length=3)
     emoji_symbol = models.CharField(max_length=30)
-    power_group = models.SmallIntegerField()
 
     def __str__(self):
         return '{} {}'.format(self.emoji_symbol, self.name)
@@ -29,9 +28,9 @@ class Match(models.Model):
 
     def result(self):
         if (self.home_score and self.guest_score) is not None:
-            if self.penalty_home_winner == True:
+            if self.penalty_home_winner:
                 return '*{}:{}'.format(self.home_score, self.guest_score)
-            elif self.penalty_home_winner == False:
+            elif not self.penalty_home_winner:
                 return '{}:{}*'.format(self.home_score, self.guest_score)
             else:
                 return '{}:{}'.format(self.home_score, self.guest_score)
