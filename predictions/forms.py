@@ -8,4 +8,4 @@ class NewPredictionForm(forms.Form):
 
 
 class WinnerPredictionForm(forms.Form):
-    team_id = forms.ModelChoiceField(queryset=Team.objects.all())
+    team_id = forms.ModelChoiceField(queryset=Team.objects.all(), label="Your Champion")

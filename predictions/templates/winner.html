@@ -1,29 +1,61 @@
 {% extends 'base.html' %}
 
-{% block title %}
-    Prediction: Cup Winner
-{% endblock %}
+{% load crispy_forms_tags %}
 
+{% block title %}
+  Prediction: Cup Winner
+{% endblock %}
 
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-  <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">Predictions</a></li>
-  <li class="breadcrumb-item active">Cup Winner</li>
+  <!--  <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">Predictions</a></li>-->
+  <!--  <li class="breadcrumb-item active">Cup Winner</li>-->
 {% endblock %}
 
 {% block content %}
- <h2>Winner of Euro-2020</h2>
-  <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-success">Predict</button>
-    </form>
-
-  <table>
-    {% for item in winner_coef %}
-      <tr>
-        <td> {{ item }} </td>
-      </tr>
-    {% endfor %}
-  </table>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <table class="table table-borderless">
+          <thead class="table-light">
+            <th scope="col">Team</th>
+            <th scope="col">Points</th>
+          </thead>
+          {% for coef in winner_coef %}
+            <tr>
+              <td> {{ coef.team_id }}: </td>
+              <td> {{ coef.coef }} </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="col">
+        <div class="row">
+          <div class="col">
+            <form class="form-horizontal" method="post">
+              <div class="col-md-4">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-success">Predict</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="form-group">
+          &nbsp;
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="alert alert-info" role="alert">
+              {% if curr_prediction %}
+                Your current predictions is {{ curr_prediction.team_id }}
+              {% else %}
+                No predictions given
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
