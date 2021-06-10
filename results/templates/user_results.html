@@ -3,14 +3,14 @@
 {% load mathfilters %}
 
 {% block title %}
-    Results: {{ user_data.username }} — {{ block.super }}
+    Results: {{ user_data.first_name }} — {{ block.super }}
 {% endblock %}
 
 
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
   <li class="breadcrumb-item"><a href="{% url 'results:results_index' %}">Results</a></li>
-  <li class="breadcrumb-item active">{{ user_data.username }}</li>
+  <li class="breadcrumb-item active">{{ user_data.first_name }}</li>
 {% endblock %}
 
 {% block content %}

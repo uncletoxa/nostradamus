@@ -11,7 +11,7 @@ from .forms import SignUpForm
 @method_decorator(login_required, name='dispatch')
 class UserUpdateView(UpdateView):
     model = User
-    fields = ('first_name', 'last_name', 'email', )
+    fields = ('first_name',)
     template_name = 'my_account.html'
     success_url = reverse_lazy('my_account')
 

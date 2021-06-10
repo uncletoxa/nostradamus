@@ -36,6 +36,7 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'),
         name='password_reset_complete'),
 
+    url(r'^settings/account/$', login_required(accounts_views.UserUpdateView.as_view()), name='my_account'),
     url(r'^settings/password/$',
         auth_views.PasswordChangeView.as_view(template_name='password_change.html'),
         name='password_change'),
@@ -43,5 +44,6 @@ urlpatterns = [
         auth_views.PasswordChangeDoneView.as_view(template_name='password_change_done.html'),
         name='password_change_done'),
 
+    url(r'^settings/account/$', accounts_views.UserUpdateView.as_view(), name='my_account'),
     url(r'^robots.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain"))
 ]
