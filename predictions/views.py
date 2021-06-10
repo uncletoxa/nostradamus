@@ -99,4 +99,5 @@ def winner_prediction(request):
     return render(request, 'winner.html',
                   {'winner_coef': winner_coef_data,
                    'curr_prediction': curr_prediction,
+                   'submissions_closed': datetime.now(pytz.UTC) < datetime(2021, 5, 11, 19, 0, 0, tzinfo=pytz.utc),
                    'form': frm})

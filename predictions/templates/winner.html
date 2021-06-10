@@ -32,6 +32,13 @@
       <div class="col">
         <div class="row">
           <div class="col">
+            {% if submissions_closed %}
+              <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  No more Cup winner prediction
+                </div>
+              </div>
+            {% else %}
             <form class="form-horizontal" method="post">
               <div class="col-md-4">
                 {% csrf_token %}
@@ -39,6 +46,7 @@
                 <button type="submit" class="btn btn-success">Predict</button>
               </div>
             </form>
+            {% endif %}
           </div>
         </div>
         <div class="form-group">
@@ -48,7 +56,7 @@
           <div class="col">
             <div class="alert alert-info" role="alert">
               {% if curr_prediction %}
-                Your current predictions is {{ curr_prediction.team_id }}
+                Your current prediction is {{ curr_prediction.team_id }}
               {% else %}
                 No predictions given
               {% endif %}
