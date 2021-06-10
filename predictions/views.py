@@ -78,8 +78,7 @@ def new_prediction(request, match_id):
                 guest_score=guest_score,
                 user_id=request.user,
                 match_id=match_data,
-                submit_time=localtime(now()),
-                coef_id=coef)
+                submit_time=localtime(now()))
             return redirect('predictions:predictions_index')
     else:
         frm = NewPredictionForm()
