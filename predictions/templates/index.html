@@ -17,9 +17,14 @@
     <tbody>
       {% for coef in avail_coefs %}
         <tr>
-          <td> <a href="{% url 'predictions:single_coef' coef.match_id %}">
-            {{ coef.match_id__home_team }} — {{ coef.match_id__guest_team }}
-          </a></td>
+          <td>
+            <a href="{% url 'predictions:single_coef' coef.match_id %}">
+              {{ coef.match_id__home_team__emoji_symbol }}
+              {{ coef.match_id__home_team__name }} —
+              {{ coef.match_id__guest_team__emoji_symbol }}
+              {{ coef.match_id__guest_team__name }}
+            </a>
+          </td>
           <td>
           {% if coef.match_id__prediction__submit_time and coef.match_id__prediction__user_id == request.user.id %}
               {{ coef.match_id__prediction__home_score }} — {{ coef.match_id__prediction__guest_score }}
@@ -36,6 +41,7 @@
     <thead class="thead-dark">
       <tr>
         <th>Past Matches</th>
+        <th>Match Result</th>
         <th>Last Prediction</th>
       </tr>
     </thead>
@@ -43,8 +49,15 @@
       {% for coef in not_avail_coefs %}
         <tr>
           <td> <a href="{% url 'predictions:single_coef' coef.match_id %}">
-            {{ coef.match_id__home_team }} — {{ coef.match_id__guest_team }}
+            {{ coef.match_id__home_team__emoji_symbol }}
+            {{ coef.match_id__home_team__name }} —
+            {{ coef.match_id__guest_team__emoji_symbol }}
+            {{ coef.match_id__guest_team__name }}
           </a></td>
+          <td> <a href="{% url 'matches:single_match' coef.match_id %}">
+            {{ coef.match_id__home_score }} :
+            {{ coef.match_id__guest_score }}
+          </td>
           <td>
           {% if coef.match_id__prediction__submit_time and coef.match_id__prediction__user_id == request.user.id %}
               {{ coef.match_id__prediction__home_score }} — {{ coef.match_id__prediction__guest_score }}

@@ -9,23 +9,6 @@
 {% endblock %}
 
 {% block content %}
-  <table>
-      <tr>
-        <td> Home win: {{ score_coef.home_win }} </td>
-        <td> Tie: {{ score_coef.tie }} </td>
-        <td> Guest win: {{ score_coef.guest_win }} </td>
-      </tr>
-  </table>
-
-  <table>
-    {% for key, value in score_coef.score.items %}
-      <tr>
-        <td> {{ key }}: </td>
-        <td> {{ value }} </td>
-      </tr>
-    {% endfor %}
-  </table>
-
   {% if match.start_time > cur_time %}
     <form method="post">
       {% csrf_token %}
@@ -53,5 +36,40 @@
     {% else %}
     no predictions
   {% endif %}
+
+<div class="container">
+    <div class="row">
+      <div class="col">
+    <table class="table table-borderless">
+      <thead class="table-light">
+      <th scope="col">Home win</th>
+      <th scope="col">Tie</th>
+      <th scope="col">Guest win</th>
+    </thead>
+      <tr>
+        <td> {{ score_coef.home_win }} </td>
+        <td> {{ score_coef.tie }} </td>
+        <td> {{ score_coef.guest_win }} </td>
+      </tr>
+  </table>
+ </div>
+      <div class="col">
+        <div class="row">
+          <div class="col">
+
+  <table class="table table-borderless">
+    <thead class="table-light">
+      <th scope="col">Score</th>
+      <th scope="col">Points</th>
+    </thead>
+    {% for key, value in score_coef.score.items %}
+      <tr>
+        <td> {{ key }}: </td>
+        <td> {{ value }} </td>
+      </tr>
+    {% endfor %}
+  </table>
+            </div>
+        </div>
 
 {% endblock %}

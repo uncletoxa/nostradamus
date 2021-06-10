@@ -18,8 +18,10 @@ def available_coefficients(request):
         .filter(coef_ready=True,
                 match_id__start_time__gt=datetime.now(pytz.UTC))
         .values('match_id',
-                'match_id__home_team',
-                'match_id__guest_team',
+                'match_id__home_team__name',
+                'match_id__guest_team__name',
+                'match_id__home_team__emoji_symbol',
+                'match_id__guest_team__emoji_symbol',
                 'match_id__prediction__home_score',
                 'match_id__prediction__guest_score',
                 'match_id__prediction__submit_time',
@@ -29,10 +31,14 @@ def available_coefficients(request):
             .filter(coef_ready=True,
                     match_id__start_time__lte=datetime.now(pytz.UTC))
             .values('match_id',
-                    'match_id__home_team',
-                    'match_id__guest_team',
+                    'match_id__home_team__name',
+                    'match_id__guest_team__name',
+                    'match_id__home_team__emoji_symbol',
+                    'match_id__guest_team__emoji_symbol',
                     'match_id__prediction__home_score',
                     'match_id__prediction__guest_score',
+                    'match_id__home_score',
+                    'match_id__guest_score',
                     'match_id__prediction__submit_time',
                     'match_id__prediction__user_id'))
     return render(request, 'index.html', {

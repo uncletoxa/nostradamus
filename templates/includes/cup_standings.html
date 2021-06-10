@@ -6,9 +6,6 @@
       {% if long_standings %}
         <th>Result Points</th>
         <th>Score Points</th>
-        <th>High Score Points</th>
-        <th>Block Bonus Points</th>
-        <th>Penalty Points</th>
       {% endif %}
     </tr>
   </thead>
@@ -16,13 +13,11 @@
     {% for user, points in results.items %}
       <tr>
         <td><a href="{% url 'results:user_results' user.id %}">{{ user.username }}</a></td>
-        <td>{{ points.total_points }}</td>
+<!--        <td>{{ points.total_points }}</td>-->
+        <td>0</td>
         {% if long_standings %}
           <td>{{ points.result_points }}</td>
           <td>{{ points.score_points }}</td>
-          <td>{{ points.high_score_points }}</td>
-          <td>{{ points.block_bonus_points }}</td>
-          <td>{{ points.penalty_points }}</td>
       {% endif %}
       </tr>
     {% endfor %}

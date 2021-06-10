@@ -15,11 +15,11 @@
 
 {% block content %}
   {% if match.start_time > cur_time %}
-    {% if result %}
-      Currently you'll receive {{ result.match_bet }} points if {{ result.match_result }}.
-    {% else %}
-      No current predictions.
-    {% endif %}
+<!--    {% if result %}-->
+<!--      Currently you'll receive {{ result.match_bet }} points if {{ result.match_result }}.-->
+<!--    {% else %}-->
+<!--      No current predictions.-->
+<!--    {% endif %}-->
   <div class="mb-4">
     <a href="{% url 'predictions:details' coef.match_id_id %}" class="btn btn-primary">Make Prediction</a>
   </div>
