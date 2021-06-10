@@ -28,11 +28,12 @@ class Match(models.Model):
 
     def result(self):
         if (self.home_score and self.guest_score) is not None:
-            if self.penalty_home_winner:
-                return '*{}:{}'.format(self.home_score, self.guest_score)
-            elif not self.penalty_home_winner:
-                return '{}:{}*'.format(self.home_score, self.guest_score)
-            else:
+            if self.penalty_home_winner is None:
                 return '{}:{}'.format(self.home_score, self.guest_score)
+            else:
+                if self.penalty_home_winner:
+                    return '*{}:{}'.format(self.home_score, self.guest_score)
+                else:
+                    return '{}:{}*'.format(self.home_score, self.guest_score)
         else:
             return None

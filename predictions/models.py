@@ -38,12 +38,13 @@ class Prediction(models.Model):
     penalty_home_winner = models.NullBooleanField(default=None, null=True, blank=True)
 
     def score(self):
-        if self.penalty_home_winner:
-            return '*{}:{}'.format(self.home_score, self.guest_score)
-        elif not self.penalty_home_winner:
-            return '{}:{}*'.format(self.home_score, self.guest_score)
-        else:
+        if self.penalty_home_winner is None:
             return '{}:{}'.format(self.home_score, self.guest_score)
+        else:
+            if self.penalty_home_winner:
+                return '*{}:{}'.format(self.home_score, self.guest_score)
+            else:
+                return '{}:{}*'.format(self.home_score, self.guest_score)
 
     def __str__(self):
         return '{} {}'.format(self.match_id, self.score())
