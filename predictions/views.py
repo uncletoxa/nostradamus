@@ -10,6 +10,7 @@ from predictions.models import Prediction, Coefficient, WinnerPrediction, Winner
 from matches.models import Match, Team
 from predictions.forms import NewPredictionForm, WinnerPredictionForm
 
+COMPETITION_START_DATE_UTC = datetime(2021, 5, 11, 19, 0, 0, tzinfo=pytz.utc)
 
 def available_coefficients(request):
     avail_coefs = last_prediction(
@@ -99,5 +100,5 @@ def winner_prediction(request):
     return render(request, 'winner.html',
                   {'winner_coef': winner_coef_data,
                    'curr_prediction': curr_prediction,
-                   'submissions_closed': datetime.now(pytz.UTC) < datetime(2021, 5, 11, 19, 0, 0, tzinfo=pytz.utc),
+                   'submissions_closed': datetime.now(pytz.UTC) < COMPETITION_START_DATE_UTC,
                    'form': frm})
