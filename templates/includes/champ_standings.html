@@ -8,7 +8,7 @@
   <tbody>
     {% for prediction in champ_predictions %}
       <tr>
-        <td><a href="{% url 'results:user_results' prediction.user_id.id %}">{{ prediction.user_id }}</a></td>
+        <td><a href="{% url 'results:user_results' prediction.user_id.id %}">{{ prediction.user_id.first_name }}</a></td>
         <td>{{ prediction.team_id }}</td>
       </tr>
     {% endfor %}
