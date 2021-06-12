@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
-from predictions.models import Prediction
+from predictions.models import Prediction, Coefficient
 
 
 def get_result(home_team: int, guest_team: int) -> str:
@@ -42,7 +42,7 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
                 prediction.home_score, prediction.guest_score)
 
             if prediction_result == match_result:
-                coef = Coefficient.objects.get(coef_id=prediction.coef_id_id)
+                coef = Coefficient.objects.get(match_id_id=prediction.match_id_id)
                 user_result_data[match.match_id].update({'result_bet': getattr(coef, match_result)})
 
                 match_score_cr = coef.score.get(
