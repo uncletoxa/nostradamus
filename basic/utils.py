@@ -4,11 +4,19 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
 from predictions.models import Prediction, Coefficient
+from matches.models import Match
 
 
 def get_result(home_team: int, guest_team: int) -> str:
     res = home_team - guest_team
     return 'home_win' if res > 0 else 'guest_win' if res < 0 else 'tie'
+
+
+def get_score(home_team, guest_team, avail_scores):
+    if f'{home_team}={guest_team}' in avail_scores:
+        return f'{home_team}={guest_team}'
+    else:
+        return 'Any other score'
 
 
 def last_prediction(queryset: QuerySet) -> QuerySet:
@@ -24,7 +32,6 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
         if (match.home_score and match.guest_score) is None:
             continue
         match_score = '{}-{}'.format(match.home_score, match.guest_score)
-        match_goals_scored = match.home_score + match.guest_score
         user_result_data.update({match.match_id: {}})
         user_result_data[match.match_id].update(
             {'match_name': match, 'match_score': match_score})
@@ -45,10 +52,8 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
                 coef = Coefficient.objects.get(match_id_id=prediction.match_id_id)
                 user_result_data[match.match_id].update({'result_bet': getattr(coef, match_result)})
 
-                match_score_cr = coef.score.get(
-                    match_score, 'Any other score')
-                predicted_score_cr = coef.score.get(
-                    predicted_score, 'Any other score')
+                match_score_cr = get_score(match.home_score, match.guest_score, coef.score)
+                predicted_score_cr = get_score(prediction.home_score, prediction.guest_score, coef.score)
 
                 if predicted_score_cr == match_score_cr:
                     user_result_data[match.match_id].update({'score_bet': coef.score[match_score]})
