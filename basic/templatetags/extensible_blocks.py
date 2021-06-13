@@ -30,7 +30,7 @@ def cup_standings():
             total_points += sum(list(filter(
                 None, [match_data['result_bet'], match_data['score_bet']])))
         standings.update({user: round(total_points, 2)})
-    return {'results': standings}
+    return {'results': dict(sorted(standings.items(), key=lambda item: item[1]))}
 
 
 @register.inclusion_tag('includes/next_matches.html')
