@@ -15,10 +15,22 @@
         {% cup_standings %}
     </div>
     <div class="col-7">
-      <h3>
-        <small class="text-muted"><a href={% url 'matches:matches_index' %}>next matches</a></small>
-      </h3>
-        {% next_matches user %}
+      <div class="row">
+        <div class="col">
+          {% live_matches %}
+        </div>
+      </div>
+      <div class="form-group">
+        &nbsp;
+      </div>
+      <div class="row">
+        <div class="col">
+          <h3>
+            <small class="text-muted"><a href={% url 'matches:matches_index' %}>next matches</a></small>
+          </h3>
+            {% next_matches user %}
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}
