@@ -13,8 +13,8 @@ def get_result(home_team: int, guest_team: int) -> str:
 
 
 def get_score(home_team, guest_team, avail_scores):
-    if f'{home_team}={guest_team}' in avail_scores:
-        return f'{home_team}={guest_team}'
+    if f'{home_team}-{guest_team}' in avail_scores:
+        return f'{home_team}-{guest_team}'
     else:
         return 'Any other score'
 
