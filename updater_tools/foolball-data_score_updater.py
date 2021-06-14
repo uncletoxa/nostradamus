@@ -34,8 +34,8 @@ def update_scores(matches):
                 match.is_live = True
             else:
                 match.is_live = False
-            match.home_score = resp['score']['fullTime']['homeTeam']
-            match.guest_score = resp['score']['fullTime']['awayTeam']
+            match.home_score = resp['match']['score']['fullTime']['homeTeam']
+            match.guest_score = resp['match']['score']['fullTime']['awayTeam']
             match.save()
         else:
             logging.warning('Invalid request. Status: {}. Reason: {}.'.format(
