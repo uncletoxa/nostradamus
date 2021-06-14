@@ -7,6 +7,7 @@ import django
 
 # Set up django env
 sys.path.append("../../")
+import nostradamus
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nostradamus.settings")
 django.setup()
 
