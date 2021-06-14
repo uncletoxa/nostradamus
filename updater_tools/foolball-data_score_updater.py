@@ -20,22 +20,22 @@ from django.utils.timezone import now
 def update_scores(matches):
     LIVE_RESULTS_API_TOKEN = config('LIVE_RESULTS_API_TOKEN')
     connection = http.client.HTTPConnection('api.football-data.org')
-    headers = {'X-Auth-Token': LIVE_RESULTS_API_TOKEN, 'X-Response-Control': 'minified' }
+    headers = {'X-Auth-Token': LIVE_RESULTS_API_TOKEN}
 
     for match in matches:
-        connection.request('GET', '/v1/fixtures/{}'.format(match.fixture_id),
+        connection.request('GET', '/v2/matches/{}'.format(match.fixture_id),
                            None, headers)
         response = connection.getresponse()
         logging.info('Running request for match {}'.format(match))
         if response.status == 200:
             resp = json.loads(response.read().decode())
             logging.info('Loading results: {}'.format(resp))
-            if resp['fixture']['status'] == 'IN_PLAY':
+            if resp['match']['status'] == 'IN_PLAY':
                 match.is_live = True
             else:
                 match.is_live = False
-            match.home_score = resp['fixture']['result']['goalsHomeTeam']
-            match.guest_score = resp['fixture']['result']['goalsAwayTeam']
+            match.home_score = resp['match']['score']['fullTime']['homeTeam']
+            match.guest_score = resp['match']['score']['fullTime']['awayTeam']
             match.save()
         else:
             logging.warning('Invalid request. Status: {}. Reason: {}.'.format(
