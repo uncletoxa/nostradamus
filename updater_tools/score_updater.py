@@ -20,21 +20,25 @@ from django.utils.timezone import now
 def update_scores(matches):
     LIVE_RESULTS_API_TOKEN = config('LIVE_RESULTS_API_TOKEN')
     connection = http.client.HTTPConnection('api.football-data.org')
-    headers = {'X-Auth-Token': LIVE_RESULTS_API_TOKEN, 'X-Response-Control': 'minified' }
+    headers = {'X-Auth-Token': LIVE_RESULTS_API_TOKEN}
 
     for match in matches:
-        connection.request('GET', '/v1/fixtures/{}'.format(match.fixture_id),
+        connection.request('GET', '/v2/matches/{}'.format(match.fixture_id),
                            None, headers)
         response = connection.getresponse()
         logging.info('Running request for match {}'.format(match))
         if response.status == 200:
             resp = json.loads(response.read().decode())
             logging.info('Loading results: {}'.format(resp))
-            match.home_score = resp['fixture']['result']['goalsHomeTeam']
-            match.guest_score = resp['fixture']['result']['goalsAwayTeam']
+            if resp['match']['status'] in ('IN_PLAY', 'PAUSED'):
+                match.is_live = True
+            else:
+                match.is_live = False
+            match.home_score = resp['match']['score']['fullTime']['homeTeam']
+            match.guest_score = resp['match']['score']['fullTime']['awayTeam']
             match.save()
         else:
-            logging.warning('Invalid request. Status: {}. Reason: {}.'.format(
+            logging.error('Invalid request. Status: {}. Reason: {}.'.format(
                 response.status, response.reason))
 
 
@@ -49,7 +53,7 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='score_updater.log',
-                        format='%(asctime)s | %(levelname)s | %(message)s',
-                        level=logging.INFO)
+    logging.basicConfig(
+        format='%(asctime)s | %(levelname)s | %(message)s',
+        level=logging.INFO)
     main()
