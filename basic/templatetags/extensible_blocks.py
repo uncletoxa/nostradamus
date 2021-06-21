@@ -17,20 +17,23 @@ def champ_standings():
 
 
 @register.inclusion_tag('includes/cup_standings.html')
-def cup_standings():
+def cup_standings(long_standings=False):
     users = User.objects.filter(is_superuser=False)
     matches_queryset = (Match.objects.filter(home_score__isnull=False) |
                         Match.objects.filter(guest_score__isnull=False))
-    standings = {}
-
+    standings = []
     for user in users:
-        total_points = 0
+        total_pts, result_pts, score_pts = 0, 0, 0
         results_data = get_user_results_by_matches(user.id, matches_queryset)
         for match_data in results_data.values():
-            total_points += sum(list(filter(
-                None, [match_data['result_bet'], match_data['score_bet']])))
-        standings.update({user: round(total_points, 2)})
-    return {'results': dict(sorted(standings.items(), key=lambda item: item[1], reverse=True))}
+            result_pts += match_data.get('result_bet', 0)
+            score_pts += match_data.get('score_bet', 0)
+        standings.append({'user': user,
+                          'total_points': round(result_pts + score_pts, 2),
+                          'result_points': round(result_pts, 2),
+                          'score_points': round(score_pts, 2)})
+    return {'results': sorted(standings, key=lambda item: item['total_points'], reverse=True),
+            'long_standings': long_standings}
 
 
 @register.inclusion_tag('includes/next_matches.html')
