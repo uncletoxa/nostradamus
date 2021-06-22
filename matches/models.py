@@ -12,6 +12,13 @@ class Team(models.Model):
 
 
 class Match(models.Model):
+    FINISHED = 'FINISHED'
+    SCHEDULED = 'SCHEDULED'
+    IN_PLAY = 'IN_PLAY'
+    PAUSED = 'PAUSED'
+    STATUS_CHOICES = [(FINISHED, 'FINISHED'), (SCHEDULED, 'SCHEDULED'),
+                      (IN_PLAY, 'IN_PLAY'), (PAUSED, 'PAUSED')]
+
     match_id = models.AutoField(primary_key=True)
     home_team = models.ForeignKey(Team, models.CASCADE, related_name='match_home_team')
     guest_team = models.ForeignKey(Team, models.CASCADE, related_name='match_guest_team')
@@ -22,6 +29,7 @@ class Match(models.Model):
     is_live = models.BooleanField(default=False)
     is_playoff = models.BooleanField(default=False)
     penalty_home_winner = models.NullBooleanField(default=None, null=True, blank=True)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=SCHEDULED)
 
     def __str__(self):
         return '{} — {}'.format(self.home_team, self.guest_team)
