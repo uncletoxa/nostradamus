@@ -30,10 +30,7 @@ def update_scores(matches):
         if response.status == 200:
             resp = json.loads(response.read().decode())
             logging.info('Loading results: {}'.format(resp))
-            if resp['match']['status'] in ('IN_PLAY', 'PAUSED'):
-                match.is_live = True
-            else:
-                match.is_live = False
+            match.status = resp['match']['status']
             match.home_score = resp['match']['score']['fullTime']['homeTeam']
             match.guest_score = resp['match']['score']['fullTime']['awayTeam']
             match.save()

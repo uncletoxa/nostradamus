@@ -39,10 +39,7 @@ def cup_standings(long_standings=False):
 @register.inclusion_tag('includes/next_matches.html')
 def next_matches(cur_user):
     predictions = {}
-    matches = Match.objects.filter(start_time__range=(
-        datetime.datetime.now(pytz.UTC),
-        datetime.datetime.now(pytz.UTC) + datetime.timedelta(days=30)
-    ))
+    matches = Match.objects.filter(status='SCHEDULED')
     for match in matches:
         last_pred = last_prediction(
             Prediction.objects.filter(match_id_id=match.match_id,
@@ -54,5 +51,5 @@ def next_matches(cur_user):
 
 @register.inclusion_tag('includes/live_matches.html')
 def live_matches():
-    matches = Match.objects.filter(is_live=True)
+    matches = Match.objects.filter(status__in=['IN_PLAY', 'PAUSED'])
     return {'live_matches': matches}

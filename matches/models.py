@@ -26,7 +26,6 @@ class Match(models.Model):
     home_score = models.SmallIntegerField(default=None, null=True, blank=True)
     guest_score = models.SmallIntegerField(default=None, null=True, blank=True)
     fixture_id = models.IntegerField(default=None, null=True, blank=True)
-    is_live = models.BooleanField(default=False)
     is_playoff = models.BooleanField(default=False)
     penalty_home_winner = models.NullBooleanField(default=None, null=True, blank=True)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=SCHEDULED)
