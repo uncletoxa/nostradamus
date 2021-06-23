@@ -17,10 +17,12 @@ def champ_standings():
 
 
 @register.inclusion_tag('includes/cup_standings.html')
-def cup_standings(long_standings=False):
+def cup_standings(long_standings=False, live_standings=False):
     users = User.objects.filter(is_superuser=False)
-    matches_queryset = (Match.objects.filter(home_score__isnull=False) |
-                        Match.objects.filter(guest_score__isnull=False))
+    if live_standings:
+        matches_queryset = Match.objects.filter(status__in=['IN_PLAY', 'PAUSED', 'FINISHED'])
+    else:
+        matches_queryset = Match.objects.filter(status='FINISHED')
     standings = []
     for user in users:
         total_pts, result_pts, score_pts = 0, 0, 0
