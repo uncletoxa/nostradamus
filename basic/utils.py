@@ -41,7 +41,7 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
                           .latest('submit_time'))
             predicted_score = '{}-{}'.format(
                 prediction.home_score, prediction.guest_score)
-            user_result_data[match.match_id].update({'match_prediction': prediction.score})
+            user_result_data[match.match_id].update({'match_prediction': prediction.score()})
 
             match_result = get_result(
                 match.home_score, match.guest_score)
@@ -63,7 +63,7 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
                 user_result_data[match.match_id].update({'result_bet': 0, 'score_bet': 0})
         except ObjectDoesNotExist:
             user_result_data[match.match_id].update(
-                {'prediction': None, 'result_bet': None, 'score_bet': None})
+                {'match_prediction': None, 'result_bet': None, 'score_bet': None})
     return user_result_data
 
 

@@ -1,5 +1,5 @@
 import datetime
-import pytz
+
 
 from matches.models import Match
 from predictions.models import Prediction, WinnerPrediction
@@ -28,14 +28,13 @@ def cup_standings(long_standings=False, live_standings=False):
         total_pts, result_pts, score_pts = 0, 0, 0
         results_data = get_user_results_by_matches(user.id, matches_queryset)
         for match_data in results_data.values():
-            result_pts += match_data.get('result_bet', 0)
-            score_pts += match_data.get('score_bet', 0)
+            result_pts += 0 if match_data['result_bet'] is None else match_data['result_bet']
+            score_pts += 0 if match_data['score_bet'] is None else match_data['score_bet']
         standings.append({'user': user,
                           'total_points': round(result_pts + score_pts, 2),
                           'result_points': round(result_pts, 2),
                           'score_points': round(score_pts, 2)})
-    return {'results': sorted(standings, key=lambda item: item['total_points'], reverse=True),
-            'long_standings': long_standings}
+    return {'results': sorted(standings, key=lambda item: item['total_points'], reverse=True)}
 
 
 @register.inclusion_tag('includes/next_matches.html')
