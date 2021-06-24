@@ -34,7 +34,8 @@ def cup_standings(long_standings=False, live_standings=False):
                           'total_points': round(result_pts + score_pts, 2),
                           'result_points': round(result_pts, 2),
                           'score_points': round(score_pts, 2)})
-    return {'results': sorted(standings, key=lambda item: item['total_points'], reverse=True)}
+    return {'results': sorted(standings, key=lambda item: item['total_points'], reverse=True),
+            'long_standings': long_standings}
 
 
 @register.inclusion_tag('includes/next_matches.html')
