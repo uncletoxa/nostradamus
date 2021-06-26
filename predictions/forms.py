@@ -5,7 +5,7 @@ from matches.models import Team
 class NewPredictionForm(forms.Form):
     home_score = forms.IntegerField()
     guest_score = forms.IntegerField()
-    home_to_advance = forms.BooleanField()
+    home_to_advance = forms.NullBooleanField()
 
 
 class WinnerPredictionForm(forms.Form):
