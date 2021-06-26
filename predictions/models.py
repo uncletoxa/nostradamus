@@ -33,15 +33,15 @@ class Prediction(models.Model):
     match_id = models.ForeignKey('matches.Match', models.SET_NULL, null=True)
     user_id = models.ForeignKey(User, models.CASCADE, related_name='predictions')
     submit_time = models.DateTimeField(auto_now=True)
-    penalty_winner = models.ForeignKey(Team, models.CASCADE, related_name='pred_penalty_winner_team',
+    advanced_to_next_stage = models.ForeignKey(Team, models.CASCADE, related_name='pred_penalty_winner_team',
                                        default=None, null=True, blank=True)
-    penalty_home_winner = models.NullBooleanField(default=None, null=True, blank=True)
+    home_to_advance = models.NullBooleanField(default=None, null=True, blank=True)
 
     def score(self):
-        if self.penalty_home_winner is None:
+        if self.advanced_to_next_stage is None:
             return '{}:{}'.format(self.home_score, self.guest_score)
         else:
-            if self.penalty_home_winner:
+            if self.advanced_to_next_stage:
                 return '*{}:{}'.format(self.home_score, self.guest_score)
             else:
                 return '{}:{}*'.format(self.home_score, self.guest_score)

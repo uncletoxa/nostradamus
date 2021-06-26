@@ -42,8 +42,8 @@ def available_coefficients(request):
                     'match_id__guest_score',
                     'match_id__prediction__submit_time',
                     'match_id__prediction__user_id'))
-    return render(request, 'index.html', {
-        'avail_coefs': avail_coefs, 'not_avail_coefs': not_avail_coefs})
+    return render(request, 'index.html', {'avail_coefs': avail_coefs,
+                                          'not_avail_coefs': not_avail_coefs})
 
 
 def single_coefficient(request, match_id):
@@ -73,12 +73,14 @@ def new_prediction(request, match_id):
         frm = NewPredictionForm(request.POST)
         home_score = request.POST['home_score']
         guest_score = request.POST['guest_score']
+        home_to_advance = request.POST['home_to_advance']
         if frm.is_valid():
             Prediction.objects.create(
                 home_score=home_score,
                 guest_score=guest_score,
                 user_id=request.user,
                 match_id=match_data,
+                home_to_advance=True if home_to_advance=='on' else False,
                 submit_time=localtime(now()))
             return redirect('predictions:predictions_index')
     else:
