@@ -35,16 +35,16 @@ class Prediction(models.Model):
     submit_time = models.DateTimeField(auto_now=True)
     advanced_to_next_stage = models.ForeignKey(Team, models.CASCADE, related_name='pred_penalty_winner_team',
                                        default=None, null=True, blank=True)
-    penalty_winner = models.NullBooleanField(default=None, null=True, blank=True)
+    home_to_advance = models.NullBooleanField(default=None, null=True, blank=True)
 
     def score(self):
-        if self.advanced_to_next_stage is None:
-            return '{}:{}'.format(self.home_score, self.guest_score)
-        else:
-            if self.advanced_to_next_stage:
+        if self.home_score == self.guest_score:
+            if self.home_to_advance == True:
                 return '*{}:{}'.format(self.home_score, self.guest_score)
-            else:
+            elif self.home_to_advance == False:
                 return '{}:{}*'.format(self.home_score, self.guest_score)
+        else:
+            return '{}:{}'.format(self.home_score, self.guest_score)
 
     def __str__(self):
         return '{} {}'.format(self.match_id, self.score())

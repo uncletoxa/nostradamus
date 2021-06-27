@@ -80,7 +80,7 @@ def new_prediction(request, match_id):
                 guest_score=guest_score,
                 user_id=request.user,
                 match_id=match_data,
-                penalty_winner=is_home_advance,
+                home_to_advance=is_home_advance,
                 submit_time=localtime(now()))
             return redirect('predictions:predictions_index')
     else:
