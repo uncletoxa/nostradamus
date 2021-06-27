@@ -73,14 +73,14 @@ def new_prediction(request, match_id):
         frm = NewPredictionForm(request.POST)
         home_score = request.POST['home_score']
         guest_score = request.POST['guest_score']
-        home_to_advance = request.POST['home_to_advance']
+        is_home_advance = request.POST['penalty_winner']
         if frm.is_valid():
             Prediction.objects.create(
                 home_score=home_score,
                 guest_score=guest_score,
                 user_id=request.user,
                 match_id=match_data,
-                home_to_advance=True if home_to_advance=='on' else False,
+                penalty_winner=is_home_advance,
                 submit_time=localtime(now()))
             return redirect('predictions:predictions_index')
     else:

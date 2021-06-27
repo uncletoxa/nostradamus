@@ -35,7 +35,7 @@ class Prediction(models.Model):
     submit_time = models.DateTimeField(auto_now=True)
     advanced_to_next_stage = models.ForeignKey(Team, models.CASCADE, related_name='pred_penalty_winner_team',
                                        default=None, null=True, blank=True)
-    home_to_advance = models.NullBooleanField(default=None, null=True, blank=True)
+    penalty_winner = models.NullBooleanField(default=None, null=True, blank=True)
 
     def score(self):
         if self.advanced_to_next_stage is None:
