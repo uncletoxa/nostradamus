@@ -43,6 +43,8 @@ class Prediction(models.Model):
                 return '*{}:{}'.format(self.home_score, self.guest_score)
             elif self.home_to_advance == False:
                 return '{}:{}*'.format(self.home_score, self.guest_score)
+            else:
+                return '{}:{}'.format(self.home_score, self.guest_score)
         else:
             return '{}:{}'.format(self.home_score, self.guest_score)
 
