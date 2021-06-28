@@ -10,7 +10,9 @@ class Coefficient(models.Model):
     coef_ready = models.BooleanField(default=False)
     score = JSONField()
     home_win = models.FloatField()
-    tie = models.FloatField()
+    tie = models.FloatField(null=True, default=None)
+    tie_home_win = models.FloatField(null=True, default=None)
+    tie_guest_win = models.FloatField(null=True, default=None)
     guest_win = models.FloatField()
     update_time = models.DateTimeField()
 
@@ -33,8 +35,6 @@ class Prediction(models.Model):
     match_id = models.ForeignKey('matches.Match', models.SET_NULL, null=True)
     user_id = models.ForeignKey(User, models.CASCADE, related_name='predictions')
     submit_time = models.DateTimeField(auto_now=True)
-    advanced_to_next_stage = models.ForeignKey(Team, models.CASCADE, related_name='pred_penalty_winner_team',
-                                       default=None, null=True, blank=True)
     home_to_advance = models.NullBooleanField(default=None, null=True, blank=True)
 
     def score(self):

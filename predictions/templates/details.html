@@ -42,12 +42,22 @@
     <table class="table table-borderless">
       <thead class="table-light">
       <th scope="col">Home win</th>
-      <th scope="col">Tie</th>
+      {% if match.is_playoff %}
+        <th scope="col">Tie, Home win</th>
+        <th scope="col">Tie, Guest win</th>
+      {% else %}
+        <th scope="col">Tie</th>
+      {% endif %}
       <th scope="col">Guest win</th>
     </thead>
       <tr>
         <td> {{ score_coef.home_win }} </td>
-        <td> {{ score_coef.tie }} </td>
+        {% if match.is_playoff %}
+          <td> {{ score_coef.tie_home_win }} </td>
+          <td> {{ score_coef.tie_guest_win }} </td>
+        {% else %}
+          <td> {{ score_coef.tie }} </td>
+        {% endif %}
         <td> {{ score_coef.guest_win }} </td>
       </tr>
   </table>

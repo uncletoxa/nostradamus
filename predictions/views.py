@@ -68,7 +68,6 @@ def new_prediction(request, match_id):
     user_predictions = (Prediction.objects
                         .filter(match_id=match_id, user_id=request.user.id)
                         .order_by('-submit_time'))
-    coef = Coefficient.objects.filter(match_id=match_id).latest('update_time')
     if request.method == 'POST':
         frm = NewPredictionForm(request.POST)
         home_score = request.POST['home_score']
