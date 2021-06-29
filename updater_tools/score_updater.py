@@ -41,7 +41,7 @@ def update_scores(matches):
 
 def main():
     live_matches = Match.objects.filter(
-        start_time__range=(now() - datetime.timedelta(hours=2), now()))
+        start_time__range=(now() - datetime.timedelta(hours=4), now()))
 
     if len(live_matches) == 0:
         logging.info('Nothing to update.')
