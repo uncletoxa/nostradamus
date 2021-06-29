@@ -46,13 +46,11 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
             prediction = (Prediction.objects
                           .filter(match_id=match.match_id, user_id=user_id)
                           .latest('submit_time'))
-            predicted_score = '{}-{}'.format(
-                prediction.home_score, prediction.guest_score)
             user_result_data[match.match_id].update({'match_prediction': prediction.score()})
 
             if match.is_playoff:
                 match_result = get_playoff_result(
-                    match.home_score, match.guest_score, match.penalty_home_winner)
+                    match.home_score, match.guest_score, match.home_to_advance)
                 prediction_result = get_playoff_result(
                     prediction.home_score, prediction.guest_score, prediction.home_to_advance)
             else:

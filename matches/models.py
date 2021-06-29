@@ -27,20 +27,19 @@ class Match(models.Model):
     guest_score = models.SmallIntegerField(default=None, null=True, blank=True)
     fixture_id = models.IntegerField(default=None, null=True, blank=True)
     is_playoff = models.BooleanField(default=False)
-    penalty_home_winner = models.NullBooleanField(default=None, null=True, blank=True)
+    home_to_advance = models.NullBooleanField(default=None, null=True, blank=True)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=SCHEDULED)
 
     def __str__(self):
         return '{} — {}'.format(self.home_team, self.guest_team)
 
     def result(self):
-        if self.status in ('FINISHED', 'IN_PLAY', 'PAUSED'):
-            if self.is_playoff:
-                if self.penalty_home_winner:
-                    return '*{}:{}'.format(self.home_score, self.guest_score)
-                else:
-                    return '{}:{}*'.format(self.home_score, self.guest_score)
+        if self.home_score == self.guest_score:
+            if self.home_to_advance == True:
+                return '*{}:{}'.format(self.home_score, self.guest_score)
+            elif self.home_to_advance == False:
+                return '{}:{}*'.format(self.home_score, self.guest_score)
             else:
                 return '{}:{}'.format(self.home_score, self.guest_score)
         else:
-            return None
+            return '{}:{}'.format(self.home_score, self.guest_score)
