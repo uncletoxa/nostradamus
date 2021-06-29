@@ -29,7 +29,7 @@
       {% for match in user_results.values %}
         <tr>
           <td>{{ match.match_name }}</td>
-          <td>{{ match.match_score }}</td>
+          <td>{{ match.match_name.result }}</td>
           {% if match.match_prediction %}
             <td>{{ match.match_prediction }}</td>
             <td>{{ match.result_bet }}</td>
