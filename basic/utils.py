@@ -12,6 +12,13 @@ def get_result(home_team: int, guest_team: int) -> str:
     return 'home_win' if res > 0 else 'guest_win' if res < 0 else 'tie'
 
 
+def get_playoff_result(home_team, guest_team, home_to_advance):
+    res = home_team - guest_team
+    if res == 0:
+        return 'tie_home_win' if home_to_advance else 'tie_guest_win'
+    return 'home_win' if res > 0 else 'guest_win'
+
+
 def get_score(home_team, guest_team, avail_scores):
     if f'{home_team}-{guest_team}' in avail_scores:
         return f'{home_team}-{guest_team}'
@@ -43,10 +50,16 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
                 prediction.home_score, prediction.guest_score)
             user_result_data[match.match_id].update({'match_prediction': prediction.score()})
 
-            match_result = get_result(
-                match.home_score, match.guest_score)
-            prediction_result = get_result(
-                prediction.home_score, prediction.guest_score)
+            if match.is_playoff:
+                match_result = get_playoff_result(
+                    match.home_score, match.guest_score, match.penalty_home_winner)
+                prediction_result = get_playoff_result(
+                    prediction.home_score, prediction.guest_score, prediction.home_to_advance)
+            else:
+                match_result = get_result(
+                    match.home_score, match.guest_score)
+                prediction_result = get_result(
+                    prediction.home_score, prediction.guest_score)
 
             if prediction_result == match_result:
                 coef = Coefficient.objects.get(match_id_id=prediction.match_id_id)
