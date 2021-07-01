@@ -9,7 +9,13 @@
     {% for prediction in champ_predictions %}
       <tr>
         <td><a href="{% url 'results:user_results' prediction.user_id.id %}">{{ prediction.user_id.first_name }}</a></td>
-        <td>{{ prediction.team_id }}</td>
+        {% if prediction.prediction_id.is_winner == False %}
+          <td><s>{{ prediction.prediction_id.team_id }}</s></td>
+        {% elif prediction.prediction_id.is_winner == True %}
+          <td><b>{{ prediction.prediction_id.team_id }}</b></td>
+        {% else %}
+          <td>{{ prediction.prediction_id.team_id }}</td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

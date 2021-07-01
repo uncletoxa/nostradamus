@@ -21,8 +21,10 @@ class Coefficient(models.Model):
 
 
 class WinnerPredictionCoef(models.Model):
+    wp_coef_id = models.AutoField(primary_key=True)
     team_id = models.ForeignKey(Team, models.CASCADE, related_name='winner_team')
     coef = models.FloatField(default=1.0)
+    is_winner = models.NullBooleanField(default=None)
 
     def __str__(self):
         return '{}: {}'.format(self.team_id, self.coef)
@@ -64,7 +66,7 @@ class OddMap(models.Model):
 
 class WinnerPrediction(models.Model):
     user_id = models.OneToOneField(User, models.CASCADE, related_name='winner_prediction', unique=True)
-    team_id = models.ForeignKey(Team, models.CASCADE, related_name='winner_team_prediction')
+    prediction_id = models.ForeignKey(WinnerPredictionCoef, models.CASCADE, related_name='winner_team_prediction')
 
     def __str__(self):
-        return '{}: {}'.format(self.user_id, self.team_id)
+        return '{}: {}'.format(self.user_id, self.prediction_id.team_id)
