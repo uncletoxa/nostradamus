@@ -21,7 +21,7 @@ class Coefficient(models.Model):
 
 
 class WinnerPredictionCoef(models.Model):
-    wp_coef_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     team_id = models.ForeignKey(Team, models.CASCADE, related_name='winner_team')
     coef = models.FloatField(default=1.0)
     is_winner = models.NullBooleanField(default=None)
