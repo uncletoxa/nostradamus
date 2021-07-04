@@ -26,9 +26,9 @@
       </tr>
     </thead>
     <tbody>
-      {% for match in user_results.values %}
+      {% for ind, match in user_results.items %}
         <tr>
-          <td>{{ match.match_name }}</td>
+          <td><a href="{% url 'matches:single_match' ind  %}">{{ match.match_name }}</a></td>
           <td>{{ match.match_name.result }}</td>
           {% if match.match_prediction %}
             <td>{{ match.match_prediction }}</td>
