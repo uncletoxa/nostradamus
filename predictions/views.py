@@ -46,19 +46,6 @@ def available_coefficients(request):
                                           'not_avail_coefs': not_avail_coefs})
 
 
-def single_coefficient(request, match_id):
-    coef = (Coefficient.objects.filter(match_id=match_id).latest('update_time'))
-    match = Match.objects.get(match_id=match_id)
-    try:
-        prediction = Prediction.objects.filter(match_id=match_id).latest('submit_time')
-        match_result = get_result(prediction.home_score, prediction.guest_score)
-        result = {'match_result': match_result,
-                  'match_bet': coef.serializable_value(match_result)}
-    except Prediction.DoesNotExist:
-        result = None
-    return render(request, 'single_prediction.html',
-                  {'coef': coef, 'result': result, 'match': match,
-                   'cur_time': now()})
 
 
 @login_required

@@ -4,12 +4,11 @@
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
   <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">Predictions</a></li>
-  <li class="breadcrumb-item"> <a href="{% url 'predictions:single_coef' match.match_id %}"> {{ match }} </a></li>
-  <li class="breadcrumb-item active">New prediction</li>
+  <li class="breadcrumb-item active"> <a href="{% url 'predictions:details' match.match_id %}"> {{ match }} </a></li>
 {% endblock %}
 
 {% block content %}
-  {% if match.start_time > cur_time %}
+  {% if match.status == "SCHEDULED" %}
     <form method="post">
       {% csrf_token %}
       {{ form.as_p }}

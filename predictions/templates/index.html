@@ -18,7 +18,7 @@
       {% for coef in avail_coefs %}
         <tr>
           <td>
-            <a href="{% url 'predictions:single_coef' coef.match_id %}">
+            <a href="{% url 'predictions:details' coef.match_id %}">
               {{ coef.match_id__home_team__emoji_symbol }}
               {{ coef.match_id__home_team__name }} —
               {{ coef.match_id__guest_team__emoji_symbol }}
@@ -48,7 +48,7 @@
     <tbody>
       {% for coef in not_avail_coefs %}
         <tr>
-          <td> <a href="{% url 'predictions:single_coef' coef.match_id %}">
+          <td> <a href="{% url 'predictions:details' coef.match_id %}">
             {{ coef.match_id__home_team__emoji_symbol }}
             {{ coef.match_id__home_team__name }} —
             {{ coef.match_id__guest_team__emoji_symbol }}
