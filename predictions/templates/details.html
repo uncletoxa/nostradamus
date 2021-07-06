@@ -92,7 +92,7 @@
       </div>
       </div>
 
-      <div class="col">
+      <div class="col-4">
         <div class="container">
         <div class="row">
         {% if match.status == "SCHEDULED" %}
@@ -118,7 +118,8 @@
           <div class="col">
             <div class="alert alert-info" role="alert">
               {% if curr_prediction %}
-                Your current prediction is {{ curr_prediction.team_id }}
+              Current prediction:
+              <p class="mb-0">{{ curr_prediction }}</p>
               {% else %}
                 No predictions given
               {% endif %}
