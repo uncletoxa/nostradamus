@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import localtime, now
 
-from basic.utils import get_result, last_prediction
+from basic.utils import last_prediction
 from predictions.models import Prediction, Coefficient, WinnerPrediction, WinnerPredictionCoef
 from matches.models import Match, Team
 from predictions.forms import NewPredictionForm, WinnerPredictionForm
@@ -29,19 +29,19 @@ def available_coefficients(request):
                 'match_id__prediction__user_id'))
     not_avail_coefs = last_prediction(
         Coefficient.objects
-            .filter(coef_ready=True,
-                    match_id__start_time__lte=datetime.now(pytz.UTC))
-            .values('match_id',
-                    'match_id__home_team__name',
-                    'match_id__guest_team__name',
-                    'match_id__home_team__emoji_symbol',
-                    'match_id__guest_team__emoji_symbol',
-                    'match_id__prediction__home_score',
-                    'match_id__prediction__guest_score',
-                    'match_id__home_score',
-                    'match_id__guest_score',
-                    'match_id__prediction__submit_time',
-                    'match_id__prediction__user_id'))
+        .filter(coef_ready=True,
+                match_id__start_time__lte=datetime.now(pytz.UTC))
+        .values('match_id',
+                'match_id__home_team__name',
+                'match_id__guest_team__name',
+                'match_id__home_team__emoji_symbol',
+                'match_id__guest_team__emoji_symbol',
+                'match_id__prediction__home_score',
+                'match_id__prediction__guest_score',
+                'match_id__home_score',
+                'match_id__guest_score',
+                'match_id__prediction__submit_time',
+                'match_id__prediction__user_id'))
     return render(request, 'index.html', {'avail_coefs': avail_coefs,
                                           'not_avail_coefs': not_avail_coefs})
 
