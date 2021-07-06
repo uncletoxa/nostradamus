@@ -46,17 +46,28 @@ def available_coefficients(request):
                                           'not_avail_coefs': not_avail_coefs})
 
 
-
-
 @login_required
 def new_prediction(request, match_id):
     match_data = Match.objects.get(match_id=match_id)
     score_coef_data = Coefficient.objects.get(match_id=match_id)
+    score_coef_win, score_coef_tie, score_coef_lose = {}, {}, {}
+    for score, coef in score_coef_data.score.items():
+        if score != 'Any other score':
+            home, guest = score.split('-')
+            if home > guest:
+                score_coef_win[score] = coef
+            if home == guest:
+                score_coef_tie[score] = coef
+            if home < guest:
+                score_coef_lose[score] = coef
+        else:
+            any_other_score = coef
     user_predictions = (Prediction.objects
                         .filter(match_id=match_id, user_id=request.user.id)
                         .order_by('-submit_time'))
     if request.method == 'POST':
-        frm = NewPredictionForm(request.POST)
+        frm = NewPredictionForm(
+            request.POST, initial={'home_score': 0, 'guest_score': 0})
         home_score = request.POST['home_score']
         guest_score = request.POST['guest_score']
         is_home_advance = request.POST['penalty_winner']
@@ -72,8 +83,13 @@ def new_prediction(request, match_id):
     else:
         frm = NewPredictionForm()
     return render(request, 'details.html',
-                  {'form': frm, 'match': match_data, 'user_predictions': user_predictions,
-                   'score_coef': score_coef_data, 'cur_time': now()})
+                  {'form': frm, 'match': match_data, 'cur_time': now(),
+                   'user_predictions': user_predictions,
+                   'score_coef': score_coef_data,
+                   'score_coef_win': score_coef_win,
+                   'score_coef_tie': score_coef_tie,
+                   'score_coef_lose': score_coef_lose,
+                   'any_other_score': any_other_score})
 
 
 @login_required
