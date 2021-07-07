@@ -62,9 +62,10 @@ def new_prediction(request, match_id):
                 score_coef_lose[score] = coef
         else:
             any_other_score = coef
-    user_predictions = (Prediction.objects
-                        .filter(match_id=match_id, user_id=request.user.id)
-                        .order_by('-submit_time'))
+    curr_prediction = (Prediction.objects
+                       .filter(match_id=match_id, user_id=request.user.id)
+                       .order_by('-submit_time')
+                       .first())
     if request.method == 'POST':
         frm = NewPredictionForm(
             request.POST, initial={'home_score': 0, 'guest_score': 0})
@@ -84,7 +85,7 @@ def new_prediction(request, match_id):
         frm = NewPredictionForm()
     return render(request, 'details.html',
                   {'form': frm, 'match': match_data, 'cur_time': now(),
-                   'user_predictions': user_predictions,
+                   'curr_prediction': curr_prediction,
                    'score_coef': score_coef_data,
                    'score_coef_win': score_coef_win,
                    'score_coef_tie': score_coef_tie,
