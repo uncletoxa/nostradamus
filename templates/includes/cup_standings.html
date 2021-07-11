@@ -5,6 +5,7 @@
       {% if long_standings %}
       <th>Result Points</th>
       <th>Score Points</th>
+      <th>Winner Points</th>
       {% endif %}
       <th>Total Points</th>
     </tr>
@@ -16,6 +17,7 @@
         {% if long_standings %}
         <td>{{ user_result.result_points }}</td>
         <td>{{ user_result.score_points }}</td>
+        <td>{{ user_result.winner_points }}</td>
         {% endif %}
         <td>{{ user_result.total_points }}</td>
       </tr>

@@ -25,15 +25,19 @@ def cup_standings(long_standings=False, live_standings=False):
         matches_queryset = Match.objects.filter(status='FINISHED')
     standings = []
     for user in users:
-        total_pts, result_pts, score_pts = 0, 0, 0
+        total_pts, result_pts, score_pts, winner_pts = 0, 0, 0, 0
+        user_champion = WinnerPrediction.objects.get(user_id=user.id)
+        if user_champion.prediction_id.is_winner:
+            winner_pts = user_champion.prediction_id.coef
         results_data = get_user_results_by_matches(user.id, matches_queryset)
         for match_data in results_data.values():
             result_pts += 0 if match_data['result_bet'] is None else match_data['result_bet']
             score_pts += 0 if match_data['score_bet'] is None else match_data['score_bet']
         standings.append({'user': user,
-                          'total_points': round(result_pts + score_pts, 2),
+                          'total_points': round(result_pts + score_pts + winner_pts, 2),
                           'result_points': round(result_pts, 2),
-                          'score_points': round(score_pts, 2)})
+                          'score_points': round(score_pts, 2),
+                          'winner_points': round(winner_pts, 2)})
     return {'results': sorted(standings, key=lambda item: item['total_points'], reverse=True),
             'long_standings': long_standings}
 
