@@ -14,6 +14,19 @@
 {% endblock %}
 
 {% block content %}
+<div class="alert alert-info" role="alert">
+  Winner prediction is
+  {% if user_champion.prediction_id.is_winner == False %}
+      <s>{{ user_champion.prediction_id.team_id }}</s><br>
+      0 points earned
+    {% elif user_champion.prediction_id.is_winner == True %}
+      <b>{{ user_champion.prediction_id.team_id }}</b><br>
+      {{ user_champion.prediction_id.coef }} points earned
+    {% else %}
+      {{ user_champion.prediction_id.team_id }}
+  {% endif %}
+
+</div>
   <table class="table">
     <thead class="thead-dark">
       <tr>
