@@ -59,19 +59,20 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
                 prediction_result = get_result(
                     prediction.home_score, prediction.guest_score)
 
-            if prediction_result == match_result:
-                coef = Coefficient.objects.get(match_id_id=prediction.match_id_id)
-                user_result_data[match.match_id].update({'result_bet': getattr(coef, match_result)})
+            coef = Coefficient.objects.get(match_id_id=prediction.match_id_id)
+            match_score_cr = get_score(match.home_score, match.guest_score, coef.score)
+            predicted_score_cr = get_score(prediction.home_score, prediction.guest_score, coef.score)
 
-                match_score_cr = get_score(match.home_score, match.guest_score, coef.score)
-                predicted_score_cr = get_score(prediction.home_score, prediction.guest_score, coef.score)
-
-                if predicted_score_cr == match_score_cr:
-                    user_result_data[match.match_id].update({'score_bet': coef.score[match_score]})
-                else:
-                    user_result_data[match.match_id].update({'score_bet': 0})
+            if predicted_score_cr == match_score_cr:
+                user_result_data[match.match_id].update({'score_bet': coef.score[match_score]})
             else:
-                user_result_data[match.match_id].update({'result_bet': 0, 'score_bet': 0})
+                user_result_data[match.match_id].update({'score_bet': 0})
+
+            if prediction_result == match_result:
+                user_result_data[match.match_id].update({'result_bet': getattr(coef, match_result)})
+            else:
+                user_result_data[match.match_id].update({'result_bet': 0})
+
         except ObjectDoesNotExist:
             user_result_data[match.match_id].update(
                 {'match_prediction': None, 'result_bet': None, 'score_bet': None})
