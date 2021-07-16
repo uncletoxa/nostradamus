@@ -95,8 +95,8 @@ def new_prediction(request, match_id):
 
 @login_required
 def winner_prediction(request):
-    winner_coef_data = WinnerPredictionCoef.objects.all().select_related('team_id')
-    curr_prediction = WinnerPrediction.objects.select_related('prediction_id').filter(user_id=request.user).first()
+    winner_coef_data = WinnerPredictionCoef.objects.all().select_related('team_id').order_by('coef')
+    curr_prediction = WinnerPrediction.objects.filter(user_id=request.user.id).first()
     if request.method == 'POST':
         frm = WinnerPredictionForm(request.POST)
         team_id = request.POST['team_id']

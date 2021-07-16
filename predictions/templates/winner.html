@@ -35,7 +35,7 @@
             {% if submissions_closed %}
               <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                  No more Cup winner prediction
+                  Cup winner prediction is not available now
                 </div>
               </div>
             {% else %}
@@ -56,7 +56,7 @@
           <div class="col">
             <div class="alert alert-info" role="alert">
               {% if curr_prediction %}
-                Your current prediction is {{ curr_prediction.team_id }}
+                Your current prediction is {{ curr_prediction.prediction_id.team_id }}
               {% else %}
                 No predictions given
               {% endif %}
