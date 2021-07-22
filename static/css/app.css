@@ -1,9 +1,10 @@
+
 body {
   background-image: url(../img/sports.png);
 }
 
 .navbar-brand {
-  font-family: 'Comfortaa', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .alert {
@@ -11,7 +12,7 @@ body {
 }
 
 .logo {
-  font-family: 'Comfortaa', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .logo a {
