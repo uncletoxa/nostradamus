@@ -33,6 +33,7 @@ class Match(models.Model):
     def __str__(self):
         return '{} — {}'.format(self.home_team, self.guest_team)
 
+    @property
     def result(self):
         if self.home_score == self.guest_score:
             if self.home_to_advance == True:
@@ -43,3 +44,7 @@ class Match(models.Model):
                 return '{}:{}'.format(self.home_score, self.guest_score)
         else:
             return '{}:{}'.format(self.home_score, self.guest_score)
+
+    @property
+    def teams(self):
+        return '{} — {}'.format(self.home_team, self.guest_team)

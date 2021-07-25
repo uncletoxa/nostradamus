@@ -59,3 +59,8 @@ def next_matches(cur_user):
 def live_matches():
     matches = Match.objects.filter(status__in=['IN_PLAY', 'PAUSED'])
     return {'live_matches': matches}
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)

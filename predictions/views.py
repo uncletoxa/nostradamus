@@ -14,36 +14,21 @@ COMPETITION_START_DATE_UTC = datetime(2021, 5, 11, 19, 0, 0, tzinfo=pytz.utc)
 
 
 def available_coefficients(request):
+    user_preds = {}
     avail_coefs = last_prediction(
         Coefficient.objects
-        .filter(coef_ready=True,
-                match_id__start_time__gt=datetime.now(pytz.UTC))
-        .values('match_id',
-                'match_id__home_team__name',
-                'match_id__guest_team__name',
-                'match_id__home_team__emoji_symbol',
-                'match_id__guest_team__emoji_symbol',
-                'match_id__prediction__home_score',
-                'match_id__prediction__guest_score',
-                'match_id__prediction__submit_time',
-                'match_id__prediction__user_id'))
+        .filter(coef_ready=True, match_id__status='SCHEDULED'))
     not_avail_coefs = last_prediction(
         Coefficient.objects
-        .filter(coef_ready=True,
-                match_id__start_time__lte=datetime.now(pytz.UTC))
-        .values('match_id',
-                'match_id__home_team__name',
-                'match_id__guest_team__name',
-                'match_id__home_team__emoji_symbol',
-                'match_id__guest_team__emoji_symbol',
-                'match_id__prediction__home_score',
-                'match_id__prediction__guest_score',
-                'match_id__home_score',
-                'match_id__guest_score',
-                'match_id__prediction__submit_time',
-                'match_id__prediction__user_id'))
+        .filter(coef_ready=True)
+        .exclude(match_id__status='SCHEDULED'))
+
+    preds_q = Prediction.objects.filter(user_id=request.user.id).order_by('match_id_id', '-submit_time').distinct('match_id_id')
+    for i in preds_q:
+        user_preds[i.match_id.match_id] = f'{i.home_score} - {i.guest_score}'
     return render(request, 'index.html', {'avail_coefs': avail_coefs,
-                                          'not_avail_coefs': not_avail_coefs})
+                                          'not_avail_coefs': not_avail_coefs,
+                                          'user_preds': user_preds})
 
 
 @login_required
@@ -63,7 +48,7 @@ def new_prediction(request, match_id):
         else:
             any_other_score = coef
     curr_prediction = (Prediction.objects
-                       .filter(match_id=match_id, user_id=request.user.id)
+                       .filter(match_id=match_data, user_id=request.user.id)
                        .order_by('-submit_time')
                        .first())
     if request.method == 'POST':
