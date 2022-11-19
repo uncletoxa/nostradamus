@@ -6,6 +6,7 @@ class Team(models.Model):
     name = models.CharField(max_length=30)
     code = models.CharField(max_length=3)
     emoji_symbol = models.CharField(max_length=30)
+    power_group = models.SmallIntegerField()
 
     def __str__(self):
         return '{} {}'.format(self.emoji_symbol, self.name)
