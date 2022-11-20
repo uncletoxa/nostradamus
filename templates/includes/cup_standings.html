@@ -1,26 +1,31 @@
-<table class="table table-hover">
+<table class="table">
   <thead class="thead-dark">
     <tr>
       <th>User</th>
-      {% if long_standings %}
-      <th>Result Points</th>
-      <th>Score Points</th>
-      <th>Winner Points</th>
-      {% endif %}
       <th>Total Points</th>
+      {% if long_standings %}
+        <th>Result Points</th>
+        <th>Score Points</th>
+        <th>High Score Points</th>
+        <th>Block Bonus Points</th>
+        <th>Penalty Points</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
-    {% for user_result in results %}
+    {% for user, points in results.items %}
       <tr>
-        <td><a href="{% url 'results:user_results' user_result.user.id %}">{{ user_result.user.first_name }}</a></td>
+        <td><a href="{% url 'results:user_results' user.id %}">{{ user.username }}</a></td>
+        <td>{{ points.total_points }}</td>
         {% if long_standings %}
-        <td>{{ user_result.result_points }}</td>
-        <td>{{ user_result.score_points }}</td>
-        <td>{{ user_result.winner_points }}</td>
-        {% endif %}
-        <td>{{ user_result.total_points }}</td>
+          <td>{{ points.result_points }}</td>
+          <td>{{ points.score_points }}</td>
+          <td>{{ points.high_score_points }}</td>
+          <td>{{ points.block_bonus_points }}</td>
+          <td>{{ points.penalty_points }}</td>
+      {% endif %}
       </tr>
     {% endfor %}
   </tbody>
 </table>
+

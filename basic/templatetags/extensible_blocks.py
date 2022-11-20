@@ -18,28 +18,40 @@ def champ_standings():
 
 @register.inclusion_tag('includes/cup_standings.html')
 def cup_standings(long_standings=False, live_standings=False):
+    def zero_if_none(val):
+        return val if val is not None else 0
+    
     users = User.objects.filter(is_superuser=False)
     if live_standings:
         matches_queryset = Match.objects.filter(status__in=['IN_PLAY', 'PAUSED', 'FINISHED'])
     else:
         matches_queryset = Match.objects.filter(status='FINISHED')
-    standings = []
+    standings = {}
+
     for user in users:
-        total_pts, result_pts, score_pts, winner_pts = 0, 0, 0, 0
-        user_champion = WinnerPrediction.objects.get(user_id=user.id)
-        if user_champion.prediction_id.is_winner:
-            winner_pts = user_champion.prediction_id.coef
+        total_points = 0
+        result_points = 0
+        score_points = 0
+        high_score_points = 0
+        block_bonus_points = 0
+        penalty_points = 0
+
         results_data = get_user_results_by_matches(user.id, matches_queryset)
         for match_data in results_data.values():
-            result_pts += 0 if match_data['result_bet'] is None else match_data['result_bet']
-            score_pts += 0 if match_data['score_bet'] is None else match_data['score_bet']
-        standings.append({'user': user,
-                          'total_points': round(result_pts + score_pts + winner_pts, 2),
-                          'result_points': round(result_pts, 2),
-                          'score_points': round(score_pts, 2),
-                          'winner_points': round(winner_pts, 2)})
-    return {'results': sorted(standings, key=lambda item: item['total_points'], reverse=True),
-            'long_standings': long_standings}
+            result_points += zero_if_none(match_data['result_points'])
+            score_points += zero_if_none(match_data['score_points'])
+            high_score_points += zero_if_none(match_data['high_score_points'])
+            block_bonus_points += zero_if_none(match_data['block_bonus_points'])
+            penalty_points += zero_if_none(match_data['penalty_points'])
+            total_points = sum([result_points, score_points, high_score_points, block_bonus_points, penalty_points])
+        standings.update({user: {
+            'total_points': total_points,
+            'result_points': result_points,
+            'score_points': score_points,
+            'high_score_points': high_score_points,
+            'block_bonus_points': block_bonus_points,
+            'penalty_points': penalty_points}})
+    return {'results': standings, 'long_standings': long_standings}
 
 
 @register.inclusion_tag('includes/next_matches.html')
