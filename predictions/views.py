@@ -34,19 +34,19 @@ def available_coefficients(request):
 @login_required
 def new_prediction(request, match_id):
     match_data = Match.objects.get(match_id=match_id)
-    score_coef_data = Coefficient.objects.get(match_id=match_id)
-    score_coef_win, score_coef_tie, score_coef_lose = {}, {}, {}
-    for score, coef in score_coef_data.score.items():
-        if score != 'Any other score':
-            home, guest = score.split('-')
-            if home > guest:
-                score_coef_win[score] = coef
-            if home == guest:
-                score_coef_tie[score] = coef
-            if home < guest:
-                score_coef_lose[score] = coef
-        else:
-            any_other_score = coef
+    # score_coef_data = Coefficient.objects.get(match_id=match_id)
+    # score_coef_win, score_coef_tie, score_coef_lose = {}, {}, {}
+    # for score, coef in score_coef_data.score.items():
+    #     if score != 'Any other score':
+    #         home, guest = score.split('-')
+    #         if home > guest:
+    #             score_coef_win[score] = coef
+    #         if home == guest:
+    #             score_coef_tie[score] = coef
+    #         if home < guest:
+    #             score_coef_lose[score] = coef
+    #     else:
+    #         any_other_score = coef
     curr_prediction = (Prediction.objects
                        .filter(match_id=match_data, user_id=request.user.id)
                        .order_by('-submit_time')
@@ -70,12 +70,7 @@ def new_prediction(request, match_id):
         frm = NewPredictionForm()
     return render(request, 'details.html',
                   {'form': frm, 'match': match_data, 'cur_time': now(),
-                   'curr_prediction': curr_prediction,
-                   'score_coef': score_coef_data,
-                   'score_coef_win': score_coef_win,
-                   'score_coef_tie': score_coef_tie,
-                   'score_coef_lose': score_coef_lose,
-                   'any_other_score': any_other_score})
+                   'curr_prediction': curr_prediction})
 
 
 @login_required
