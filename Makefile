@@ -5,7 +5,7 @@ system-setup:
 	sudo add-apt-repository -y ppa:deadsnakes/ppa
 	sudo apt update
 	sudo apt -y upgrade
-	sudo apt install -y python3.7 postgresql postgresql-contrib nginx supervisor python3-pip
+	sudo apt install -y python3.7 postgresql postgresql-contrib nginx supervisor python3-pip python3.7-distutils
 	mkdir -p ~/run ~/logs
 
 db-setup: system-setup
