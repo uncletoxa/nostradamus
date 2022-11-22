@@ -30,6 +30,9 @@
           <th>Prediction</th>
           <th>Result Points</th>
           <th>Score Points</th>
+          <th>High Score Points</th>
+          <th>Block Bonus Points</th>
+          <th>Penalty Points</th>
           <th>Total Points</th>
         </tr>
       </thead>
@@ -37,13 +40,19 @@
         {% for user, user_result in users_results.items %}
           {% for _, match in user_result.items %}
             <tr>
-              <td> <a href="{% url 'results:user_results' user.id %}"> {{ user.first_name }} </a></td>
+              <td> <a href="{% url 'results:user_results' user.id %}"> {{ user }} </a></td>
               {% if match %}
                 <td>{{ match.match_prediction }}</td>
-                <td>{{ match.result_bet }}</td>
-                <td>{{ match.score_bet }}</td>
-                <td>{{ match.result_bet|addition:match.score_bet }}</td>
+                <td>{{ match.result_points }}</td>
+                <td>{{ match.score_points }}</td>
+                <td>{{ match.high_score_points }}</td>
+                <td>{{ match.block_bonus_points }}</td>
+                <td>{{ match.penalty_points }}</td>
+                <td>{{ match.result_points|addition:match.score_points|addition:match.high_score_points|addition:match.block_bonus_points|addition:match.penalty_points }}</td>
               {% else %}
+                <td>No prediction given</td>
+                <td>No prediction given</td>
+                <td>No prediction given</td>
                 <td>No prediction given</td>
                 <td>No prediction given</td>
                 <td>No prediction given</td>
@@ -55,6 +64,6 @@
       </tbody>
     </table>
   {% else %}
-    <h3>No prediction table available until match start.</h3>
+    <h3>No prediction table available.</h3>
   {% endif %}
 {% endblock %}
