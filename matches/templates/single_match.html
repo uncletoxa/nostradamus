@@ -40,7 +40,7 @@
         {% for user, user_result in users_results.items %}
           {% for _, match in user_result.items %}
             <tr>
-              <td> <a href="{% url 'results:user_results' user.id %}"> {{ user }} </a></td>
+              <td> <a href="{% url 'results:user_results' user.id %}"> {{ user.first_name }} </a></td>
               {% if match %}
                 <td>{{ match.match_prediction }}</td>
                 <td>{{ match.result_points }}</td>
