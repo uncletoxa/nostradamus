@@ -53,7 +53,7 @@ def cup_standings(long_standings=False, live_standings=False):
             'penalty_points': penalty_points}})
 
     return {'results': dict(
-                sorted(standings['results'].items(), key=lambda x: x[1]['total_points'], reverse=True))}
+                sorted(standings.items(), key=lambda x: x[1]['total_points'], reverse=True))}
 
 
 @register.inclusion_tag('includes/next_matches.html')
