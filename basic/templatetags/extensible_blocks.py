@@ -20,7 +20,7 @@ def champ_standings():
 def cup_standings(long_standings=False, live_standings=False):
     def zero_if_none(val):
         return val if val is not None else 0
-    
+
     users = User.objects.filter(is_superuser=False)
     if live_standings:
         matches_queryset = Match.objects.filter(status__in=['IN_PLAY', 'PAUSED', 'FINISHED'])
@@ -51,7 +51,9 @@ def cup_standings(long_standings=False, live_standings=False):
             'high_score_points': high_score_points,
             'block_bonus_points': block_bonus_points,
             'penalty_points': penalty_points}})
-    return {'results': standings, 'long_standings': long_standings}
+
+    return {'results': {'results': dict(
+                sorted(standings['results'].items(), key=lambda x: x[1]['total_points'], reverse=True))}}
 
 
 @register.inclusion_tag('includes/next_matches.html')
