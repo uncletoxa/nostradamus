@@ -1,5 +1,6 @@
-from datetime import datetime
 import pytz
+from datetime import datetime
+from decouple import config
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -10,7 +11,9 @@ from predictions.models import Prediction, Coefficient, WinnerPrediction, Winner
 from matches.models import Match, Team
 from predictions.forms import NewPredictionForm, WinnerPredictionForm
 
-COMPETITION_START_DATE_UTC = datetime(2021, 5, 11, 19, 0, 0, tzinfo=pytz.utc)
+# iso utc example: '2022-11-25T19:29:45.115942'
+tz = pytz.timezone('UTC')
+COMPETITION_START_DATE_UTC = tz.localize(datetime.fromisoformat(config('COMPETITION_START_DATE_UTC')))
 
 
 def available_coefficients(request):
