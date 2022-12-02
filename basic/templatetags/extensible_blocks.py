@@ -3,6 +3,7 @@ import datetime
 
 from matches.models import Match
 from predictions.models import Prediction, WinnerPrediction
+from accounts.models import TeamSupporter
 from django import template
 from django.contrib.auth.models import User
 from basic.utils import last_prediction, get_user_results_by_matches
@@ -14,6 +15,12 @@ register = template.Library()
 def champ_standings():
     champ_predictions = WinnerPrediction.objects.all().order_by('id')
     return {'champ_predictions': champ_predictions}
+
+
+@register.inclusion_tag('includes/champ_supporters.html')
+def champ_supporters():
+    team_champ_supporters = TeamSupporter.objects.all().order_by('id')
+    return {'team_champ_supporters': team_champ_supporters}
 
 
 @register.inclusion_tag('includes/cup_standings.html')

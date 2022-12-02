@@ -1,0 +1,16 @@
+<table class="table table-hover">
+  <thead class="thead-dark">
+    <tr>
+      <th>User</th>
+      <th>Supported Team</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for supporter in team_champ_supporters %}
+      <tr>
+        <td><a href="{% url 'results:user_results' supporter.user_id.id %}">{{ supporter.user_id.first_name }}</a></td>
+        <td>{{ supporter.team_id }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
