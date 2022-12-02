@@ -4,7 +4,7 @@ from matches.models import Team
 
 
 class TeamSupporter(models.Model):
-    ts_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     team_id = models.ForeignKey(Team, models.CASCADE, related_name='supported_team')
     user_id = models.ForeignKey(User, models.CASCADE, related_name='user')
 
