@@ -78,7 +78,7 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
                     guest_power_bonus = tie_block_bonus_map[match.guest_team.power_group]
                     power_bonus = abs(guest_power_bonus - home_power_bonus)
                     if match.is_playoff:
-                        if match.penalty_home_winner == prediction.penalty_home_winner:
+                        if match.home_to_advance == prediction.home_to_advance:
                             user_result_data[match.match_id].update({'penalty_points': 1})
 
                 user_result_data[match.match_id].update({
