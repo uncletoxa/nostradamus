@@ -42,6 +42,11 @@ def cup_standings(long_standings=False, live_standings=False):
         high_score_points = 0
         block_bonus_points = 0
         penalty_points = 0
+        winner_points = 0
+
+        user_champion = WinnerPrediction.objects.get(user_id=user.id)
+        if user_champion.prediction_id.is_winner:
+            winner_points = user_champion.prediction_id.coef
 
         results_data = get_user_results_by_matches(user.id, matches_queryset)
         for match_data in results_data.values():
@@ -50,14 +55,16 @@ def cup_standings(long_standings=False, live_standings=False):
             high_score_points += zero_if_none(match_data['high_score_points'])
             block_bonus_points += zero_if_none(match_data['block_bonus_points'])
             penalty_points += zero_if_none(match_data['penalty_points'])
-            total_points = sum([result_points, score_points, high_score_points, block_bonus_points, penalty_points])
+            total_points = sum([result_points, score_points, high_score_points,
+                                block_bonus_points, penalty_points, winner_points])
         standings.update({user: {
             'total_points': total_points,
             'result_points': result_points,
             'score_points': score_points,
             'high_score_points': high_score_points,
             'block_bonus_points': block_bonus_points,
-            'penalty_points': penalty_points}})
+            'penalty_points': penalty_points,
+            'winner_points': winner_points}})
 
     return {'results': dict(sorted(standings.items(), key=lambda x: x[1]['total_points'], reverse=True)),
             'long_standings': long_standings}
