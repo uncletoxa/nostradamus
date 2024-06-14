@@ -8,7 +8,6 @@ from django.contrib.auth import views as auth_views
 from accounts import views as accounts_views
 from basic import views as basic_views
 
-
 urlpatterns = [
     path('matches/', include('matches.urls')),
     path('predictions/', include('predictions.urls')),

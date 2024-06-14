@@ -1,6 +1,9 @@
 __pycache__/
 *.py[cod]
 .env
+.env.prod
+.env-db.prod
+.env-proxy-companion.prod
 .idea
 venv/
 sftp-config.json

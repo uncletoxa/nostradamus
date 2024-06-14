@@ -1,6 +1,6 @@
 # Score Updater
 
-Live score updater for [live score widget](../templates/includes/live_matches.html) support.
+Live score updater for [live score widget](../app/templates/includes/live_matches.html) support.
 
 ## Deployment
 

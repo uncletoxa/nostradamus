@@ -1,4 +1,4 @@
-from django.urls import resolve, reverse
+from django.urls import reverse
 from django.test import TestCase
 from matches.models import Match
 from predictions.models import Prediction, Coefficient
