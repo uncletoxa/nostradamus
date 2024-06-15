@@ -3,14 +3,14 @@ import pytz
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.utils.timezone import localtime, now
+from django.utils.timezone import now
 
 from basic.utils import last_prediction
 from predictions.models import Prediction, Coefficient, WinnerPrediction, WinnerPredictionCoef
 from matches.models import Match, Team
 from predictions.forms import NewPredictionForm, WinnerPredictionForm
 
-COMPETITION_START_DATE_UTC = datetime(2021, 5, 11, 19, 0, 0, tzinfo=pytz.utc)
+COMPETITION_START_DATE_UTC = datetime(2024, 6, 14, 22, 0, 0, tzinfo=pytz.utc)
 
 
 def available_coefficients(request):
@@ -64,7 +64,7 @@ def new_prediction(request, match_id):
                 user_id=request.user,
                 match_id=match_data,
                 home_to_advance=is_home_advance,
-                submit_time=localtime(now()))
+                submit_time=now())
             return redirect('predictions:details', match_id)
     else:
         frm = NewPredictionForm()
