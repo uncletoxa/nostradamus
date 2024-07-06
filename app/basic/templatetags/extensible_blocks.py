@@ -12,13 +12,15 @@ register = template.Library()
 
 @register.inclusion_tag('includes/champ_standings.html')
 def champ_standings():
-    champ_predictions = WinnerPrediction.objects.all().order_by('id')
+    champ_predictions = WinnerPrediction.objects.filter(user_id__is_superuser=False).filter(
+        user_id__is_active=True).order_by('id')
     return {'champ_predictions': champ_predictions}
 
 
 @register.inclusion_tag('includes/champ_supporters.html')
 def champ_supporters():
-    team_champ_supporters = TeamSupporter.objects.all().order_by('id')
+    team_champ_supporters = TeamSupporter.objects.filter(user_id__is_superuser=False).filter(
+        user_id__is_active=True).order_by('id')
     return {'team_champ_supporters': team_champ_supporters}
 
 
