@@ -12,12 +12,14 @@ Match results (including live updates) powered by the dev-friendly football API 
 ### dev
 
 ```bash
-docker-compose up -d --build 
+docker compose up -d --build 
 ```
 
 ```bash
-docker-compose exec web python manage.py flush --no-input
-docker-compose exec web python manage.py migrate
+docker compose exec web python manage.py flush --no-input
+docker compose exec web python manage.py makemigrations matches predictions results accounts
+docker compose exec web python manage.py migrate
+docker compose exec web python manage.py createsuperuser
 ```
 
 ### prod
@@ -25,19 +27,23 @@ docker-compose exec web python manage.py migrate
 Change parameters inside `.env` files (except for `.env.dev`) to the actual ones and rename them - remove `.example` postfix
 
 ```bash
-docker-compose -f docker-compose-prod.yml up -d --build
+docker compose -f docker-compose-prod.yml up -d --build
 ```
 
 ```bash
-docker-compose -f docker-compose-prod.yml exec web python manage.py makemigrations --noinput
+docker compose exec web python manage.py createsuperuser
 ```
 
 ```bash
-docker-compose -f docker-compose-prod.yml exec web python manage.py migrate --noinput
+docker compose -f docker-compose-prod.yml exec web python manage.py makemigrations --noinput
 ```
 
 ```bash
-docker-compose -f docker-compose-prod.yml exec web python manage.py collectstatic
+docker compose -f docker-compose-prod.yml exec web python manage.py migrate --noinput
+```
+
+```bash
+docker compose -f docker-compose-prod.yml exec web python manage.py collectstatic
 ```
 
 ### Acknowledgements
