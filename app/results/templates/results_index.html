@@ -14,13 +14,13 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-7">
+    <div class="col-8">
       <h3>
         <small class="text-muted"><a href="{% url 'results:points_table' %}">standings</a></small>
       </h3>
         {% cup_standings True False %}
     </div>
-    <div class="col-5">
+    <div class="col">
       <h3>
         <small class="text-muted"><a href="{% url 'results:results_champions' %}">champions choices</a></small>
       </h3>

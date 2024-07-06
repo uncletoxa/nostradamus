@@ -2,7 +2,7 @@
   <span class="badge badge-danger">Live Results</span><small >&nbsp;powered by <a href="https://www.football-data.org">football-data.org</a></small>
     <div class="card-deck">
       {% for live_match in live_matches %}
-        <div class="card w-25">
+        <div class="card w-100">
           <div class="card-header"><a href="{% url 'matches:single_match' live_match.match_id %}">{{ live_match }}</a></div>
           <div class="card-body">
             <h3 class="card-title">{{ live_match.result }}</h3>
