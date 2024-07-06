@@ -1,4 +1,4 @@
-FROM python:3.9.19-slim-bookworm as builder
+FROM python:3.9.19-slim-bookworm AS builder
 LABEL authors="uncletoxa"
 
 WORKDIR /usr/src/app
