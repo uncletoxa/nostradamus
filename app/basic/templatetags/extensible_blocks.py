@@ -34,9 +34,10 @@ def cup_standings(long_standings=False, live_standings=False):
     standings = []
     for user in users:
         total_pts, result_pts, score_pts, winner_pts = 0, 0, 0, 0
-        user_champion = WinnerPrediction.objects.get(user_id=user.id)
-        if user_champion.prediction_id.is_winner:
-            winner_pts = user_champion.prediction_id.coef
+        user_champion = WinnerPrediction.objects.filter(user_id=user.id).first()
+        if user_champion:
+            if user_champion.prediction_id.is_winner:
+                winner_pts = user_champion.prediction_id.coef
         results_data = get_user_results_by_matches(user.id, matches_queryset)
         for match_data in results_data.values():
             result_pts += 0 if match_data['result_bet'] is None else match_data['result_bet']

@@ -10,7 +10,7 @@ def results(request):
 
 
 def user_result(request, user_id):
-    user_champion = WinnerPrediction.objects.get(user_id=user_id)
+    user_champion = WinnerPrediction.objects.filter(user_id=user_id).first()
     matches = (Match.objects.filter(home_score__isnull=False) |
                Match.objects.filter(guest_score__isnull=False)).order_by('-start_time')
     user_data = get_object_or_404(User, pk=user_id)
