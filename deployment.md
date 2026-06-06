@@ -1,97 +1,176 @@
-# Deployment
+# Deployment guide — Ubuntu 24.04
 
-## Podman Compose (recommended)
+## 1. Initial server setup
 
-### Prerequisites
+### Create a dedicated user
 
-- [Podman](https://podman.io/getting-started/installation) with the socket activated
-- `podman-compose` or `docker-compose` CLI
+```bash
+adduser deploy
+usermod -aG sudo deploy
+```
 
-Enable the Podman socket for your user:
+Log in as the new user for all remaining steps:
+
+```bash
+su - deploy
+```
+
+### Install system packages
+
+```bash
+sudo apt update && sudo apt install -y \
+    podman \
+    docker-compose \
+    git \
+    ufw
+```
+
+> **Note:** On Ubuntu 24.04 the `docker-compose` package installs Compose v2 as a Podman compose backend. `podman compose` delegates to it automatically.
+
+### Configure the firewall
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+```
+
+### Install Caddy
+
+```bash
+sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' \
+    | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' \
+    | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+sudo apt update && sudo apt install -y caddy
+```
+
+Verify Caddy is running:
+
+```bash
+sudo systemctl status caddy
+```
+
+### Enable rootless Podman to survive logout
+
+By default, rootless containers stop when the user logs out. Enable linger so the user's systemd session starts at boot:
+
+```bash
+sudo loginctl enable-linger deploy
+```
+
+Enable the Podman socket (needed for `podman compose`):
+
 ```bash
 systemctl --user enable --now podman.socket
 ```
 
-### 1. Configure environment
-
-Copy `.env.example` to `.env` and fill in the values:
-
-```bash
-cp .env.example .env
-```
-
-| Variable | Description |
-|---|---|
-| `SECRET_KEY` | Django secret key (generate with `python -c "import secrets; print(secrets.token_urlsafe(50))"`) |
-| `DEBUG` | `False` for production |
-| `ALLOWED_HOSTS` | Comma-separated list of allowed hostnames (e.g. `2018.example.com`) |
-| `DATABASE_URL` | `postgres://u_nostr:<password>@db:5432/db_nostr` — use `db` as the host when running via compose |
-
-### 2. Start the stack
-
-```bash
-podman compose --project-name nostr-2018 up -d
-```
-
-The `--project-name` flag is required when running multiple version stacks on the same host to avoid container and volume name collisions.
-
-On startup the container automatically runs `collectstatic` before gunicorn starts.
-
-This starts two services:
-- **db** — PostgreSQL 16 (no host port; reachable only inside the compose network)
-- **web** — gunicorn on `127.0.0.1:8018`, 2 workers
-
-### 3. Create a superuser
-
-```bash
-podman exec -it nostr-2018-web-1 python manage.py createsuperuser
-```
-
 ---
 
-## Multi-version subdomain hosting
-
-To serve multiple historical versions alongside the current site, each version runs as an independent Podman Compose stack behind a shared Caddy reverse proxy.
-
-### Host layout
+## 2. Clone the repository
 
 Use git worktrees so all versions share a single `.git` object store:
 
 ```bash
+sudo mkdir -p /srv/nostradamus
+sudo chown deploy:deploy /srv/nostradamus
+
 git clone git@github.com:uncletoxa/nostradamus.git /srv/nostradamus/current
+```
+
+Add a worktree for each historical version:
+
+```bash
 git -C /srv/nostradamus/current worktree add /srv/nostradamus/2018 v2018
 ```
 
-Each version directory needs its own `.env`:
+Final layout:
 
 ```
 /srv/nostradamus/
-    current/    → domain.com          (port 8000)
-    2018/       → 2018.domain.com     (port 8018)
+    current/    → domain.com
+    2018/       → 2018.domain.com
     caddy/
         Caddyfile
 ```
 
+---
+
+## 3. Configure environment files
+
+Each version needs its own `.env`. Start from the example:
+
+```bash
+cp /srv/nostradamus/2018/.env.example /srv/nostradamus/2018/.env
+```
+
+Edit `/srv/nostradamus/2018/.env`:
+
+```
+SECRET_KEY=<generate with: python3 -c "import secrets; print(secrets.token_urlsafe(50))">
+DEBUG=False
+ALLOWED_HOSTS=2018.domain.com
+DATABASE_URL=postgres://u_nostr:<db_password>@db:5432/db_nostr
+```
+
+> Replace `domain.com` with your actual domain throughout this guide.
+
+---
+
+## 4. Restore database snapshot (optional)
+
+If you have a `.sql.gz` dump, place it in the version directory and reference it in `compose.yaml`:
+
+```yaml
+- ./db_nostr_backup.sql.gz:/docker-entrypoint-initdb.d/02_restore.sql.gz:ro
+```
+
+The Postgres container restores it automatically on first start. If the data volume already exists, it is skipped — use `podman compose down -v` first to wipe it.
+
+---
+
+## 5. Start the stacks
+
+```bash
+podman compose --project-name nostr-2018 \
+    -f /srv/nostradamus/2018/compose.yaml up -d
+```
+
+On startup the web container runs `collectstatic` then launches gunicorn. Check logs:
+
+```bash
+podman logs nostr-2018-web-1
+```
+
+Expected output:
+
+```
+N static files copied to '/app/staticfiles'.
+[INFO] Starting gunicorn 19.8.1
+[INFO] Listening at: http://0.0.0.0:8000
+```
+
 ### Port assignment
 
-Each version's `compose.yaml` binds gunicorn to a distinct localhost port so Caddy can reach it:
+Each version binds gunicorn to a distinct `127.0.0.1` port:
 
 | Version | Port |
 |---------|------|
-| current | `127.0.0.1:8000:8000` |
-| 2018    | `127.0.0.1:8018:8000` |
-| 2020    | `127.0.0.1:8020:8000` |
+| current | `127.0.0.1:8000` |
+| 2018    | `127.0.0.1:8018` |
+| 2020    | `127.0.0.1:8020` |
 
-### Starting all stacks
+---
+
+## 6. Configure Caddy
 
 ```bash
-podman compose --project-name nostr-current -f /srv/nostradamus/current/compose.yaml up -d
-podman compose --project-name nostr-2018   -f /srv/nostradamus/2018/compose.yaml   up -d
+mkdir -p /srv/nostradamus/caddy
 ```
 
-### Caddy reverse proxy
-
-Install Caddy on the host and create `/srv/nostradamus/caddy/Caddyfile`:
+Create `/srv/nostradamus/caddy/Caddyfile`:
 
 ```
 2018.domain.com {
@@ -103,78 +182,115 @@ domain.com, www.domain.com {
 }
 ```
 
-Caddy issues and renews TLS certificates automatically via Let's Encrypt. Reload after any Caddyfile change:
+Point Caddy at this file by editing `/etc/caddy/Caddyfile` — replace its contents with a single import:
 
-```bash
-systemctl reload caddy
+```
+import /srv/nostradamus/caddy/Caddyfile
 ```
 
-### Adding a new historical version
+Reload Caddy:
 
-1. Create the branch with the port set to `127.0.0.1:80YY:8000` in `compose.yaml`
-2. Add a worktree: `git -C /srv/nostradamus/current worktree add /srv/nostradamus/20YY v20YY`
-3. Copy and edit `.env`
-4. Start the stack: `podman compose --project-name nostr-20YY -f /srv/nostradamus/20YY/compose.yaml up -d`
-5. Add a block to the Caddyfile and `systemctl reload caddy`
+```bash
+sudo systemctl reload caddy
+```
+
+Caddy issues and renews TLS certificates automatically via Let's Encrypt. Ports 80 and 443 must be open (done in step 1) and DNS A records for each subdomain must point at the server before reloading.
 
 ---
 
-## Restoring a database snapshot
+## 7. Auto-start containers on boot
 
-If you have a `.sql.gz` dump (created with `pg_dump`), you can restore it in two ways:
-
-### Option A — on first run (recommended for fresh installs)
-
-Place the dump file in the project root and reference it in `compose.yaml` as an init script. The PostgreSQL container automatically restores any `.sql` or `.sql.gz` files placed in `/docker-entrypoint-initdb.d/` on first start (only if the data volume is empty).
-
-The `compose.yaml` in this repo already has this wired up — just drop your dump as `db_nostr_backup.sql.gz` and update the filename in the volume mount:
-
-```yaml
-- ./db_nostr_backup.sql.gz:/docker-entrypoint-initdb.d/02_restore.sql.gz:ro
-```
-
-Then start fresh:
+Create a systemd user service for each stack. Example for the 2018 version:
 
 ```bash
-podman compose down -v   # removes the data volume
-podman compose --project-name nostr-2018 up -d
+mkdir -p ~/.config/systemd/user
 ```
 
-### Option B — into a running container
+Create `~/.config/systemd/user/nostr-2018.service`:
+
+```ini
+[Unit]
+Description=Nostradamus 2018
+After=default.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/srv/nostradamus/2018
+ExecStart=/usr/bin/docker-compose --project-name nostr-2018 up -d
+ExecStop=/usr/bin/docker-compose --project-name nostr-2018 down
+TimeoutStartSec=300
+
+[Install]
+WantedBy=default.target
+```
+
+Enable and start:
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now nostr-2018
+```
+
+Repeat for each additional version, changing the unit name, `WorkingDirectory`, and `--project-name`.
+
+---
+
+## 8. Create a Django superuser
+
+```bash
+podman exec -it nostr-2018-web-1 python manage.py createsuperuser
+```
+
+---
+
+## 9. Adding a new historical version
+
+1. Create a branch (e.g. `v2020`) with `compose.yaml` port set to `127.0.0.1:8020:8000`
+2. Add a worktree: `git -C /srv/nostradamus/current worktree add /srv/nostradamus/2020 v2020`
+3. Copy and edit `.env`: `cp /srv/nostradamus/2018/.env /srv/nostradamus/2020/.env`
+4. Start the stack: `podman compose --project-name nostr-2020 -f /srv/nostradamus/2020/compose.yaml up -d`
+5. Add a block to the Caddyfile and `sudo systemctl reload caddy`
+6. Create a systemd unit as in step 7 and enable it
+
+---
+
+## Database operations
+
+### Create a snapshot
+
+```bash
+podman exec nostr-2018-db-1 \
+    pg_dump -U u_nostr db_nostr \
+    | gzip > db_nostr_backup_$(date +%Y%m%d_%H%M%S).sql.gz
+```
+
+### Restore into a running container
 
 ```bash
 podman cp db_nostr_backup.sql.gz nostr-2018-db-1:/tmp/
 
 podman exec -it nostr-2018-db-1 bash -c \
-  "zcat /tmp/db_nostr_backup.sql.gz | psql -U u_nostr -d db_nostr"
+    "zcat /tmp/db_nostr_backup.sql.gz | psql -U u_nostr -d db_nostr"
 ```
 
-### Creating a snapshot
+### Restore on fresh volume (wipes existing data)
+
+Update the `compose.yaml` volume mount to point at the dump file, then:
 
 ```bash
-podman exec nostr-2018-db-1 \
-  pg_dump -U u_nostr db_nostr | gzip > db_nostr_backup_$(date +%Y%m%d_%H%M%S).sql.gz
+podman compose --project-name nostr-2018 down -v
+podman compose --project-name nostr-2018 -f /srv/nostradamus/2018/compose.yaml up -d
 ```
 
 ---
 
-## Traditional deployment (bare metal)
+## Troubleshooting
 
-See the `Makefile` for the full automated setup. Requires Ubuntu with Python 3.7, PostgreSQL, Nginx, and Supervisor.
-
-```bash
-make domain="example.com" db_password="your_db_password"
-```
-
-Steps performed by `make`:
-1. Installs system packages (Python 3.7, PostgreSQL, Nginx, Supervisor)
-2. Creates the database user and database
-3. Creates a virtualenv and installs Python dependencies
-4. Runs Django migrations and collects static files
-5. Configures Gunicorn via Supervisor
-6. Configures Nginx and issues a Let's Encrypt certificate
-
-To clean up everything:
-```bash
-make clean -i
-```
+| Symptom | Check |
+|---------|-------|
+| Blank page, no CSS | `podman logs nostr-2018-web-1` — confirm `collectstatic` ran |
+| 502 Bad Gateway | Gunicorn not running — check logs; confirm port in Caddyfile matches `compose.yaml` |
+| TLS certificate not issued | DNS A record must exist before Caddy first starts; check `sudo journalctl -u caddy` |
+| Container not starting after reboot | Confirm `loginctl enable-linger deploy` was run; check `systemctl --user status nostr-2018` |
+| Port already in use | Another version's stack is using the same port — check port assignments in step 5 |
