@@ -10,11 +10,20 @@ Simple Django app for a predictions competition. Includes accounts management, p
 
 ### Option A — Podman Compose (recommended)
 
-No local Python or Postgres install needed.
+No local Python or Postgres install needed. The app's `compose.yaml` joins an external `nostr_shared` network (the same pattern used in production to share one Postgres instance across site versions — see [deployment.md](deployment.md)), so for local use create that network and a local Postgres container once:
+
+```bash
+podman network create nostr_shared
+podman run -d --name local-postgres \
+    --network nostr_shared --network-alias postgres \
+    -e POSTGRES_USER=u_nostr_2018 -e POSTGRES_PASSWORD=nostr -e POSTGRES_DB=db_nostr_2018 \
+    docker.io/library/postgres:16
+```
 
 ```bash
 cp .env.example .env
-# Edit .env — set SECRET_KEY, leave other values as-is for local use
+# Edit .env — set SECRET_KEY; DATABASE_URL can stay as
+# postgres://u_nostr_2018:nostr@postgres:5432/db_nostr_2018
 ```
 
 Start the stack:
@@ -25,26 +34,25 @@ podman compose --project-name nostr-dev up --build
 
 The app is available at http://localhost:8018.
 
-On first start with a DB dump in the project root, the database is restored automatically (see `compose.yaml` for the mount). To start with an empty database instead, remove the `02_restore.sql.gz` volume mount from `compose.yaml`.
-
 Run Django management commands against the running container:
 
 ```bash
-podman exec -it nostr-dev-web-1 python manage.py createsuperuser
-podman exec -it nostr-dev-web-1 python manage.py migrate
-podman exec -it nostr-dev-web-1 python manage.py shell
+podman compose --project-name nostr-dev exec web python manage.py createsuperuser
+podman compose --project-name nostr-dev exec web python manage.py migrate
+podman compose --project-name nostr-dev exec web python manage.py shell
 ```
 
-Stop and remove containers (keep DB data):
+Stop and remove the app container:
 
 ```bash
 podman compose --project-name nostr-dev down
 ```
 
-Wipe everything including the database volume:
+Remove the local Postgres and network entirely:
 
 ```bash
-podman compose --project-name nostr-dev down -v
+podman rm -f local-postgres
+podman network rm nostr_shared
 ```
 
 ### Option B — virtualenv + local Postgres
@@ -77,7 +85,7 @@ The app is available at http://localhost:8000.
 | `SECRET_KEY` | Django secret key — generate with `python -c "import secrets; print(secrets.token_urlsafe(50))"` |
 | `DEBUG` | `False` in production; you can set `True` locally for the Django debug toolbar and detailed error pages |
 | `ALLOWED_HOSTS` | Comma-separated hostnames (e.g. `localhost,127.0.0.1`) |
-| `DATABASE_URL` | `postgres://u_nostr:<password>@db:5432/db_nostr` — use `db` as the host with compose, `localhost` with a local Postgres |
+| `DATABASE_URL` | `postgres://u_nostr_2018:<password>@postgres:5432/db_nostr_2018` — use `postgres` as the host with compose (see Option A), `localhost` with a local Postgres |
 
 ## Production deployment
 
