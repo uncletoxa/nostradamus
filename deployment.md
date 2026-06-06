@@ -115,7 +115,6 @@ Create `/srv/nostradamus/postgres/compose.yaml`:
 services:
   db:
     image: docker.io/library/postgres:16
-    hostname: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -127,7 +126,9 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      - nostr_shared
+      nostr_shared:
+        aliases:
+          - postgres
 
 networks:
   nostr_shared:
@@ -136,6 +137,8 @@ networks:
 volumes:
   db_data:
 ```
+
+> The `aliases` entry is what makes the container resolvable as `postgres` from other compose stacks on the `nostr_shared` network — a `hostname:` field alone only sets the container's own internal hostname and does not register a network-wide DNS entry.
 
 Start it:
 
