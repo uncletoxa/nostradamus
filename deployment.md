@@ -103,42 +103,16 @@ Final layout:
 
 All site versions share a single Postgres container. Each version gets its own database within it.
 
-Create the postgres stack directory:
+The compose file for this shared instance is version-controlled at `docker/postgres-shared/compose.yaml` in the repo (it is infrastructure shared by every version, not specific to any one of them — kept alongside the rest of the containerized setup rather than duplicated per branch). Copy it out to its own directory:
 
 ```bash
 mkdir -p /srv/nostradamus/postgres
+cp /srv/nostradamus/2018/docker/postgres-shared/compose.yaml /srv/nostradamus/postgres/compose.yaml
 ```
 
-Create `/srv/nostradamus/postgres/compose.yaml`:
-
-```yaml
-services:
-  db:
-    image: docker.io/library/postgres:16
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    networks:
-      nostr_shared:
-        aliases:
-          - postgres
-
-networks:
-  nostr_shared:
-    name: nostr_shared
-
-volumes:
-  db_data:
-```
-
-> The `aliases` entry is what makes the container resolvable as `postgres` from other compose stacks on the `nostr_shared` network — a `hostname:` field alone only sets the container's own internal hostname and does not register a network-wide DNS entry.
+> The `aliases` entry in that file is what makes the container resolvable as `postgres` from other compose stacks on the `nostr_shared` network — a `hostname:` field alone only sets the container's own internal hostname and does not register a network-wide DNS entry.
+>
+> To pick up future changes to this file, `git pull` in `/srv/nostradamus/current` (or any worktree) and re-copy it, then recreate the container with `up -d --force-recreate`.
 
 Start it:
 
