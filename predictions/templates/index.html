@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load extensible_blocks %}
 
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
@@ -8,32 +7,24 @@
 {% endblock %}
 
 {% block content %}
-
-
   <table class="table">
     <thead class="thead-dark">
       <tr>
-        <th>Match</th>
-        <th>Your Prediction</th>
+        <th>Available Matches</th>
+        <th>Last Prediction</th>
       </tr>
     </thead>
     <tbody>
       {% for coef in avail_coefs %}
         <tr>
+          <td> <a href="{% url 'predictions:single_coef' coef.match_id %}">
+            {{ coef.match_id__home_team }} — {{ coef.match_id__guest_team }}
+          </a></td>
           <td>
-            <a href="{% url 'predictions:details' coef.match_id.match_id %}">
-              {{ coef.match_id }}
-            </a>
-          </td>
-          <td>
-          {% if user_preds|get_item:coef.match_id.match_id %}
-            <a href="{% url 'predictions:details' coef.match_id.match_id %}">
-              {{ user_preds|get_item:coef.match_id.match_id }}
-            </a>
+          {% if coef.match_id__prediction__submit_time and coef.match_id__prediction__user_id == request.user.id %}
+              {{ coef.match_id__prediction__home_score }} — {{ coef.match_id__prediction__guest_score }}
           {% else %}
-            <a href="{% url 'predictions:details' coef.match_id.match_id %}" class="btn btn-primary">
-              Make prediction
-            </a>
+            No score submission yet
           {% endif %}
           </td>
         </tr>
@@ -41,39 +32,28 @@
     </tbody>
   </table>
 
-<div class="row">
-      <div class="col">
-<p>
-  <a class="btn btn-secondary" data-toggle="collapse" href="#pastMatches" role="button" aria-expanded="false" aria-controls="pastMatches">
-    Show Past Matches
-  </a>
-        <div class="collapse" id="pastMatches">
-        <table class="table table-borderless">
-          <thead class="table-light">
+  <table class="table">
+    <thead class="thead-dark">
       <tr>
-        <th>Match</th>
-        <th>Result</th>
+        <th>Past Matches</th>
         <th>Last Prediction</th>
       </tr>
     </thead>
     <tbody>
       {% for coef in not_avail_coefs %}
         <tr>
-          <td> <a href="{% url 'matches:single_match' coef.match_id.match_id %}">
-            {{ coef.match_id }}
-            </a>
-          </td>
+          <td> <a href="{% url 'predictions:single_coef' coef.match_id %}">
+            {{ coef.match_id__home_team }} — {{ coef.match_id__guest_team }}
+          </a></td>
           <td>
-            {{ coef.match_id.result }}
-          </td>
-          <td>
-            <a href="{% url 'predictions:details' coef.match_id.match_id %}">
-            {{ user_preds|get_item:coef.match_id.match_id }}
-            </a>
+          {% if coef.match_id__prediction__submit_time and coef.match_id__prediction__user_id == request.user.id %}
+              {{ coef.match_id__prediction__home_score }} — {{ coef.match_id__prediction__guest_score }}
+          {% else %}
+            No score submission
+          {% endif %}
           </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
-      </div></div></div>
 {% endblock %}

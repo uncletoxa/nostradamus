@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Prediction: {{ coef.match_id.name }}. {{ block.super }}
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">Predictions</a></li>
+  <li class="breadcrumb-item active">{{ coef.match_id }}</li>
+{% endblock %}
+
+
+
+{% block content %}
+  {% if match.start_time > cur_time %}
+    {% if result %}
+      Currently you'll receive {{ result.match_bet }} points if {{ result.match_result }}.
+    {% else %}
+      No current predictions.
+    {% endif %}
+  <div class="mb-4">
+    <a href="{% url 'predictions:details' coef.match_id_id %}" class="btn btn-primary">Make Prediction</a>
+  </div>
+  {% else %}
+    No more bets.<br>
+    But you can check your <a href="{% url 'predictions:details' coef.match_id_id  %}">prediction history</a>
+  {% endif %}
+
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th>Event</th>
+        <th>Odd</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Home win</td>
+        <td class="align-middle"> {{ coef.home_win }} </td>
+      </tr>
+      <tr>
+        <td>Tie</td>
+        <td class="align-middle"> {{ coef.tie }} </td>
+      </tr>
+      <tr>
+        <td>Guest win</td>
+        <td class="align-middle"> {{ coef.guest_win }} </td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th>Score</th>
+        <th>Odd</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for score, odd in coef.score.items %}
+      <tr>
+        <td>{{ score }}</td>
+        <td class="align-middle"> {{ odd }} </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

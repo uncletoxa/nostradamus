@@ -1,9 +1,8 @@
 import datetime
-
+import pytz
 
 from matches.models import Match
-from predictions.models import Prediction, WinnerPrediction
-from accounts.models import TeamSupporter
+from predictions.models import Prediction
 from django import template
 from django.contrib.auth.models import User
 from basic.utils import last_prediction, get_user_results_by_matches
@@ -11,28 +10,13 @@ from basic.utils import last_prediction, get_user_results_by_matches
 register = template.Library()
 
 
-@register.inclusion_tag('includes/champ_standings.html')
-def champ_standings():
-    champ_predictions = WinnerPrediction.objects.all().order_by('id')
-    return {'champ_predictions': champ_predictions}
-
-
-@register.inclusion_tag('includes/champ_supporters.html')
-def champ_supporters():
-    team_champ_supporters = TeamSupporter.objects.all().order_by('id')
-    return {'team_champ_supporters': team_champ_supporters}
-
-
 @register.inclusion_tag('includes/cup_standings.html')
-def cup_standings(long_standings=False, live_standings=False):
+def cup_standings(long_standings=False):
     def zero_if_none(val):
         return val if val is not None else 0
-
-    users = User.objects.filter(is_superuser=False)
-    if live_standings:
-        matches_queryset = Match.objects.filter(status__in=['IN_PLAY', 'PAUSED', 'FINISHED'])
-    else:
-        matches_queryset = Match.objects.filter(status='FINISHED')
+    users = User.objects.filter(is_staff=False)
+    matches_queryset = (Match.objects.filter(home_score__isnull=False) |
+                        Match.objects.filter(guest_score__isnull=False))
     standings = {}
 
     for user in users:
@@ -42,11 +26,6 @@ def cup_standings(long_standings=False, live_standings=False):
         high_score_points = 0
         block_bonus_points = 0
         penalty_points = 0
-        winner_points = 0
-
-        user_champion = WinnerPrediction.objects.get(user_id=user.id)
-        if user_champion.prediction_id.is_winner:
-            winner_points = user_champion.prediction_id.coef
 
         results_data = get_user_results_by_matches(user.id, matches_queryset)
         for match_data in results_data.values():
@@ -55,40 +34,33 @@ def cup_standings(long_standings=False, live_standings=False):
             high_score_points += zero_if_none(match_data['high_score_points'])
             block_bonus_points += zero_if_none(match_data['block_bonus_points'])
             penalty_points += zero_if_none(match_data['penalty_points'])
-            total_points = sum([result_points, score_points, high_score_points,
-                                block_bonus_points, penalty_points, winner_points])
+            total_points = sum([result_points, score_points, high_score_points, block_bonus_points, penalty_points])
         standings.update({user: {
             'total_points': total_points,
             'result_points': result_points,
             'score_points': score_points,
             'high_score_points': high_score_points,
             'block_bonus_points': block_bonus_points,
-            'penalty_points': penalty_points,
-            'winner_points': winner_points}})
-
-    return {'results': dict(sorted(standings.items(), key=lambda x: x[1]['total_points'], reverse=True)),
-            'long_standings': long_standings}
+            'penalty_points': penalty_points}})
+    return {'results': standings, 'long_standings': long_standings}
 
 
 @register.inclusion_tag('includes/next_matches.html')
-def next_matches(cur_user):
-    predictions = {}
-    matches = Match.objects.filter(status='SCHEDULED')
+def next_matches():
+    predictions = []
+    matches = Match.objects.filter(start_time__range=(
+        datetime.datetime.now(pytz.UTC),
+        datetime.datetime.now(pytz.UTC) + datetime.timedelta(hours=24)
+    )).order_by('start_time')
     for match in matches:
         last_pred = last_prediction(
-            Prediction.objects.filter(match_id_id=match.match_id,
-                                      user_id=cur_user))
-        predictions.update({match: next(iter(last_pred), None)})
+            Prediction.objects.filter(match_id_id=match.match_id))
+        predictions.append({match: next(iter(last_pred), None)})
 
     return {'predictions': predictions, 'cur_time': datetime.datetime.now()}
 
 
 @register.inclusion_tag('includes/live_matches.html')
 def live_matches():
-    matches = Match.objects.filter(status__in=['IN_PLAY', 'PAUSED'])
+    matches = Match.objects.filter(is_live=True)
     return {'live_matches': matches}
-
-
-@register.filter
-def get_item(dictionary, key):
-    return dictionary.get(key)

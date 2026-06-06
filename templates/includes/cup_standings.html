@@ -9,14 +9,13 @@
         <th>High Score Points</th>
         <th>Block Bonus Points</th>
         <th>Penalty Points</th>
-        <th>Winner Points</th>
       {% endif %}
     </tr>
   </thead>
   <tbody>
     {% for user, points in results.items %}
       <tr>
-        <td><a href="{% url 'results:user_results' user.id %}">{{ user.first_name }}</a></td>
+        <td><a href="{% url 'results:user_results' user.id %}">{{ user.username }}</a></td>
         <td>{{ points.total_points }}</td>
         {% if long_standings %}
           <td>{{ points.result_points }}</td>
@@ -24,10 +23,8 @@
           <td>{{ points.high_score_points }}</td>
           <td>{{ points.block_bonus_points }}</td>
           <td>{{ points.penalty_points }}</td>
-          <td>{{ points.winner_points }}</td>
       {% endif %}
       </tr>
     {% endfor %}
   </tbody>
 </table>
-

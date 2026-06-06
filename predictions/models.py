@@ -10,24 +10,12 @@ class Coefficient(models.Model):
     coef_ready = models.BooleanField(default=False)
     score = JSONField()
     home_win = models.FloatField()
-    tie = models.FloatField(null=True, default=None)
-    tie_home_win = models.FloatField(null=True, default=None)
-    tie_guest_win = models.FloatField(null=True, default=None)
+    tie = models.FloatField()
     guest_win = models.FloatField()
     update_time = models.DateTimeField()
 
     def __str__(self):
         return '{}'.format(self.match_id)
-
-
-class WinnerPredictionCoef(models.Model):
-    id = models.AutoField(primary_key=True)
-    team_id = models.ForeignKey(Team, models.CASCADE, related_name='winner_team')
-    coef = models.FloatField(default=1.0)
-    is_winner = models.NullBooleanField(default=None)
-
-    def __str__(self):
-        return '{}: {}'.format(self.team_id, self.coef)
 
 
 class Prediction(models.Model):
@@ -37,16 +25,15 @@ class Prediction(models.Model):
     match_id = models.ForeignKey('matches.Match', models.SET_NULL, null=True)
     user_id = models.ForeignKey(User, models.CASCADE, related_name='predictions')
     submit_time = models.DateTimeField(auto_now=True)
-    home_to_advance = models.NullBooleanField(default=None, null=True, blank=True)
+    penalty_winner = models.ForeignKey(Team, models.CASCADE, related_name='pred_penalty_winner_team',
+                                       default=None, null=True, blank=True)
+    penalty_home_winner = models.NullBooleanField(default=None, null=True, blank=True)
 
     def score(self):
-        if self.home_score == self.guest_score:
-            if self.home_to_advance == True:
-                return '*{}:{}'.format(self.home_score, self.guest_score)
-            elif self.home_to_advance == False:
-                return '{}:{}*'.format(self.home_score, self.guest_score)
-            else:
-                return '{}:{}'.format(self.home_score, self.guest_score)
+        if self.penalty_home_winner == True:
+            return '*{}:{}'.format(self.home_score, self.guest_score)
+        elif self.penalty_home_winner == False:
+            return '{}:{}*'.format(self.home_score, self.guest_score)
         else:
             return '{}:{}'.format(self.home_score, self.guest_score)
 
@@ -66,7 +53,7 @@ class OddMap(models.Model):
 
 class WinnerPrediction(models.Model):
     user_id = models.OneToOneField(User, models.CASCADE, related_name='winner_prediction', unique=True)
-    prediction_id = models.ForeignKey(WinnerPredictionCoef, models.CASCADE, related_name='winner_team_prediction')
+    team_id = models.ForeignKey(Team, models.CASCADE, related_name='winner_team_prediction')
 
     def __str__(self):
-        return '{}: {}'.format(self.user_id, self.prediction_id.team_id)
+        return '{}: {}'.format(self.user_id, self.team_id)

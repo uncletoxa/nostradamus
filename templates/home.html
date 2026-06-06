@@ -10,24 +10,15 @@
   <div class="row">
     <div class="col-5">
       <h3>
-        <small class="text-muted"><a href={% url 'results:results_index' %}>Сup Standings</a> <span class="text-danger">Live</span></small>
+        <small class="text-muted"><a href={% url 'results:results_index' %}>standings</a></small>
       </h3>
-        {% cup_standings False True %}
+        {% cup_standings %}
     </div>
     <div class="col-7">
-      <div class="row">
-        <div class="col">
-          {% live_matches %}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <h3>
-            <small class="text-muted"><a href={% url 'matches:matches_index' %}>next matches</a></small>
-          </h3>
-            {% next_matches user %}
-        </div>
-      </div>
+      <h3>
+        <small class="text-muted"><a href={% url 'matches:matches_index' %}>matches</a></small>
+      </h3>
+        {% next_matches %}
     </div>
   </div>
 {% endblock %}

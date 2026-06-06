@@ -1,31 +1,12 @@
-import csv
-from datetime import datetime
-
 from collections import OrderedDict
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
-from predictions.models import Prediction, Coefficient
-from matches.models import Match
+from predictions.models import Prediction
 
 
 def get_result(home_team: int, guest_team: int) -> str:
     res = home_team - guest_team
     return 'home_win' if res > 0 else 'guest_win' if res < 0 else 'tie'
-
-
-def get_playoff_result(home_team, guest_team, home_to_advance):
-    res = home_team - guest_team
-    if res == 0:
-        return 'tie_home_win' if home_to_advance else 'tie_guest_win'
-    return 'home_win' if res > 0 else 'guest_win'
-
-
-def get_score(home_team, guest_team, avail_scores):
-    if f'{home_team}-{guest_team}' in avail_scores:
-        return f'{home_team}-{guest_team}'
-    else:
-        return 'Any other score'
 
 
 def last_prediction(queryset: QuerySet) -> QuerySet:
@@ -78,7 +59,7 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
                     guest_power_bonus = tie_block_bonus_map[match.guest_team.power_group]
                     power_bonus = abs(guest_power_bonus - home_power_bonus)
                     if match.is_playoff:
-                        if match.home_to_advance == prediction.home_to_advance:
+                        if match.penalty_home_winner == prediction.penalty_home_winner:
                             user_result_data[match.match_id].update({'penalty_points': 1})
 
                 user_result_data[match.match_id].update({
@@ -96,15 +77,3 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
                  'high_score_points': None, 'block_bonus_points': None,
                  'penalty_points': None})
     return user_result_data
-
-
-def load_matches(path):
-    with open(path) as f:
-        reader = csv.reader(f)
-        bulk = []
-        for row in reader:
-            bulk.append(
-                Match(home_team=row[1],
-                      guest_team=row[2],
-                      start_time=datetime.strptime(row[0], '%d/%m/%Y %H:%M')))
-    Match.objects.bulk_create(bulk)

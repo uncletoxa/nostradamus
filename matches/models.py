@@ -13,13 +13,6 @@ class Team(models.Model):
 
 
 class Match(models.Model):
-    FINISHED = 'FINISHED'
-    SCHEDULED = 'SCHEDULED'
-    IN_PLAY = 'IN_PLAY'
-    PAUSED = 'PAUSED'
-    STATUS_CHOICES = [(FINISHED, 'FINISHED'), (SCHEDULED, 'SCHEDULED'),
-                      (IN_PLAY, 'IN_PLAY'), (PAUSED, 'PAUSED')]
-
     match_id = models.AutoField(primary_key=True)
     home_team = models.ForeignKey(Team, models.CASCADE, related_name='match_home_team')
     guest_team = models.ForeignKey(Team, models.CASCADE, related_name='match_guest_team')
@@ -27,25 +20,20 @@ class Match(models.Model):
     home_score = models.SmallIntegerField(default=None, null=True, blank=True)
     guest_score = models.SmallIntegerField(default=None, null=True, blank=True)
     fixture_id = models.IntegerField(default=None, null=True, blank=True)
+    is_live = models.BooleanField(default=False)
     is_playoff = models.BooleanField(default=False)
-    home_to_advance = models.NullBooleanField(default=None, null=True, blank=True)
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=SCHEDULED)
+    penalty_home_winner = models.NullBooleanField(default=None, null=True, blank=True)
 
     def __str__(self):
         return '{} — {}'.format(self.home_team, self.guest_team)
 
-    @property
     def result(self):
-        if self.home_score == self.guest_score:
-            if self.home_to_advance == True:
+        if (self.home_score and self.guest_score) is not None:
+            if self.penalty_home_winner == True:
                 return '*{}:{}'.format(self.home_score, self.guest_score)
-            elif self.home_to_advance == False:
+            elif self.penalty_home_winner == False:
                 return '{}:{}*'.format(self.home_score, self.guest_score)
             else:
                 return '{}:{}'.format(self.home_score, self.guest_score)
         else:
-            return '{}:{}'.format(self.home_score, self.guest_score)
-
-    @property
-    def teams(self):
-        return '{} — {}'.format(self.home_team, self.guest_team)
+            return None

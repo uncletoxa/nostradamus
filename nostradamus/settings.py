@@ -27,7 +27,6 @@ INSTALLED_APPS = [
 
     'widget_tweaks',
     'mathfilters',
-    'crispy_forms',
 
     'basic',
     'predictions',
@@ -115,4 +114,3 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
