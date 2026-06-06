@@ -149,7 +149,9 @@ podman compose --project-name nostr-postgres \
 Run once per version. For the 2018 version:
 
 ```bash
-podman exec -it nostr-postgres-db-1 psql -U postgres -c "
+podman compose --project-name nostr-postgres \
+    -f /srv/nostradamus/postgres/compose.yaml \
+    exec db psql -U postgres -c "
   CREATE USER u_nostr_2018 WITH PASSWORD 'nostr';
   CREATE DATABASE db_nostr_2018 OWNER u_nostr_2018;
   GRANT ALL PRIVILEGES ON DATABASE db_nostr_2018 TO u_nostr_2018;
@@ -159,7 +161,9 @@ podman exec -it nostr-postgres-db-1 psql -U postgres -c "
 For the current version:
 
 ```bash
-podman exec -it nostr-postgres-db-1 psql -U postgres -c "
+podman compose --project-name nostr-postgres \
+    -f /srv/nostradamus/postgres/compose.yaml \
+    exec db psql -U postgres -c "
   CREATE USER u_nostr WITH PASSWORD 'nostr';
   CREATE DATABASE db_nostr OWNER u_nostr;
   GRANT ALL PRIVILEGES ON DATABASE db_nostr TO u_nostr;
@@ -196,10 +200,10 @@ DATABASE_URL=postgres://u_nostr_2018:nostr@postgres:5432/db_nostr_2018
 If you have a `.sql.gz` dump, restore it into the running Postgres container:
 
 ```bash
-podman cp db_nostr_2018_backup.sql.gz nostr-postgres-db-1:/tmp/
-
-podman exec -it nostr-postgres-db-1 bash -c \
-    "zcat /tmp/db_nostr_2018_backup.sql.gz | psql -U u_nostr_2018 -d db_nostr_2018"
+zcat db_nostr_2018_backup.sql.gz \
+    | podman compose --project-name nostr-postgres \
+        -f /srv/nostradamus/postgres/compose.yaml \
+        exec -T db psql -U u_nostr_2018 -d db_nostr_2018
 ```
 
 ---
@@ -214,7 +218,8 @@ podman compose --project-name nostr-2018 \
 On startup the web container runs `collectstatic` then launches gunicorn. Check logs:
 
 ```bash
-podman logs nostr-2018-web-1
+podman compose --project-name nostr-2018 \
+    -f /srv/nostradamus/2018/compose.yaml logs web
 ```
 
 Expected output:
@@ -330,7 +335,9 @@ systemctl --user enable --now nostr-2018
 ## 9. Create a Django superuser
 
 ```bash
-podman exec -it nostr-2018-web-1 python manage.py createsuperuser
+podman compose --project-name nostr-2018 \
+    -f /srv/nostradamus/2018/compose.yaml \
+    exec web python manage.py createsuperuser
 ```
 
 ---
@@ -352,18 +359,19 @@ podman exec -it nostr-2018-web-1 python manage.py createsuperuser
 ### Create a snapshot
 
 ```bash
-podman exec nostr-postgres-db-1 \
-    pg_dump -U u_nostr_2018 db_nostr_2018 \
+podman compose --project-name nostr-postgres \
+    -f /srv/nostradamus/postgres/compose.yaml \
+    exec -T db pg_dump -U u_nostr_2018 db_nostr_2018 \
     | gzip > db_nostr_2018_backup_$(date +%Y%m%d_%H%M%S).sql.gz
 ```
 
 ### Restore into a running instance
 
 ```bash
-podman cp db_nostr_2018_backup.sql.gz nostr-postgres-db-1:/tmp/
-
-podman exec -it nostr-postgres-db-1 bash -c \
-    "zcat /tmp/db_nostr_2018_backup.sql.gz | psql -U u_nostr_2018 -d db_nostr_2018"
+zcat db_nostr_2018_backup.sql.gz \
+    | podman compose --project-name nostr-postgres \
+        -f /srv/nostradamus/postgres/compose.yaml \
+        exec -T db psql -U u_nostr_2018 -d db_nostr_2018
 ```
 
 ---
@@ -372,7 +380,7 @@ podman exec -it nostr-postgres-db-1 bash -c \
 
 | Symptom | Check |
 |---------|-------|
-| Blank page, no CSS | `podman logs nostr-2018-web-1` — confirm `collectstatic` ran |
+| Blank page, no CSS | `podman compose --project-name nostr-2018 -f /srv/nostradamus/2018/compose.yaml logs web` — confirm `collectstatic` ran |
 | 502 Bad Gateway | Gunicorn not running — check logs; confirm port in Caddyfile matches `compose.yaml` |
 | Database connection refused | Shared postgres not running — `podman ps` and `systemctl --user status nostr-postgres` |
 | TLS certificate not issued | DNS A record must exist before Caddy first starts; check `sudo journalctl -u caddy` |
