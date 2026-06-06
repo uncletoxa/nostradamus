@@ -3,4 +3,6 @@ __pycache__/
 .env
 .idea
 venv/
+.venv/
 sftp-config.json
+*.sql.gz
