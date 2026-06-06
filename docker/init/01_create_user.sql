@@ -1,0 +1,3 @@
+CREATE USER u_nostr WITH PASSWORD 'nostr';
+CREATE DATABASE db_nostr OWNER u_nostr;
+GRANT ALL PRIVILEGES ON DATABASE db_nostr TO u_nostr;
