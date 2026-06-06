@@ -183,7 +183,7 @@ cp /srv/nostradamus/2018/.env.example /srv/nostradamus/2018/.env
 Edit `/srv/nostradamus/2018/.env`:
 
 ```
-SECRET_KEY=<generate with: python3 -c "import secrets; print(secrets.token_urlsafe(50))">
+SECRET_KEY=<generate with: `python3 -c "import secrets; print(secrets.token_urlsafe(50))`">
 DEBUG=False
 ALLOWED_HOSTS=2018.domain.com
 DATABASE_URL=postgres://u_nostr_2018:nostr@postgres:5432/db_nostr_2018
@@ -246,16 +246,17 @@ Each version binds gunicorn to a distinct `127.0.0.1` port:
 mkdir -p /srv/nostradamus/caddy
 ```
 
-Create `/srv/nostradamus/caddy/Caddyfile`:
+Create `/srv/nostradamus/caddy/Caddyfile`. Only add a block for a domain once its app stack is actually running — Caddy will fail to obtain a TLS certificate (and log connection-refused errors) for any domain whose backend isn't listening yet:
 
 ```
 2018.domain.com {
     reverse_proxy 127.0.0.1:8018
 }
 
-domain.com, www.domain.com {
-    reverse_proxy 127.0.0.1:8000
-}
+# Add once the current version's stack is deployed and listening on 127.0.0.1:8000:
+# domain.com, www.domain.com {
+#     reverse_proxy 127.0.0.1:8000
+# }
 ```
 
 Point Caddy at this file by editing `/etc/caddy/Caddyfile` — replace its contents with:
