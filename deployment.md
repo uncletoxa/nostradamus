@@ -115,6 +115,9 @@ ALLOWED_HOSTS=2018.domain.com
 DATABASE_URL=postgres://u_nostr:<db_password>@db:5432/db_nostr
 ```
 
+> `SECRET_KEY` must be strong and kept secret — it signs sessions and CSRF tokens.
+> `db_password` can be a simple string. The database port is not exposed outside the compose network, so the password provides no real security boundary; if the host is compromised the `.env` is already readable.
+>
 > Replace `domain.com` with your actual domain throughout this guide.
 
 ---
