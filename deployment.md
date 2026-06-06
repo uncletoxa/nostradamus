@@ -151,11 +151,10 @@ Run once per version. For the 2018 version:
 ```bash
 podman compose --project-name nostr-postgres \
     -f /srv/nostradamus/postgres/compose.yaml \
-    exec db psql -U postgres -c "
-  CREATE USER u_nostr_2018 WITH PASSWORD 'nostr';
-  CREATE DATABASE db_nostr_2018 OWNER u_nostr_2018;
-  GRANT ALL PRIVILEGES ON DATABASE db_nostr_2018 TO u_nostr_2018;
-"
+    exec db psql -U postgres \
+    -c "CREATE USER u_nostr_2018 WITH PASSWORD 'nostr';" \
+    -c "CREATE DATABASE db_nostr_2018 OWNER u_nostr_2018;" \
+    -c "GRANT ALL PRIVILEGES ON DATABASE db_nostr_2018 TO u_nostr_2018;"
 ```
 
 For the current version:
@@ -163,11 +162,10 @@ For the current version:
 ```bash
 podman compose --project-name nostr-postgres \
     -f /srv/nostradamus/postgres/compose.yaml \
-    exec db psql -U postgres -c "
-  CREATE USER u_nostr WITH PASSWORD 'nostr';
-  CREATE DATABASE db_nostr OWNER u_nostr;
-  GRANT ALL PRIVILEGES ON DATABASE db_nostr TO u_nostr;
-"
+    exec db psql -U postgres \
+    -c "CREATE USER u_nostr WITH PASSWORD 'nostr';" \
+    -c "CREATE DATABASE db_nostr OWNER u_nostr;" \
+    -c "GRANT ALL PRIVILEGES ON DATABASE db_nostr TO u_nostr;"
 ```
 
 > The database password can be a simple string — the port is never exposed outside the `nostr_shared` network. `SECRET_KEY` in the app's `.env` is what must be kept strong and secret.
