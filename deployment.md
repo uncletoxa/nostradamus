@@ -1,5 +1,7 @@
 # Deployment guide — Ubuntu 24.04
 
+> This copy is frozen as of the v2018 historical snapshot. For the canonical, up-to-date guide (written from the live site's perspective, with historical versions as optional add-ons), see [`deployment.md` on `master`](https://github.com/uncletoxa/nostradamus/blob/master/deployment.md).
+
 ## 1. Initial server setup
 
 ### Create a dedicated user

@@ -90,3 +90,5 @@ The app is available at http://localhost:8000.
 ## Production deployment
 
 See [deployment.md](deployment.md) for the full Podman Compose production setup, multi-version subdomain hosting, Caddy configuration, and database backup/restore procedures.
+
+> This is a frozen, historical-version-oriented copy of the guide. The canonical, up-to-date version (written from the live site's perspective) lives on [`master`](https://github.com/uncletoxa/nostradamus/blob/master/deployment.md).
