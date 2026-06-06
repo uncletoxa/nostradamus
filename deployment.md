@@ -5,7 +5,7 @@
 ### Prerequisites
 
 - [Podman](https://podman.io/getting-started/installation) with the socket activated
-- `docker-compose` CLI (used as the compose backend)
+- `podman-compose` or `docker-compose` CLI
 
 Enable the Podman socket for your user:
 ```bash
@@ -23,27 +23,99 @@ cp .env.example .env
 | Variable | Description |
 |---|---|
 | `SECRET_KEY` | Django secret key (generate with `python -c "import secrets; print(secrets.token_urlsafe(50))"`) |
-| `DEBUG` | `True` for development, `False` for production |
-| `ALLOWED_HOSTS` | Comma-separated list of allowed hostnames |
+| `DEBUG` | `False` for production |
+| `ALLOWED_HOSTS` | Comma-separated list of allowed hostnames (e.g. `2018.example.com`) |
 | `DATABASE_URL` | `postgres://u_nostr:<password>@db:5432/db_nostr` — use `db` as the host when running via compose |
 
 ### 2. Start the stack
 
 ```bash
-podman compose up -d
+podman compose --project-name nostr-2018 up -d
 ```
 
-This starts two services:
-- **db** — PostgreSQL 16 on port 5433
-- **web** — Django dev server on port 8000
+The `--project-name` flag is required when running multiple version stacks on the same host to avoid container and volume name collisions.
 
-The app is available at http://localhost:8000.
+On startup the container automatically runs `collectstatic` before gunicorn starts.
+
+This starts two services:
+- **db** — PostgreSQL 16 (no host port; reachable only inside the compose network)
+- **web** — gunicorn on `127.0.0.1:8018`, 2 workers
 
 ### 3. Create a superuser
 
 ```bash
-podman exec -it nostradamus-web-1 python manage.py createsuperuser
+podman exec -it nostr-2018-web-1 python manage.py createsuperuser
 ```
+
+---
+
+## Multi-version subdomain hosting
+
+To serve multiple historical versions alongside the current site, each version runs as an independent Podman Compose stack behind a shared Caddy reverse proxy.
+
+### Host layout
+
+Use git worktrees so all versions share a single `.git` object store:
+
+```bash
+git clone git@github.com:uncletoxa/nostradamus.git /srv/nostradamus/current
+git -C /srv/nostradamus/current worktree add /srv/nostradamus/2018 v2018
+```
+
+Each version directory needs its own `.env`:
+
+```
+/srv/nostradamus/
+    current/    → domain.com          (port 8000)
+    2018/       → 2018.domain.com     (port 8018)
+    caddy/
+        Caddyfile
+```
+
+### Port assignment
+
+Each version's `compose.yaml` binds gunicorn to a distinct localhost port so Caddy can reach it:
+
+| Version | Port |
+|---------|------|
+| current | `127.0.0.1:8000:8000` |
+| 2018    | `127.0.0.1:8018:8000` |
+| 2020    | `127.0.0.1:8020:8000` |
+
+### Starting all stacks
+
+```bash
+podman compose --project-name nostr-current -f /srv/nostradamus/current/compose.yaml up -d
+podman compose --project-name nostr-2018   -f /srv/nostradamus/2018/compose.yaml   up -d
+```
+
+### Caddy reverse proxy
+
+Install Caddy on the host and create `/srv/nostradamus/caddy/Caddyfile`:
+
+```
+2018.domain.com {
+    reverse_proxy 127.0.0.1:8018
+}
+
+domain.com, www.domain.com {
+    reverse_proxy 127.0.0.1:8000
+}
+```
+
+Caddy issues and renews TLS certificates automatically via Let's Encrypt. Reload after any Caddyfile change:
+
+```bash
+systemctl reload caddy
+```
+
+### Adding a new historical version
+
+1. Create the branch with the port set to `127.0.0.1:80YY:8000` in `compose.yaml`
+2. Add a worktree: `git -C /srv/nostradamus/current worktree add /srv/nostradamus/20YY v20YY`
+3. Copy and edit `.env`
+4. Start the stack: `podman compose --project-name nostr-20YY -f /srv/nostradamus/20YY/compose.yaml up -d`
+5. Add a block to the Caddyfile and `systemctl reload caddy`
 
 ---
 
@@ -65,26 +137,22 @@ Then start fresh:
 
 ```bash
 podman compose down -v   # removes the data volume
-podman compose up -d
+podman compose --project-name nostr-2018 up -d
 ```
 
 ### Option B — into a running container
 
 ```bash
-# Copy the dump into the container
-podman cp db_nostr_backup.sql.gz nostradamus-db-1:/tmp/
+podman cp db_nostr_backup.sql.gz nostr-2018-db-1:/tmp/
 
-# Restore it
-podman exec -it nostradamus-db-1 bash -c \
+podman exec -it nostr-2018-db-1 bash -c \
   "zcat /tmp/db_nostr_backup.sql.gz | psql -U u_nostr -d db_nostr"
 ```
 
 ### Creating a snapshot
 
-To back up the running database:
-
 ```bash
-podman exec nostradamus-db-1 \
+podman exec nostr-2018-db-1 \
   pg_dump -U u_nostr db_nostr | gzip > db_nostr_backup_$(date +%Y%m%d_%H%M%S).sql.gz
 ```
 

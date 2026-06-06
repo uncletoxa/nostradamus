@@ -1,26 +1,84 @@
 # Nostradamus
 
-Simple Django app for Predictors Competition. Includes accounts management,
-predictions, matches models, results tracker, and odds scraper. 
-Initially hosted on [nostradamus.ml](https://nostradamus.ml).
+Simple Django app for a predictions competition. Includes accounts management, predictions, matches, results tracker, and odds scraper.
 
+## Local development
 
-Match results (including live updates) powered by the dev-friendly football API [football-data.org](https://football-data.org)
+### Prerequisites
 
-## Deployment
+- [Podman](https://podman.io/getting-started/installation) with compose support, **or** Python 3.7 + PostgreSQL running locally
 
-Application deployment is partly interactive during Django superuser creation and site certificate issuing. All other stuff is automated.
-1. Add `.env` file containing all the needed parameters for service start — [ALLOWED_HOSTS](https://docs.djangoproject.com/en/3.2/ref/settings/#allowed-hosts), [SECRET_KEY](https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECRET_KEY), [DATABASE_URL](https://github.com/kennethreitz/dj-database-url#url-schema) ([DEBUG](https://docs.djangoproject.com/en/3.2/ref/settings/#debug) could be also useful) to root folder of the project, use  `.env_example` as a template.
-2. Execute Make providing:
-	* _db_password_ as the password for db for django user. The same you put in DATABASE_URL on the previous step.
-	* _domain_ domain where your app will be hosted — your site's URL w/o `https://www` part. 
+### Option A — Podman Compose (recommended)
 
-For example: ```make domain="nostradamus.ml" db_password="my_super_password"```
+No local Python or Postgres install needed.
 
-## Cleaning
+```bash
+cp .env.example .env
+# Edit .env — set SECRET_KEY, leave other values as-is for local use
+```
 
-`make clean -i` to clean everything that's got installed during deployment.
+Start the stack:
 
-### Acknowledgements
+```bash
+podman compose --project-name nostr-dev up --build
+```
 
-[@vitorfs](https://github.com/vitorfs) for brilliant [Djange guide](https://simpleisbetterthancomplex.com/series/beginners-guide)
+The app is available at http://localhost:8018.
+
+On first start with a DB dump in the project root, the database is restored automatically (see `compose.yaml` for the mount). To start with an empty database instead, remove the `02_restore.sql.gz` volume mount from `compose.yaml`.
+
+Run Django management commands against the running container:
+
+```bash
+podman exec -it nostr-dev-web-1 python manage.py createsuperuser
+podman exec -it nostr-dev-web-1 python manage.py migrate
+podman exec -it nostr-dev-web-1 python manage.py shell
+```
+
+Stop and remove containers (keep DB data):
+
+```bash
+podman compose --project-name nostr-dev down
+```
+
+Wipe everything including the database volume:
+
+```bash
+podman compose --project-name nostr-dev down -v
+```
+
+### Option B — virtualenv + local Postgres
+
+```bash
+python3.7 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Create the database and user in Postgres, then:
+
+```bash
+cp .env.example .env
+# Edit .env — set SECRET_KEY and DATABASE_URL to point at your local Postgres
+```
+
+```bash
+python manage.py migrate
+python manage.py collectstatic --noinput
+python manage.py runserver
+```
+
+The app is available at http://localhost:8000.
+
+## Environment variables
+
+| Variable | Description |
+|---|---|
+| `SECRET_KEY` | Django secret key — generate with `python -c "import secrets; print(secrets.token_urlsafe(50))"` |
+| `DEBUG` | `False` in production; you can set `True` locally for the Django debug toolbar and detailed error pages |
+| `ALLOWED_HOSTS` | Comma-separated hostnames (e.g. `localhost,127.0.0.1`) |
+| `DATABASE_URL` | `postgres://u_nostr:<password>@db:5432/db_nostr` — use `db` as the host with compose, `localhost` with a local Postgres |
+
+## Production deployment
+
+See [deployment.md](deployment.md) for the full Podman Compose production setup, multi-version subdomain hosting, Caddy configuration, and database backup/restore procedures.
