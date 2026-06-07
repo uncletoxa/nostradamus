@@ -1,0 +1,24 @@
+services:
+  db:
+    image: docker.io/library/postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      nostr_shared:
+        aliases:
+          - postgres
+
+networks:
+  nostr_shared:
+    name: nostr_shared
+
+volumes:
+  db_data:
