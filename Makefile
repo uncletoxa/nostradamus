@@ -5,7 +5,7 @@ system-setup:
 	sudo add-apt-repository -y ppa:deadsnakes/ppa
 	sudo apt update
 	sudo apt -y upgrade
-	sudo apt install -y python3.7 postgresql postgresql-contrib nginx supervisor python3-pip python3.7-distutils
+	sudo apt install -y python3.12 postgresql postgresql-contrib nginx supervisor python3-pip
 	mkdir -p ~/run ~/logs
 
 db-setup: system-setup
@@ -16,7 +16,7 @@ db-setup: system-setup
 
 venv-setup: system-setup
 	sudo pip3 install virtualenv
-	virtualenv venv -p python3.7
+	virtualenv venv -p python3.12
 	. venv/bin/activate && pip install -r requirements.txt
 
 django-setup: venv-setup # make sure .env file settings are set up
@@ -59,7 +59,7 @@ db-clean:
 	&& dropuser u_nostr "
 
 system-clean:
-	sudo apt purge -y python3.7 postgresql postgresql-contrib nginx supervisor python3-pip
+	sudo apt purge -y python3.12 postgresql postgresql-contrib nginx supervisor python3-pip
 	sudo apt -y autoremove
 	sudo apt -y autoclean
 

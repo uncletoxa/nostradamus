@@ -47,7 +47,7 @@ class SuccessfulPasswordChangeTests(PasswordChangeTestCase):
         Create a new request to an arbitrary page.
         The resulting response should now have an `user` to its context, after a successful sign up.
         """
-        response = self.client.get(reverse('home'))
+        response = self.client.get(reverse('home'), follow=True)
         user = response.context.get('user')
         self.assertTrue(user.is_authenticated)
 
@@ -57,7 +57,7 @@ class InvalidPasswordChangeTests(PasswordChangeTestCase):
         """
         An invalid form submission should return to the same page
         """
-        self.assertEquals(self.response.status_code, 200)
+        self.assertEqual(self.response.status_code, 200)
 
     def test_form_errors(self):
         form = self.response.context.get('form')

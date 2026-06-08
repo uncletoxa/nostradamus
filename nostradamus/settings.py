@@ -14,6 +14,8 @@ DATABASES = {
     )
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -28,6 +30,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'mathfilters',
     'crispy_forms',
+    'crispy_bootstrap4',
 
     'basic',
     'predictions',
@@ -97,8 +100,6 @@ TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
-USE_L10N = True
-
 USE_TZ = True
 
 
@@ -116,4 +117,6 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap4'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

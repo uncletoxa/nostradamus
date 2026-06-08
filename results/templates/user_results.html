@@ -15,6 +15,13 @@
 
 {% block content %}
 
+{% if supported_teams %}
+  <p>
+    <strong>{{ user_data.first_name }} supports:</strong>
+    {% for team in supported_teams %}{{ team }}{% if not forloop.last %}, {% endif %}{% endfor %}
+  </p>
+{% endif %}
+
 <table class="table">
   <thead class="thead-dark">
     <tr>
