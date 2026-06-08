@@ -186,6 +186,18 @@ zcat db_nostr_backup.sql.gz \
 
 ## 6. Start the app stacks
 
+> **Deploying the Django 2.2 → 5.2 upgrade branch:** migrations aren't tracked in
+> git for this project — they're generated fresh per deploy. Before starting the
+> stack on this branch for the first time, take a fresh backup of the live DB,
+> then run `python manage.py makemigrations accounts matches predictions results`
+> and apply the result with `migrate`. The Postgres schema itself won't change
+> shape (`NullBooleanField` / `BooleanField(null=True)` and the old
+> `django.contrib.postgres.fields.JSONField` / `django.db.models.JSONField` are
+> wire-compatible on `jsonb`), but Django's migration state needs to be told
+> about the field-class changes made during the upgrade. Coordinate the timing
+> with whoever owns the deploy — don't run `migrate` against a live DB without a
+> fresh backup in hand.
+
 ```bash
 podman compose --project-name nostr-current \
     -f /srv/nostradamus/current/compose.yaml up -d
