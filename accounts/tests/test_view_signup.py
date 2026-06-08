@@ -28,11 +28,10 @@ class SignUpTests(TestCase):
     def test_form_inputs(self):
         """
         The view must contain five inputs: csrf, username,
-        password1, password2
+        first_name, password1, password2
         """
         self.assertContains(self.response, '<input', 5)
-        self.assertContains(self.response, 'type="text"', 1)
-        self.assertContains(self.response, 'type="email"', 1)
+        self.assertContains(self.response, 'type="text"', 2)
         self.assertContains(self.response, 'type="password"', 2)
 
 
@@ -41,7 +40,7 @@ class SuccessfulSignUpTests(TestCase):
         url = reverse('signup')
         data = {
             'username': 'john',
-            'email': 'az@nostr.ml',
+            'first_name': 'John',
             'password1': 'abcdef123456',
             'password2': 'abcdef123456'
         }
@@ -50,9 +49,11 @@ class SuccessfulSignUpTests(TestCase):
 
     def test_redirection(self):
         """
-        A valid form submission should redirect the user to the home page
+        A valid form submission should redirect the user to the home page,
+        which in turn redirects a fresh user to the winner-prediction page
+        (they haven't made one yet)
         """
-        self.assertRedirects(self.response, self.home_url)
+        self.assertRedirects(self.response, self.home_url, target_status_code=302)
 
     def test_user_creation(self):
         self.assertTrue(User.objects.exists())
@@ -63,7 +64,7 @@ class SuccessfulSignUpTests(TestCase):
         The resulting response should now have a `user` to its context,
         after a successful sign up.
         """
-        response = self.client.get(self.home_url)
+        response = self.client.get(self.home_url, follow=True)
         user = response.context.get('user')
         self.assertTrue(user.is_authenticated)
 

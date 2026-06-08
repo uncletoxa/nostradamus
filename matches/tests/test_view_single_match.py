@@ -1,15 +1,17 @@
 from django.urls import resolve, reverse
 from django.test import TestCase
 from matches.views import single_match
-from matches.models import Match
+from matches.models import Match, Team
 
 
 class SingleMatchTopicsTests(TestCase):
     def setUp(self):
+        home_team = Team.objects.create(name='Netherlands', code='NED', emoji_symbol='🇳🇱', power_group=1)
+        guest_team = Team.objects.create(name='Russia', code='RUS', emoji_symbol='🇷🇺', power_group=1)
         Match.objects.create(
             match_id=1,
-            home_team='Netherlands',
-            guest_team='Russia',
+            home_team=home_team,
+            guest_team=guest_team,
             start_time='2008-06-21 19:45Z'
         )
 
