@@ -6,7 +6,7 @@ Simple Django app for a predictions competition. Includes accounts management, p
 
 ### Prerequisites
 
-- [Podman](https://podman.io/getting-started/installation) with compose support, **or** Python 3.7 + PostgreSQL running locally
+- [Podman](https://podman.io/getting-started/installation) with compose support, **or** Python 3.12 + PostgreSQL running locally
 
 ### Option A — Podman Compose (recommended)
 
@@ -58,7 +58,7 @@ podman network rm nostr_shared
 ### Option B — virtualenv + local Postgres
 
 ```bash
-python3.7 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
