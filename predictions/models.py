@@ -1,6 +1,6 @@
 from django.db import models
+from django.db.models import JSONField
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
 from matches.models import Team
 
 
@@ -24,7 +24,7 @@ class WinnerPredictionCoef(models.Model):
     id = models.AutoField(primary_key=True)
     team_id = models.ForeignKey(Team, models.CASCADE, related_name='winner_team')
     coef = models.FloatField(default=1.0)
-    is_winner = models.NullBooleanField(default=None)
+    is_winner = models.BooleanField(default=None, null=True)
 
     def __str__(self):
         return '{}: {}'.format(self.team_id, self.coef)
@@ -37,7 +37,7 @@ class Prediction(models.Model):
     match_id = models.ForeignKey('matches.Match', models.SET_NULL, null=True)
     user_id = models.ForeignKey(User, models.CASCADE, related_name='predictions')
     submit_time = models.DateTimeField(auto_now=True)
-    home_to_advance = models.NullBooleanField(default=None, null=True, blank=True)
+    home_to_advance = models.BooleanField(default=None, null=True, blank=True)
 
     def score(self):
         if self.home_score == self.guest_score:
