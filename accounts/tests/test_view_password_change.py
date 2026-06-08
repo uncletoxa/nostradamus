@@ -57,7 +57,7 @@ class InvalidPasswordChangeTests(PasswordChangeTestCase):
         """
         An invalid form submission should return to the same page
         """
-        self.assertEquals(self.response.status_code, 200)
+        self.assertEqual(self.response.status_code, 200)
 
     def test_form_errors(self):
         form = self.response.context.get('form')

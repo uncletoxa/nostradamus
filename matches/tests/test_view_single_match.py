@@ -16,16 +16,16 @@ class SingleMatchTopicsTests(TestCase):
     def test_single_match_view_success_status_code(self):
         url = reverse('matches:single_match', kwargs={'match_id': 1})
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_single_match_view_not_found_status_code(self):
         url = reverse('matches:single_match', kwargs={'match_id': 99})
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_single_match_url_resolves_single_match_view(self):
         view = resolve('/matches/1/')
-        self.assertEquals(view.func, single_match)
+        self.assertEqual(view.func, single_match)
 
     def test_single_match_view_contains_link_back_to_index(self):
         single_match_url = reverse('matches:single_match', kwargs={'match_id': 1})

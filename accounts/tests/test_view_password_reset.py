@@ -12,11 +12,11 @@ class PasswordResetTests(TestCase):
         self.response = self.client.get(url)
 
     def test_status_code(self):
-        self.assertEquals(self.response.status_code, 200)
+        self.assertEqual(self.response.status_code, 200)
 
     def test_view_function(self):
         view = resolve('/reset/')
-        self.assertEquals(view.func.view_class, auth_views.PasswordResetView)
+        self.assertEqual(view.func.view_class, auth_views.PasswordResetView)
 
     def test_csrf(self):
         self.assertContains(self.response, 'csrfmiddlewaretoken')
@@ -74,11 +74,11 @@ class PasswordResetDoneTests(TestCase):
         self.response = self.client.get(url)
 
     def test_status_code(self):
-        self.assertEquals(self.response.status_code, 200)
+        self.assertEqual(self.response.status_code, 200)
 
     def test_view_function(self):
         view = resolve('/reset/done/')
-        self.assertEquals(view.func.view_class, auth_views.PasswordResetDoneView)
+        self.assertEqual(view.func.view_class, auth_views.PasswordResetDoneView)
 
 
 class PasswordResetCompleteTests(TestCase):
@@ -87,8 +87,8 @@ class PasswordResetCompleteTests(TestCase):
         self.response = self.client.get(url)
 
     def test_status_code(self):
-        self.assertEquals(self.response.status_code, 200)
+        self.assertEqual(self.response.status_code, 200)
 
     def test_view_function(self):
         view = resolve('/reset/complete/')
-        self.assertEquals(view.func.view_class, auth_views.PasswordResetCompleteView)
+        self.assertEqual(view.func.view_class, auth_views.PasswordResetCompleteView)

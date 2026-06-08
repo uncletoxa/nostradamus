@@ -31,11 +31,11 @@ class AllMatchesTests(TestCase):
         )
 
     def test_index_view_status_code(self):
-        self.assertEquals(self.response.status_code, 200)
+        self.assertEqual(self.response.status_code, 200)
 
     # def test_index_url_resolves_index_view(self):
     #     view = resolve('/matches/')
-    #     self.assertEquals(view.func, matches_index)
+    #     self.assertEqual(view.func, matches_index)
 
     def test_index_view_contains_link_to_single_match_page(self):
         single_match_url = reverse(
