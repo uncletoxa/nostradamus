@@ -4,11 +4,8 @@
       <th>User</th>
       <th>Total Points</th>
       {% if long_standings %}
-        <th>Result Points</th>
-        <th>Score Points</th>
-        <th>High Score Points</th>
-        <th>Block Bonus Points</th>
-        <th>Penalty Points</th>
+        <th>Result Bet</th>
+        <th>Score Bet</th>
         <th>Winner Points</th>
       {% endif %}
     </tr>
@@ -19,11 +16,8 @@
         <td><a href="{% url 'results:user_results' user.id %}">{{ user.first_name }}</a></td>
         <td>{{ points.total_points }}</td>
         {% if long_standings %}
-          <td>{{ points.result_points }}</td>
-          <td>{{ points.score_points }}</td>
-          <td>{{ points.high_score_points }}</td>
-          <td>{{ points.block_bonus_points }}</td>
-          <td>{{ points.penalty_points }}</td>
+          <td>{{ points.result_bet }}</td>
+          <td>{{ points.score_bet }}</td>
           <td>{{ points.winner_points }}</td>
       {% endif %}
       </tr>
