@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models import JSONField
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 from matches.models import Team
 
 
@@ -15,6 +17,21 @@ class Coefficient(models.Model):
     tie_guest_win = models.FloatField(null=True, default=None)
     guest_win = models.FloatField()
     update_time = models.DateTimeField()
+
+    def clean(self):
+        match = self.match_id
+        if match is None:
+            return
+        if match.status == match.FINISHED:
+            raise ValidationError(
+                f"Cannot update odds: match '{match}' is already finished.")
+        if match.start_time <= timezone.now():
+            raise ValidationError(
+                f"Cannot update odds: match '{match}' has already started.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return '{}'.format(self.match_id)

@@ -2,6 +2,8 @@
 
 This guide covers deploying the live site (this branch, served at `domain.com`) via Podman Compose, plus how to host historical version snapshots (e.g. `2018.domain.com`) alongside it on the same server.
 
+Every checkout — live or historical — lives in a directory named after its year (e.g. `2026/`, `2018/`). Nothing in the directory/project naming marks one as "current"; only the Caddy routing does, by binding the live version's block to the root domain instead of `20YY.domain.com`.
+
 ## 1. Initial server setup
 
 ### Create a dedicated user
@@ -73,14 +75,14 @@ systemctl --user enable --now podman.socket
 
 ## 2. Clone the repository
 
-Clone this branch as the primary checkout. If you also want to host historical versions, add them as git worktrees so everything shares a single `.git` object store:
+Clone this branch into a directory named after its year — that's the live checkout. If you also want to host historical versions, add them as git worktrees so everything shares a single `.git` object store:
 
 ```bash
 sudo mkdir -p /srv/nostradamus
 sudo chown deploy:deploy /srv/nostradamus
 
-git clone git@github.com:uncletoxa/nostradamus.git /srv/nostradamus/current
-git -C /srv/nostradamus/current worktree add /srv/nostradamus/2018 v2018
+git clone git@github.com:uncletoxa/nostradamus.git /srv/nostradamus/2026
+git -C /srv/nostradamus/2026 worktree add /srv/nostradamus/2018 v2018
 ```
 
 Final layout:
@@ -88,11 +90,13 @@ Final layout:
 ```
 /srv/nostradamus/
     postgres/       ← shared database instance
-    current/        → domain.com           (this branch)
+    2026/           → domain.com            (live version — this branch)
     2018/           → 2018.domain.com       (historical snapshot, optional)
     caddy/
         Caddyfile
 ```
+
+> The live checkout's directory, project name, and systemd unit are all named after its year just like any historical one — e.g. `2026`/`nostr-2026`. The only thing that makes it "current" is the Caddy block (step 7) binding it to the root domain instead of `20YY.domain.com`. When a new season's branch takes over as live, deploy it like a historical version, then move the root-domain Caddy block to point at its port and demote the old live version to a `20YY.domain.com` block.
 
 If you are not hosting any historical versions, skip the `worktree add` step and the `2018`-specific commands below.
 
@@ -106,12 +110,12 @@ The compose file for this shared instance is version-controlled at `docker/postg
 
 ```bash
 mkdir -p /srv/nostradamus/postgres
-cp /srv/nostradamus/current/docker/postgres-shared/compose.yaml /srv/nostradamus/postgres/compose.yaml
+cp /srv/nostradamus/2026/docker/postgres-shared/compose.yaml /srv/nostradamus/postgres/compose.yaml
 ```
 
 > The `aliases` entry in that file is what makes the container resolvable as `postgres` from other compose stacks on the `nostr_shared` network — a `hostname:` field alone only sets the container's own internal hostname and does not register a network-wide DNS entry.
 >
-> To pick up future changes to this file, `git pull` in `/srv/nostradamus/current` and re-copy it, then recreate the container with `up -d --force-recreate`.
+> To pick up future changes to this file, `git pull` in `/srv/nostradamus/2026` (the live checkout) and re-copy it, then recreate the container with `up -d --force-recreate`.
 
 Start it:
 
@@ -122,15 +126,15 @@ podman compose --project-name nostr-postgres \
 
 ### Create a database for each version
 
-Run once per version. For the live/current site:
+Run once per version. For the live site (2026):
 
 ```bash
 podman compose --project-name nostr-postgres \
     -f /srv/nostradamus/postgres/compose.yaml \
     exec db psql -U postgres \
-    -c "CREATE USER u_nostr WITH PASSWORD 'nostr';" \
-    -c "CREATE DATABASE db_nostr OWNER u_nostr;" \
-    -c "GRANT ALL PRIVILEGES ON DATABASE db_nostr TO u_nostr;"
+    -c "CREATE USER u_nostr_2026 WITH PASSWORD 'nostr';" \
+    -c "CREATE DATABASE db_nostr_2026 OWNER u_nostr_2026;" \
+    -c "GRANT ALL PRIVILEGES ON DATABASE db_nostr_2026 TO u_nostr_2026;"
 ```
 
 For the 2018 historical version (if hosting it):
@@ -150,19 +154,19 @@ podman compose --project-name nostr-postgres \
 
 ## 4. Configure environment files
 
-Each version needs its own `.env`. For the live/current site:
+Each version needs its own `.env`. For the live site (2026):
 
 ```bash
-cp /srv/nostradamus/current/.env.example /srv/nostradamus/current/.env
+cp /srv/nostradamus/2026/.env.example /srv/nostradamus/2026/.env
 ```
 
-Edit `/srv/nostradamus/current/.env`:
+Edit `/srv/nostradamus/2026/.env`:
 
 ```
-SECRET_KEY=<generate with: python3 -c "import secrets; print(secrets.token_urlsafe(50))">
+SECRET_KEY=<generate with: `python3 -c "import secrets; print(secrets.token_urlsafe(50))`">
 DEBUG=False
 ALLOWED_HOSTS=domain.com,www.domain.com
-DATABASE_URL=postgres://u_nostr:nostr@postgres:5432/db_nostr
+DATABASE_URL=postgres://u_nostr_2026:nostr@postgres:5432/db_nostr_2026
 ```
 
 > Replace `domain.com` with your actual domain throughout this guide.
@@ -176,10 +180,10 @@ For the 2018 version (if hosting it), repeat with `ALLOWED_HOSTS=2018.domain.com
 If you have a `.sql.gz` dump, restore it into the running shared Postgres container:
 
 ```bash
-zcat db_nostr_backup.sql.gz \
+zcat db_nostr_2026_backup.sql.gz \
     | podman compose --project-name nostr-postgres \
         -f /srv/nostradamus/postgres/compose.yaml \
-        exec -T db psql -U u_nostr -d db_nostr
+        exec -T db psql -U u_nostr_2026 -d db_nostr_2026
 ```
 
 ---
@@ -199,15 +203,15 @@ zcat db_nostr_backup.sql.gz \
 > fresh backup in hand.
 
 ```bash
-podman compose --project-name nostr-current \
-    -f /srv/nostradamus/current/compose.yaml up -d
+podman compose --project-name nostr-2026 \
+    -f /srv/nostradamus/2026/compose.yaml up -d
 ```
 
 On startup the web container runs `collectstatic` then launches gunicorn. Check logs:
 
 ```bash
-podman compose --project-name nostr-current \
-    -f /srv/nostradamus/current/compose.yaml logs web
+podman compose --project-name nostr-2026 \
+    -f /srv/nostradamus/2026/compose.yaml logs web
 ```
 
 Expected output:
@@ -231,9 +235,11 @@ Each version binds gunicorn to a distinct `127.0.0.1` port:
 
 | Version | Port | Database |
 |---------|------|----------|
-| current | `127.0.0.1:8000` | `db_nostr` |
+| 2026 (live) | `127.0.0.1:8000` | `db_nostr_2026` |
 | 2018    | `127.0.0.1:8018` | `db_nostr_2018` |
 | 2020    | `127.0.0.1:8020` | `db_nostr_2020` |
+
+> Port `8000` belongs to whichever version is currently live, regardless of its year — it's what the root-domain Caddy block points at. When promoting a new year to live, give it port `8000` and move the previous live version to its own `80YY` slot.
 
 ---
 
@@ -246,6 +252,7 @@ mkdir -p /srv/nostradamus/caddy
 Create `/srv/nostradamus/caddy/Caddyfile`. Only add a block for a domain once its app stack is actually running — Caddy will fail to obtain a TLS certificate (and log connection-refused errors) for any domain whose backend isn't listening yet:
 
 ```
+# Live version (currently 2026) — bound to the root domain, not <year>.domain.com:
 domain.com, www.domain.com {
     reverse_proxy 127.0.0.1:8000
 }
@@ -299,19 +306,19 @@ TimeoutStartSec=60
 WantedBy=default.target
 ```
 
-Create `~/.config/systemd/user/nostr-current.service`:
+Create `~/.config/systemd/user/nostr-2026.service`:
 
 ```ini
 [Unit]
-Description=Nostradamus current
+Description=Nostradamus 2026 (live)
 After=nostr-postgres.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/srv/nostradamus/current
-ExecStart=/usr/bin/docker-compose --project-name nostr-current up -d
-ExecStop=/usr/bin/docker-compose --project-name nostr-current down
+WorkingDirectory=/srv/nostradamus/2026
+ExecStart=/usr/bin/docker-compose --project-name nostr-2026 up -d
+ExecStop=/usr/bin/docker-compose --project-name nostr-2026 down
 TimeoutStartSec=120
 
 [Install]
@@ -323,7 +330,7 @@ Enable the services:
 ```bash
 systemctl --user daemon-reload
 systemctl --user enable --now nostr-postgres
-systemctl --user enable --now nostr-current
+systemctl --user enable --now nostr-2026
 ```
 
 Repeat the unit creation for `nostr-2018` (and any other historical version) with `After=nostr-postgres.service`, the matching `WorkingDirectory`, and `--project-name`.
@@ -333,8 +340,8 @@ Repeat the unit creation for `nostr-2018` (and any other historical version) wit
 ## 9. Create a Django superuser
 
 ```bash
-podman compose --project-name nostr-current \
-    -f /srv/nostradamus/current/compose.yaml \
+podman compose --project-name nostr-2026 \
+    -f /srv/nostradamus/2026/compose.yaml \
     exec web python manage.py createsuperuser
 ```
 
@@ -343,9 +350,9 @@ podman compose --project-name nostr-current \
 ## 10. Adding a historical version
 
 1. Create branch `v20YY` with `compose.yaml` port set to `127.0.0.1:80YY:8000` and network set to `nostr_shared` (external)
-2. Add a worktree: `git -C /srv/nostradamus/current worktree add /srv/nostradamus/20YY v20YY`
+2. Add a worktree: `git -C /srv/nostradamus/2026 worktree add /srv/nostradamus/20YY v20YY`
 3. Create the database: run the `psql` command from step 3 with `u_nostr_20YY` / `db_nostr_20YY`
-4. Copy and edit `.env`: `cp /srv/nostradamus/current/.env /srv/nostradamus/20YY/.env`, then set `ALLOWED_HOSTS` and `DATABASE_URL`
+4. Copy and edit `.env`: `cp /srv/nostradamus/2026/.env /srv/nostradamus/20YY/.env`, then set `ALLOWED_HOSTS` and `DATABASE_URL`
 5. Start the stack: `podman compose --project-name nostr-20YY -f /srv/nostradamus/20YY/compose.yaml up -d`
 6. Add a block to the Caddyfile and `sudo systemctl reload caddy`
 7. Create a systemd unit as in step 8 with `After=nostr-postgres.service`
@@ -359,8 +366,8 @@ podman compose --project-name nostr-current \
 ```bash
 podman compose --project-name nostr-postgres \
     -f /srv/nostradamus/postgres/compose.yaml \
-    exec -T db pg_dump -U u_nostr db_nostr \
-    | gzip > db_nostr_backup_$(date +%Y%m%d_%H%M%S).sql.gz
+    exec -T db pg_dump -U u_nostr_2026 db_nostr_2026 \
+    | gzip > db_nostr_2026_backup_$(date +%Y%m%d_%H%M%S).sql.gz
 ```
 
 Adjust the user/database names to back up a different version (e.g. `u_nostr_2018` / `db_nostr_2018`).
@@ -368,10 +375,10 @@ Adjust the user/database names to back up a different version (e.g. `u_nostr_201
 ### Restore into a running instance
 
 ```bash
-zcat db_nostr_backup.sql.gz \
+zcat db_nostr_2026_backup.sql.gz \
     | podman compose --project-name nostr-postgres \
         -f /srv/nostradamus/postgres/compose.yaml \
-        exec -T db psql -U u_nostr -d db_nostr
+        exec -T db psql -U u_nostr_2026 -d db_nostr_2026
 ```
 
 ---
@@ -380,9 +387,9 @@ zcat db_nostr_backup.sql.gz \
 
 | Symptom | Check |
 |---------|-------|
-| Blank page, no CSS | `podman compose --project-name nostr-current -f /srv/nostradamus/current/compose.yaml logs web` — confirm `collectstatic` ran |
+| Blank page, no CSS | `podman compose --project-name nostr-2026 -f /srv/nostradamus/2026/compose.yaml logs web` — confirm `collectstatic` ran |
 | 502 Bad Gateway | Gunicorn not running — check logs; confirm port in Caddyfile matches `compose.yaml` |
 | Database connection refused | Shared postgres not running — `podman ps` and `systemctl --user status nostr-postgres` |
 | TLS certificate not issued | DNS A record must exist before Caddy first starts; check `sudo journalctl -u caddy` |
-| Container not starting after reboot | Confirm `loginctl enable-linger deploy` was run; check `systemctl --user status nostr-current` |
+| Container not starting after reboot | Confirm `loginctl enable-linger deploy` was run; check `systemctl --user status nostr-2026` |
 | Port already in use | Another version's stack is using the same port — check port assignments in step 6 |
