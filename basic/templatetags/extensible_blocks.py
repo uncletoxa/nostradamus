@@ -40,8 +40,8 @@ def cup_standings(long_standings=False, live_standings=False):
         score_bet = 0
         winner_points = 0
 
-        user_champion = WinnerPrediction.objects.get(user_id=user.id)
-        if user_champion.prediction_id.is_winner:
+        user_champion = WinnerPrediction.objects.filter(user_id=user.id).first()
+        if user_champion and user_champion.prediction_id.is_winner:
             winner_points = user_champion.prediction_id.coef
 
         results_data = get_user_results_by_matches(user.id, matches_queryset)
