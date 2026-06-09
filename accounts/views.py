@@ -40,8 +40,13 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
+            teams = [
+                form.cleaned_data.get('favourite_team_1'),
+                form.cleaned_data.get('favourite_team_2'),
+                form.cleaned_data.get('favourite_team_3')]
             SupportedTeam.objects.bulk_create(
-                SupportedTeam(user_id=user, team_id=team) for team in form.cleaned_data['teams'])
+                SupportedTeam(user_id=user, team_id=team)
+                for team in teams if team)
             login(request, user)
             return redirect('home')
     else:
