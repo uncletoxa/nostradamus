@@ -66,6 +66,13 @@
             </div>
         </div>
     </nav>
+    {% if user.is_authenticated and not has_winner_prediction %}
+    <div class="bg-warning py-2">
+        <div class="container text-center">
+            <span>&#9888; You haven't made your <a href="{% url 'predictions:winner' %}">tournament winner prediction</a> yet.</span>
+        </div>
+    </div>
+    {% endif %}
     <div class="container">
       <ol class="breadcrumb my-4">
         {% block breadcrumb %}
