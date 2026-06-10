@@ -1,6 +1,8 @@
 import datetime
 
 
+COMPETITION_START_DATE_UTC = datetime.datetime(2026, 6, 11, 19, 0, 0, tzinfo=datetime.timezone.utc)
+
 from matches.models import Match
 from predictions.models import Prediction, WinnerPrediction
 from accounts.models import TeamSupporter
@@ -15,13 +17,15 @@ register = template.Library()
 def champ_standings():
     champ_predictions = WinnerPrediction.objects.exclude(
         user_id__profile__previous_participant=True).order_by('id')
-    return {'champ_predictions': champ_predictions}
+    submissions_closed = datetime.datetime.now(datetime.timezone.utc) > COMPETITION_START_DATE_UTC
+    return {'champ_predictions': champ_predictions, 'submissions_closed': submissions_closed}
 
 
 @register.inclusion_tag('includes/champ_supporters.html')
 def champ_supporters():
     team_champ_supporters = TeamSupporter.objects.all().order_by('id')
-    return {'team_champ_supporters': team_champ_supporters}
+    submissions_closed = datetime.datetime.now(datetime.timezone.utc) > COMPETITION_START_DATE_UTC
+    return {'team_champ_supporters': team_champ_supporters, 'submissions_closed': submissions_closed}
 
 
 @register.inclusion_tag('includes/cup_standings.html')

@@ -9,7 +9,11 @@
     {% for supporter in team_champ_supporters %}
       <tr>
         <td><a href="{% url 'results:user_results' supporter.user_id.id %}">{{ supporter.user_id.first_name }}</a></td>
-        <td>{{ supporter.team_id }}</td>
+        {% if submissions_closed %}
+          <td>{{ supporter.team_id }}</td>
+        {% else %}
+          <td class="text-muted">Hidden until deadline</td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

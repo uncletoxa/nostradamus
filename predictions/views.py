@@ -9,7 +9,7 @@ from predictions.models import Prediction, Coefficient, WinnerPrediction, Winner
 from matches.models import Match, Team
 from predictions.forms import NewPredictionForm, WinnerPredictionForm
 
-COMPETITION_START_DATE_UTC = datetime(2021, 5, 11, 19, 0, 0, tzinfo=timezone.utc)
+COMPETITION_START_DATE_UTC = datetime(2026, 6, 11, 19, 0, 0, tzinfo=timezone.utc)
 
 
 def available_coefficients(request):
