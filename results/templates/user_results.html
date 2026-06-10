@@ -15,6 +15,10 @@
 
 {% block content %}
 
+{% if user_profile.photo %}
+  <img src="{{ user_profile.photo.url }}" alt="{{ user_data.first_name }}" class="img-thumbnail mb-3" style="max-width: 200px;">
+{% endif %}
+
 {% if user_profile.description %}
   <p>{{ user_profile.description }}</p>
 {% endif %}
