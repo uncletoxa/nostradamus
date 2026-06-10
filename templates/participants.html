@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Participants{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Participants</li>
+{% endblock %}
+
+{% block content %}
+  <h3>Previous Participants</h3>
+  <p class="text-muted">Profiles of participants from previous tournaments.</p>
+  {% if profiles %}
+    <div class="row">
+      {% for profile in profiles %}
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">{{ profile.user.get_full_name|default:profile.user.username }}</h5>
+              {% if profile.description %}
+                <p class="card-text">{{ profile.description }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">No previous participants yet.</p>
+  {% endif %}
+{% endblock %}

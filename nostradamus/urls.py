@@ -35,6 +35,7 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'),
         name='password_reset_complete'),
 
+    re_path(r'^participants/$', accounts_views.participants, name='participants'),
     re_path(r'^settings/account/$', accounts_views.my_account, name='my_account'),
     re_path(r'^settings/password/$',
         auth_views.PasswordChangeView.as_view(template_name='password_change.html'),

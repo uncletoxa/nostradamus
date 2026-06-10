@@ -40,6 +40,15 @@ def my_account(request):
                    'supported_teams_form': supported_teams_form})
 
 
+@login_required
+def participants(request):
+    profiles = (UserProfile.objects
+                .filter(non_participant=True)
+                .select_related('user')
+                .order_by('user__first_name', 'user__username'))
+    return render(request, 'participants.html', {'profiles': profiles})
+
+
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
