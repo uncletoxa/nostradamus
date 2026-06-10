@@ -35,6 +35,8 @@ class Match(models.Model):
 
     @property
     def result(self):
+        if self.home_score is None or self.guest_score is None:
+            return None
         if self.home_score == self.guest_score:
             if self.home_to_advance == True:
                 return '*{}:{}'.format(self.home_score, self.guest_score)
