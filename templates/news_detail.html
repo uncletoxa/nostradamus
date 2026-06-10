@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'news_list' %}">News</a></li>
+  <li class="breadcrumb-item active">{{ post.title }}</li>
+{% endblock %}
+
+{% block content %}
+  <h3>{{ post.title }}</h3>
+  <p class="text-muted"><small>{{ post.created_at|date:"j F Y" }}</small></p>
+  {% if post.photo %}
+    <img src="{{ post.photo.url }}" class="img-fluid rounded mb-3" alt="{{ post.title }}" style="max-height: 400px; object-fit: cover;">
+  {% endif %}
+  <div>{{ post.body|linebreaks }}</div>
+{% endblock %}

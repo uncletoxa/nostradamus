@@ -7,6 +7,21 @@
 {% endblock %}
 
 {% block content %}
+  {% if latest_news %}
+    <div class="card mb-4">
+      {% if latest_news.photo %}
+        <img src="{{ latest_news.photo.url }}" class="card-img-top" alt="{{ latest_news.title }}" style="max-height: 250px; object-fit: cover;">
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">
+          <a href="{% url 'news_detail' latest_news.pk %}">{{ latest_news.title }}</a>
+        </h5>
+        <p class="card-text text-muted"><small>{{ latest_news.created_at|date:"j F Y" }}</small></p>
+        <p class="card-text">{{ latest_news.body|truncatewords:30 }}</p>
+        <a href="{% url 'news_detail' latest_news.pk %}" class="btn btn-sm btn-outline-primary">Read more</a>
+      </div>
+    </div>
+  {% endif %}
   <div class="row">
     <div class="col-5">
       <h3>
