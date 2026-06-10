@@ -11,16 +11,31 @@
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
   <li class="breadcrumb-item"><a href="{% url 'matches:matches_index' %}">Matches</a></li>
-  <li class="breadcrumb-item active">{{ match }}</li>
+  <li class="breadcrumb-item active" aria-current="page">{{ match }}</li>
 {% endblock %}
 {% block content %}
-  {% if match.result %}
-    <h1>{{ match.result }}</h1>
-  {% else %}
-    <h1>No result yet.</h1>
-  {% endif %}
-  <h2>{{ match }}</h2>
-  <h4>{{ match.start_time|date:"d-m-Y H:i" }}</h4>
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="text-center flex-fill">
+          <div style="font-size: 2.5rem; line-height: 1;">{{ match.home_team.emoji_symbol }}</div>
+          <div class="font-weight-bold mt-1">{{ match.home_team.name }}</div>
+        </div>
+        <div class="text-center mx-4">
+          {% if match.result %}
+            <span class="badge badge-dark py-2 px-3" style="font-size: 1.6rem; letter-spacing: 3px;">{{ match.result }}</span>
+          {% else %}
+            <span class="text-muted font-weight-bold" style="font-size: 1.4rem;">vs</span>
+          {% endif %}
+          <div class="text-muted mt-2"><small>{{ match.start_time|date:"j F Y, H:i" }}</small></div>
+        </div>
+        <div class="text-center flex-fill">
+          <div style="font-size: 2.5rem; line-height: 1;">{{ match.guest_team.emoji_symbol }}</div>
+          <div class="font-weight-bold mt-1">{{ match.guest_team.name }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   {% if match.result %}
     <table class="table">

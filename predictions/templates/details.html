@@ -5,7 +5,7 @@
 {% block breadcrumb %}
   <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
   <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">Predictions</a></li>
-  <li class="breadcrumb-item active"> <a href="{% url 'predictions:details' match.match_id %}"> {{ match }} </a></li>
+  <li class="breadcrumb-item active" aria-current="page"> <a href="{% url 'predictions:details' match.match_id %}"> {{ match }} </a></li>
 {% endblock %}
 
 {% block content %}

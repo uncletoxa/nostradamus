@@ -3,7 +3,7 @@
 {% load extensible_blocks static %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item active">Home</li>
+  <li class="breadcrumb-item active" aria-current="page">Home</li>
 {% endblock %}
 
 {% block content %}
@@ -44,7 +44,7 @@
       <div class="row">
         <div class="col">
           <h3>
-            <small class="text-muted"><a href={% url 'matches:matches_index' %}>next matches</a></small>
+            <small class="text-muted"><a href={% url 'matches:matches_index' %}>Next Matches</a></small>
           </h3>
             {% next_matches user %}
         </div>
