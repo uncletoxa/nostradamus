@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 
-{% load extensible_blocks %}
+{% load extensible_blocks static %}
 
 {% block breadcrumb %}
   <li class="breadcrumb-item active">Home</li>
 {% endblock %}
 
 {% block content %}
+  <div class="mb-4">
+    <p class="lead fw-bold">Смотреть всем перед стартом Чемпионата мира по футболу-2026!</p>
+    <video controls playsinline class="w-100" style="max-height: 400px; object-fit: cover;">
+      <source src="{% static 'video/preview.mp4' %}" type="video/mp4">
+    </video>
+  </div>
   {% if latest_news %}
     <div class="card mb-4">
       {% if latest_news.photo %}
