@@ -16,7 +16,7 @@ def user_result(request, user_id):
                Match.objects.filter(guest_score__isnull=False)).order_by('-start_time')
     user_data = get_object_or_404(User, pk=user_id)
     user_results_data = get_user_results_by_matches(user_id, matches)
-    supported_teams = Team.objects.filter(supporters__user_id=user_id)
+    supported_teams = Team.objects.filter(supporters__user_id=user_id).order_by('supporters__id')
     user_profile = UserProfile.objects.filter(user_id=user_id).first()
     return render(request, 'user_results.html',
                   {'user_results': user_results_data,
