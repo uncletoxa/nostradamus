@@ -27,6 +27,7 @@ class SupportedTeam(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     description = models.TextField(blank=True, default='')
+    photo = models.ImageField(upload_to='avatars/', blank=True)
     previous_participant = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):

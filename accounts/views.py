@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from matches.models import Team
-from .forms import SignUpForm, UserUpdateForm, UserProfileForm, SupportedTeamsForm
+from .forms import SignUpForm, UserUpdateForm, SupportedTeamsForm
 from .models import SupportedTeam, UserProfile
 
 
@@ -13,18 +13,14 @@ def _supported_teams_initial(user):
 
 @login_required
 def my_account(request):
-    profile, _ = UserProfile.objects.get_or_create(user=request.user)
     account_form = UserUpdateForm(instance=request.user)
-    profile_form = UserProfileForm(instance=profile)
     supported_teams_form = SupportedTeamsForm(initial=_supported_teams_initial(request.user))
 
     if request.method == 'POST':
         if 'update_account' in request.POST:
             account_form = UserUpdateForm(request.POST, instance=request.user)
-            profile_form = UserProfileForm(request.POST, instance=profile)
-            if account_form.is_valid() and profile_form.is_valid():
+            if account_form.is_valid():
                 account_form.save()
-                profile_form.save()
                 return redirect('my_account')
         elif 'update_supported_teams' in request.POST:
             supported_teams_form = SupportedTeamsForm(request.POST)
@@ -36,8 +32,7 @@ def my_account(request):
                 return redirect('my_account')
 
     return render(request, 'my_account.html',
-                  {'form': account_form, 'profile_form': profile_form,
-                   'supported_teams_form': supported_teams_form})
+                  {'form': account_form, 'supported_teams_form': supported_teams_form})
 
 
 @login_required

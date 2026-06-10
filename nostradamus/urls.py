@@ -3,6 +3,8 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 from accounts import views as accounts_views
 from basic import views as basic_views
@@ -45,4 +47,4 @@ urlpatterns = [
         name='password_change_done'),
 
     re_path(r'^robots.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain"))
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

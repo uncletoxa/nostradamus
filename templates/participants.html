@@ -14,6 +14,9 @@
       {% for profile in profiles %}
         <div class="col-md-4 mb-4">
           <div class="card h-100">
+            {% if profile.photo %}
+              <img src="{{ profile.photo.url }}" class="card-img-top" alt="{{ profile.user.get_full_name|default:profile.user.username }}" style="object-fit: cover; height: 200px;">
+            {% endif %}
             <div class="card-body">
               <h5 class="card-title">{{ profile.user.get_full_name|default:profile.user.username }}</h5>
               {% if profile.description %}
