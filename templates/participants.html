@@ -15,7 +15,7 @@
         <div class="col-md-4 mb-4">
           <div class="card h-100">
             {% if profile.photo %}
-              <img src="{{ profile.photo.url }}" class="card-img-top" alt="{{ profile.user.get_full_name|default:profile.user.username }}" style="object-fit: cover; height: 200px;">
+              <img src="{{ profile.photo.url }}" class="card-img-top participant-photo" alt="{{ profile.user.get_full_name|default:profile.user.username }}">
             {% endif %}
             <div class="card-body">
               <h5 class="card-title">{{ profile.user.get_full_name|default:profile.user.username }}</h5>
