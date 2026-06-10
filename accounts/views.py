@@ -8,7 +8,11 @@ from .models import SupportedTeam, UserProfile
 
 
 def _supported_teams_initial(user):
-    return {'teams': Team.objects.filter(supporters__user_id=user)}
+    teams = list(Team.objects.filter(supporters__user_id=user).order_by('supporters__id'))
+    return {
+        'favourite_team_1': teams[0] if len(teams) > 0 else None,
+        'favourite_team_2': teams[1] if len(teams) > 1 else None,
+        'favourite_team_3': teams[2] if len(teams) > 2 else None}
 
 
 @login_required
@@ -25,10 +29,12 @@ def my_account(request):
         elif 'update_supported_teams' in request.POST:
             supported_teams_form = SupportedTeamsForm(request.POST)
             if supported_teams_form.is_valid():
+                cd = supported_teams_form.cleaned_data
+                teams = [cd.get('favourite_team_1'), cd.get('favourite_team_2'), cd.get('favourite_team_3')]
                 SupportedTeam.objects.filter(user_id=request.user).delete()
                 SupportedTeam.objects.bulk_create(
                     SupportedTeam(user_id=request.user, team_id=team)
-                    for team in supported_teams_form.cleaned_data['teams'])
+                    for team in teams if team)
                 return redirect('my_account')
 
     return render(request, 'my_account.html',
