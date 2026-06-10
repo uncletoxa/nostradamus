@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from matches.models import Team
+from .models import UserProfile
 
 SUPPORTED_TEAMS_LIMIT = 3
 
@@ -57,6 +58,18 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('first_name',)
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ('description',)
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4}),
+        }
+        labels = {
+            'description': 'About me',
+        }
 
 
 class SupportedTeamsForm(forms.Form):
