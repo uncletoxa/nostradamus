@@ -11,97 +11,86 @@
 {% block content %}
   <div class="container">
     <div class="row">
-      <div class="col-4">
 
-        {% if coef %}
-        <div class="mb-3">
-          <table class="table table-sm table-bordered text-center">
-            <thead class="thead-dark">
-              <tr>
-                <th>1</th>
-                {% if coef.tie is not None %}<th>X</th>{% endif %}
-                <th>2</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{{ coef.home_win }}</td>
-                {% if coef.tie is not None %}<td>{{ coef.tie }}</td>{% endif %}
-                <td>{{ coef.guest_win }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="mb-3">
-          <div class="row text-center">
-            <div class="col">
-              <strong>Home win</strong>
-              <table class="table table-sm table-bordered">
-                {% for score, odd in score_coefs.home.items %}
-                <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
-                {% endfor %}
-              </table>
-            </div>
-            <div class="col">
-              <strong>Draw</strong>
-              <table class="table table-sm table-bordered">
-                {% for score, odd in score_coefs.draw.items %}
-                <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
-                {% endfor %}
-              </table>
-            </div>
-            <div class="col">
-              <strong>Away win</strong>
-              <table class="table table-sm table-bordered">
-                {% for score, odd in score_coefs.away.items %}
-                <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
-                {% endfor %}
-              </table>
-            </div>
-          </div>
-          {% if score_coefs.other %}
-          <div class="text-center text-muted small">Any other score: {{ score_coefs.other }}</div>
-          {% endif %}
-        </div>
-        {% endif %}
-
-        <div class="container">
-        <div class="row">
+      <!-- Left: prediction form -->
+      <div class="col-md-4">
         {% if match.status == "SCHEDULED" %}
           <form class="form-horizontal" method="post">
-            <div class="col-md-8">
-              {% csrf_token %}
-              {{ form|crispy }}
-              <button type="submit" class="btn btn-success">Predict</button>
-            </div>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-success">Predict</button>
           </form>
-          {% else %}
-            <div class="card" style="width: 18rem;">
-              <div class="card-body">
-                  No more predictions available
-              </div>
-            </div>
+        {% else %}
+          <div class="card">
+            <div class="card-body">No more predictions available</div>
+          </div>
         {% endif %}
+
+        <div class="mt-3">
+          <div class="alert alert-info" role="alert">
+            {% if curr_prediction %}
+              Current prediction: <strong>{{ curr_prediction }}</strong>
+            {% else %}
+              No predictions given
+            {% endif %}
+          </div>
         </div>
-        <div class="form-group">
-          &nbsp;
-        </div>
-        <div class="row">
-          <div class="col">
-            <div class="alert alert-info" role="alert">
-              {% if curr_prediction %}
-              Current prediction:
-              <p class="mb-0">{{ curr_prediction }}</p>
-              {% else %}
-                No predictions given
-              {% endif %}
-            </div>
-          </div>
-          </div>
-          </div>
       </div>
 
-        </div>
-  </div>
+      <!-- Right: odds -->
+      {% if coef %}
+      <div class="col-md-8">
+        <h6 class="text-muted mb-2">Match odds</h6>
+        <table class="table table-sm table-bordered text-center mb-4" style="max-width: 300px;">
+          <thead class="thead-dark">
+            <tr>
+              <th>1</th>
+              {% if coef.tie is not None %}<th>X</th>{% endif %}
+              <th>2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ coef.home_win }}</td>
+              {% if coef.tie is not None %}<td>{{ coef.tie }}</td>{% endif %}
+              <td>{{ coef.guest_win }}</td>
+            </tr>
+          </tbody>
+        </table>
 
+        <h6 class="text-muted mb-2">Correct score odds</h6>
+        <div class="row text-center">
+          <div class="col">
+            <div class="fw-bold mb-1">Home win</div>
+            <table class="table table-sm table-bordered">
+              {% for score, odd in score_coefs.home.items %}
+              <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
+              {% endfor %}
+            </table>
+          </div>
+          <div class="col">
+            <div class="fw-bold mb-1">Draw</div>
+            <table class="table table-sm table-bordered">
+              {% for score, odd in score_coefs.draw.items %}
+              <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
+              {% endfor %}
+            </table>
+          </div>
+          <div class="col">
+            <div class="fw-bold mb-1">Away win</div>
+            <table class="table table-sm table-bordered">
+              {% for score, odd in score_coefs.away.items %}
+              <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+        {% if score_coefs.other %}
+        <div class="text-muted small">Any other score: {{ score_coefs.other }}</div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
 {% endblock %}
