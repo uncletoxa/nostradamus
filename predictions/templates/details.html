@@ -17,7 +17,11 @@
         {% if match.status == "SCHEDULED" %}
           <form class="form-horizontal" method="post">
             {% csrf_token %}
-            {{ form|crispy }}
+            {{ form.home_score|as_crispy_field }}
+            {{ form.guest_score|as_crispy_field }}
+            {% if match.is_playoff %}
+              {{ form.penalty_winner|as_crispy_field }}
+            {% endif %}
             <button type="submit" class="btn btn-success">Predict</button>
           </form>
         {% else %}

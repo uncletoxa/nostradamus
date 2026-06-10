@@ -72,7 +72,7 @@ def new_prediction(request, match_id):
             request.POST, initial={'home_score': 0, 'guest_score': 0})
         home_score = request.POST['home_score']
         guest_score = request.POST['guest_score']
-        is_home_advance = request.POST['penalty_winner']
+        is_home_advance = request.POST.get('penalty_winner') if match_data.is_playoff else None
         if frm.is_valid():
             Prediction.objects.create(
                 home_score=home_score,
