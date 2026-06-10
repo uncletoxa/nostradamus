@@ -31,6 +31,38 @@
             </tbody>
           </table>
         </div>
+        {% if coef %}
+        <div class="mb-3">
+          <div class="row text-center">
+            <div class="col">
+              <strong>Home win</strong>
+              <table class="table table-sm table-bordered">
+                {% for score, odd in score_coefs.home.items %}
+                <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
+                {% endfor %}
+              </table>
+            </div>
+            <div class="col">
+              <strong>Draw</strong>
+              <table class="table table-sm table-bordered">
+                {% for score, odd in score_coefs.draw.items %}
+                <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
+                {% endfor %}
+              </table>
+            </div>
+            <div class="col">
+              <strong>Away win</strong>
+              <table class="table table-sm table-bordered">
+                {% for score, odd in score_coefs.away.items %}
+                <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
+                {% endfor %}
+              </table>
+            </div>
+          </div>
+          {% if score_coefs.other %}
+          <div class="text-center text-muted small">Any other score: {{ score_coefs.other }}</div>
+          {% endif %}
+        </div>
         {% endif %}
         <div class="container">
         <div class="row">

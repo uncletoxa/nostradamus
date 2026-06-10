@@ -54,6 +54,19 @@ def new_prediction(request, match_id):
             .filter(match_id=match_data, coef_ready=True)
             .order_by('-update_time')
             .first())
+    score_coefs = {'home': {}, 'draw': {}, 'away': {}, 'other': None}
+    if coef:
+        for score, odd in coef.score.items():
+            if score == 'Any other score':
+                score_coefs['other'] = odd
+            else:
+                h, g = map(int, score.split('-'))
+                if h > g:
+                    score_coefs['home'][score] = odd
+                elif h == g:
+                    score_coefs['draw'][score] = odd
+                else:
+                    score_coefs['away'][score] = odd
     if request.method == 'POST':
         frm = NewPredictionForm(
             request.POST, initial={'home_score': 0, 'guest_score': 0})
@@ -73,7 +86,8 @@ def new_prediction(request, match_id):
         frm = NewPredictionForm()
     return render(request, 'details.html',
                   {'form': frm, 'match': match_data, 'cur_time': now(),
-                   'curr_prediction': curr_prediction, 'coef': coef})
+                   'curr_prediction': curr_prediction, 'coef': coef,
+                   'score_coefs': score_coefs})
 
 
 @login_required
