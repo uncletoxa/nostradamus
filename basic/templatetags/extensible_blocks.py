@@ -14,7 +14,7 @@ register = template.Library()
 @register.inclusion_tag('includes/champ_standings.html')
 def champ_standings():
     champ_predictions = WinnerPrediction.objects.exclude(
-        user_id__profile__non_participant=True).order_by('id')
+        user_id__profile__previous_participant=True).order_by('id')
     return {'champ_predictions': champ_predictions}
 
 
@@ -29,7 +29,7 @@ def cup_standings(long_standings=False, live_standings=False):
     def zero_if_none(val):
         return val if val is not None else 0
 
-    users = User.objects.filter(is_superuser=False).exclude(profile__non_participant=True)
+    users = User.objects.filter(is_superuser=False).exclude(profile__previous_participant=True)
     if live_standings:
         matches_queryset = Match.objects.filter(status__in=['IN_PLAY', 'PAUSED', 'FINISHED'])
     else:

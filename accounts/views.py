@@ -43,7 +43,7 @@ def my_account(request):
 @login_required
 def participants(request):
     profiles = (UserProfile.objects
-                .filter(non_participant=True)
+                .filter(previous_participant=True)
                 .select_related('user')
                 .order_by('user__first_name', 'user__username'))
     return render(request, 'participants.html', {'profiles': profiles})

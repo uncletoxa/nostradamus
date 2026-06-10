@@ -27,4 +27,10 @@ class SupportedTeam(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     description = models.TextField(blank=True, default='')
-    non_participant = models.BooleanField(default=False)
+    previous_participant = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        expected_active = not self.previous_participant
+        if self.user.is_active != expected_active:
+            User.objects.filter(pk=self.user_id).update(is_active=expected_active)
