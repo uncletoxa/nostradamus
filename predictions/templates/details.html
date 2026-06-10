@@ -30,8 +30,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-        {% if coef %}
         <div class="mb-3">
           <div class="row text-center">
             <div class="col">
@@ -63,6 +61,7 @@
           <div class="text-center text-muted small">Any other score: {{ score_coefs.other }}</div>
           {% endif %}
         </div>
+        {% endif %}
         {% endif %}
         <div class="container">
         <div class="row">
