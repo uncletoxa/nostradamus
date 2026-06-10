@@ -67,7 +67,7 @@ def cup_standings(long_standings=False, live_standings=False):
 @register.inclusion_tag('includes/next_matches.html')
 def next_matches(cur_user):
     predictions = {}
-    matches = Match.objects.filter(status='SCHEDULED')
+    matches = Match.objects.filter(status='SCHEDULED').order_by('match_date')[:10]
     for match in matches:
         last_pred = last_prediction(
             Prediction.objects.filter(match_id_id=match.match_id,
