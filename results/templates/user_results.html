@@ -20,7 +20,7 @@
 {% endif %}
 
 {% if user_profile.description %}
-  <p>{{ user_profile.description }}</p>
+  <p>{{ user_profile.description|linebreaksbr }}</p>
 {% endif %}
 
 {% if supported_teams %}

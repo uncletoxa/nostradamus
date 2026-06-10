@@ -20,7 +20,7 @@
             <div class="card-body">
               <h5 class="card-title">{{ profile.user.get_full_name|default:profile.user.username }}</h5>
               {% if profile.description %}
-                <p class="card-text">{{ profile.description }}</p>
+                <p class="card-text">{{ profile.description|linebreaksbr }}</p>
               {% endif %}
             </div>
           </div>
