@@ -98,9 +98,10 @@ def winner_prediction(request):
         frm = WinnerPredictionForm(request.POST)
         team_id = request.POST['team_id']
         if frm.is_valid():
+            coef_record = WinnerPredictionCoef.objects.get(team_id=team_id)
             WinnerPrediction.objects.update_or_create(
                 user_id=request.user,
-                defaults={'team_id': Team(team_id=team_id)}
+                defaults={'prediction_id': coef_record}
             )
             return redirect('home')
     else:
