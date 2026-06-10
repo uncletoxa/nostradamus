@@ -16,26 +16,26 @@
 {% block content %}
   <div class="container">
     <div class="row">
-<!--      <div class="col">-->
-<!--        <p>-->
-<!--  <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">-->
-<!--    Winner Coefficients-->
-<!--  </a>-->
-<!--        <div class="collapse" id="collapseExample">-->
-<!--        <table class="table table-borderless">-->
-<!--          <thead class="table-light">-->
-<!--            <th scope="col">Team</th>-->
-<!--            <th scope="col">Points</th>-->
-<!--          </thead>-->
-<!--          {% for coef in winner_coef %}-->
-<!--            <tr>-->
-<!--              <td> {{ coef.team_id }} </td>-->
-<!--              <td> {{ coef.coef }} </td>-->
-<!--            </tr>-->
-<!--          {% endfor %}-->
-<!--        </table>-->
-<!--      </div>-->
-<!--      </div>-->
+      <div class="col">
+        {% if winner_coef %}
+        <table class="table table-sm table-bordered">
+          <thead class="thead-dark">
+            <tr>
+              <th>Team</th>
+              <th>Odds</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for coef in winner_coef %}
+            <tr>
+              <td>{{ coef.team_id }}</td>
+              <td>{{ coef.coef }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </div>
       <div class="col">
         {% champ_standings %}
       </div>

@@ -50,6 +50,10 @@ def new_prediction(request, match_id):
                        .filter(match_id=match_data, user_id=request.user.id)
                        .order_by('-submit_time')
                        .first())
+    coef = (Coefficient.objects
+            .filter(match_id=match_data, coef_ready=True)
+            .order_by('-update_time')
+            .first())
     if request.method == 'POST':
         frm = NewPredictionForm(
             request.POST, initial={'home_score': 0, 'guest_score': 0})
@@ -69,7 +73,7 @@ def new_prediction(request, match_id):
         frm = NewPredictionForm()
     return render(request, 'details.html',
                   {'form': frm, 'match': match_data, 'cur_time': now(),
-                   'curr_prediction': curr_prediction})
+                   'curr_prediction': curr_prediction, 'coef': coef})
 
 
 @login_required
