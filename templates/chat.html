@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Chat</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+    <h3 class="mb-3">Chat</h3>
+
+    <div id="chat-messages"
+         style="height: 520px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.25rem; padding: 1rem; background: #fff;"
+         class="mb-3">
+      {% for msg in messages %}
+      <div class="media mb-3">
+        <div class="mr-2" style="flex-shrink:0;">
+          {% if msg.user.profile.photo %}
+            <img src="{{ msg.user.profile.photo.url }}"
+                 class="rounded-circle"
+                 style="width:36px;height:36px;object-fit:cover;"
+                 alt="{{ msg.user.get_full_name|default:msg.user.username }}">
+          {% else %}
+            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
+                 style="width:36px;height:36px;">
+              <span class="text-white font-weight-bold" style="font-size:14px;">
+                {{ msg.user.get_full_name|default:msg.user.username|slice:":1"|upper }}
+              </span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="media-body">
+          <div>
+            <strong>{{ msg.user.get_full_name|default:msg.user.username }}</strong>
+            <small class="text-muted ml-2">{{ msg.created_at|time:"H:i" }}</small>
+          </div>
+          <div>{{ msg.text }}</div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-muted text-center mt-4" id="no-messages">No messages yet. Be the first to write!</p>
+      {% endfor %}
+    </div>
+
+    <form method="post" id="chat-form" autocomplete="off">
+      {% csrf_token %}
+      <div class="input-group">
+        <input type="text" name="text" id="chat-input"
+               class="form-control"
+               placeholder="Write a message…"
+               maxlength="1000"
+               required>
+        <div class="input-group-append">
+          <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+(function () {
+  var messagesDiv = document.getElementById('chat-messages');
+  var lastTs = '{{ last_ts|escapejs }}';
+
+  function scrollToBottom() {
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+  scrollToBottom();
+
+  function escapeHtml(s) {
+    var d = document.createElement('div');
+    d.appendChild(document.createTextNode(s));
+    return d.innerHTML;
+  }
+
+  function avatarHtml(msg) {
+    if (msg.avatar) {
+      return '<img src="' + escapeHtml(msg.avatar) + '" class="rounded-circle" ' +
+             'style="width:36px;height:36px;object-fit:cover;" alt="' + escapeHtml(msg.user) + '">';
+    }
+    var initial = msg.user.charAt(0).toUpperCase();
+    return '<div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" ' +
+           'style="width:36px;height:36px;">' +
+           '<span class="text-white font-weight-bold" style="font-size:14px;">' + escapeHtml(initial) + '</span>' +
+           '</div>';
+  }
+
+  function appendMessage(msg) {
+    var noMsg = document.getElementById('no-messages');
+    if (noMsg) noMsg.remove();
+    var html = '<div class="media mb-3">' +
+      '<div class="mr-2" style="flex-shrink:0;">' + avatarHtml(msg) + '</div>' +
+      '<div class="media-body">' +
+        '<div><strong>' + escapeHtml(msg.user) + '</strong>' +
+        '<small class="text-muted ml-2">' + escapeHtml(msg.time) + '</small></div>' +
+        '<div>' + escapeHtml(msg.text) + '</div>' +
+      '</div></div>';
+    var atBottom = messagesDiv.scrollHeight - messagesDiv.clientHeight <= messagesDiv.scrollTop + 10;
+    messagesDiv.insertAdjacentHTML('beforeend', html);
+    if (atBottom) scrollToBottom();
+  }
+
+  function poll() {
+    fetch('{% url "chat_poll" %}?since=' + encodeURIComponent(lastTs))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.messages && data.messages.length) {
+          data.messages.forEach(function (msg) {
+            appendMessage(msg);
+            lastTs = msg.created_at;
+          });
+        }
+      })
+      .catch(function () {});
+  }
+
+  setInterval(poll, 5000);
+
+  /* Submit via AJAX so the page doesn't reload */
+  document.getElementById('chat-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var input = document.getElementById('chat-input');
+    var text = input.value.trim();
+    if (!text) return;
+    var form = this;
+    var data = new FormData(form);
+    fetch('{% url "chat" %}', {method: 'POST', body: data})
+      .then(function () {
+        input.value = '';
+        poll();
+      })
+      .catch(function () { form.submit(); });
+  });
+}());
+</script>
+{% endblock %}

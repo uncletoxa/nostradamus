@@ -48,5 +48,6 @@ urlpatterns = [
         auth_views.PasswordChangeDoneView.as_view(template_name='password_change_done.html'),
         name='password_change_done'),
 
+    path('chat/', include('chat.urls')),
     re_path(r'^robots.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain"))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

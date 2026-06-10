@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'predictions',
     'accounts',
     'matches',
-    'results'
+    'results',
+    'chat'
 ]
 
 MIDDLEWARE = [
