@@ -19,3 +19,8 @@ def news_list(request):
 def news_detail(request, pk):
     post = get_object_or_404(NewsPost, pk=pk)
     return render(request, 'news_detail.html', {'post': post})
+
+
+@login_required
+def history(request):
+    return render(request, 'history.html')

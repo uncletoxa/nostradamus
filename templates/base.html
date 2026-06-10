@@ -26,27 +26,30 @@
                     aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <ul class="nav justify-content-center">
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'news_list' %}">News</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'chat' %}">Chat</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'results:results_index' %}">Results</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'predictions:winner' %}">Predictions.Winner</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'matches:matches_index' %}">Matches</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'participants' %}">Participants</a>
-                </li>
-              </ul>
             <div class="collapse navbar-collapse" id="mainMenu">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'news_list' %}">News</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'chat' %}">Chat</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'results:results_index' %}">Results</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'predictions:winner' %}">Winner</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'matches:matches_index' %}">Matches</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'participants' %}">Participants</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'history' %}">История</a>
+                    </li>
+                </ul>
                 {% if user.is_authenticated %}
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown">

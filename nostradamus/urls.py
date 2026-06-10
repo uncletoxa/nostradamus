@@ -38,6 +38,7 @@ urlpatterns = [
         name='password_reset_complete'),
 
     re_path(r'^news/$', basic_views.news_list, name='news_list'),
+    re_path(r'^history/$', basic_views.history, name='history'),
     re_path(r'^news/(?P<pk>\d+)/$', basic_views.news_detail, name='news_detail'),
     re_path(r'^participants/$', accounts_views.participants, name='participants'),
     re_path(r'^settings/account/$', accounts_views.my_account, name='my_account'),
