@@ -17,15 +17,6 @@ from django.utils.timezone import now
 from matches.models import Match
 
 API_HOST = 'api.football-data.org'
-COMPETITION = 'WC'
-
-# football-data.org v4 team names → our DB names
-NAME_MAP = {
-    'Bosnia-Herzegovina': 'Bosnia and Herzegovina',
-    'Cape Verde Islands': 'Cape Verde',
-    'Congo DR': 'DR Congo',
-    'Czechia': 'Czech Republic',
-}
 
 # v4 API statuses → our model statuses
 STATUS_MAP = {
@@ -37,57 +28,41 @@ STATUS_MAP = {
 }
 
 
-def fetch_competition_matches(token, date_from, date_to):
+def fetch_match(token, fixture_id):
     conn = http.client.HTTPSConnection(API_HOST)
-    path = '/v4/competitions/{}/matches?dateFrom={}&dateTo={}'.format(
-        COMPETITION, date_from, date_to)
-    conn.request('GET', path, headers={'X-Auth-Token': token})
+    conn.request('GET', '/v4/matches/{}'.format(fixture_id),
+                 headers={'X-Auth-Token': token})
     resp = conn.getresponse()
     if resp.status != 200:
         raise RuntimeError('API error {}: {}'.format(resp.status, resp.reason))
-    return json.loads(resp.read().decode())['matches']
+    return json.loads(resp.read().decode())
 
 
 def main():
     token = config('FOOTBALL_DATA_API_KEY')
     current_time = now()
 
-    # Fetch matches for yesterday–tomorrow to cover all timezones and late-running games
-    date_from = (current_time - timedelta(days=1)).date().isoformat()
-    date_to = (current_time + timedelta(days=1)).date().isoformat()
-
-    api_matches = fetch_competition_matches(token, date_from, date_to)
-    logging.info('Fetched {} matches from API ({} to {})'.format(
-        len(api_matches), date_from, date_to))
-
-    # Build lookup by normalised team name pair
-    api_lookup = {}
-    for m in api_matches:
-        home = NAME_MAP.get(m['homeTeam']['name'], m['homeTeam']['name'])
-        away = NAME_MAP.get(m['awayTeam']['name'], m['awayTeam']['name'])
-        api_lookup[(home, away)] = m
-
     # DB matches that need attention:
     #   - currently live (IN_PLAY or PAUSED)
     #   - scheduled to start within the next 5 min (catch the kickoff transition)
-    #   - started up to 3h ago and still not FINISHED (handles restarts / delays)
-    window_start = current_time - timedelta(hours=3)
-    window_end = current_time + timedelta(minutes=5)
-
+    #   - scheduled with start_time in the past (catches missed transitions)
     db_matches = Match.objects.select_related('home_team', 'guest_team').filter(
         Q(status__in=[Match.IN_PLAY, Match.PAUSED]) |
-        Q(status=Match.SCHEDULED, start_time__range=(window_start, window_end)))
+        Q(status=Match.SCHEDULED, start_time__lte=current_time + timedelta(minutes=5))
+    ).exclude(fixture_id__isnull=True)
 
     if not db_matches.exists():
         logging.info('No active matches to update.')
         return
 
+    logging.info('Checking {} match(es).'.format(db_matches.count()))
+
     updated = 0
     for match in db_matches:
-        key = (match.home_team.name, match.guest_team.name)
-        api_match = api_lookup.get(key)
-        if not api_match:
-            logging.warning('No API data for {}'.format(key))
+        try:
+            api_match = fetch_match(token, match.fixture_id)
+        except RuntimeError as e:
+            logging.error('{}: {}'.format(match, e))
             continue
 
         api_status = STATUS_MAP.get(api_match['status'], Match.SCHEDULED)
