@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import TeamSupporter, SupportedTeam, UserProfile
+from .models import SupportedTeam, UserProfile
 
 
 class UserProfileInline(admin.StackedInline):
@@ -16,5 +16,4 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
-admin.site.register(TeamSupporter)
 admin.site.register(SupportedTeam)

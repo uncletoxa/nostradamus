@@ -34,48 +34,89 @@ def last_prediction(queryset: QuerySet) -> QuerySet:
             .distinct('match_id'))
 
 
+def _score_match(match, prediction, coef):
+    match_score_cr = get_score(match.home_score, match.guest_score, coef.score)
+    predicted_score_cr = get_score(prediction.home_score, prediction.guest_score, coef.score)
+
+    if match.is_playoff:
+        match_result = get_playoff_result(
+            match.home_score, match.guest_score, match.home_to_advance)
+        prediction_result = get_playoff_result(
+            prediction.home_score, prediction.guest_score, prediction.home_to_advance)
+    else:
+        match_result = get_result(match.home_score, match.guest_score)
+        prediction_result = get_result(prediction.home_score, prediction.guest_score)
+
+    result_bet = getattr(coef, match_result) if prediction_result == match_result else 0
+    score_bet = coef.score[match_score_cr] if predicted_score_cr == match_score_cr else 0
+    return prediction.score(), result_bet, score_bet
+
+
 def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
     """Get prediction results for given user for given matches."""
-    user_result_data = OrderedDict({})
+    match_ids = [
+        m.match_id for m in matches
+        if (m.home_score and m.guest_score) is not None]
+
+    predictions = {
+        p.match_id_id: p
+        for p in (Prediction.objects
+                  .filter(match_id__in=match_ids, user_id=user_id)
+                  .order_by('match_id_id', '-submit_time')
+                  .distinct('match_id_id'))}
+    coefficients = {
+        c.match_id_id: c
+        for c in Coefficient.objects.filter(match_id__in=match_ids)}
+
+    user_result_data = OrderedDict()
     for match in matches:
         if (match.home_score and match.guest_score) is None:
             continue
-        user_result_data.update({match.match_id: {}})
-        user_result_data[match.match_id].update(
-            {'match_name': match, 'match_score': match.result,
-             'result_bet': 0, 'score_bet': 0})
-        try:
-            prediction = (Prediction.objects
-                          .filter(match_id=match.match_id, user_id=user_id)
-                          .latest('submit_time'))
-            user_result_data[match.match_id].update({'match_prediction': prediction.score()})
-
-            coef = Coefficient.objects.get(match_id_id=match.match_id)
-            match_score_cr = get_score(match.home_score, match.guest_score, coef.score)
-            predicted_score_cr = get_score(
-                prediction.home_score, prediction.guest_score, coef.score)
-
-            if match.is_playoff:
-                match_result = get_playoff_result(
-                    match.home_score, match.guest_score, match.home_to_advance)
-                prediction_result = get_playoff_result(
-                    prediction.home_score, prediction.guest_score, prediction.home_to_advance)
-            else:
-                match_result = get_result(match.home_score, match.guest_score)
-                prediction_result = get_result(prediction.home_score, prediction.guest_score)
-
-            if prediction_result == match_result:
-                user_result_data[match.match_id].update(
-                    {'result_bet': getattr(coef, match_result)})
-
-            if predicted_score_cr == match_score_cr:
-                user_result_data[match.match_id].update(
-                    {'score_bet': coef.score[match_score_cr]})
-
-        except ObjectDoesNotExist:
-            user_result_data[match.match_id].update(
-                {'match_prediction': None, 'result_bet': None, 'score_bet': None})
+        entry = {
+            'match_name': match, 'match_score': match.result,
+            'result_bet': 0, 'score_bet': 0}
+        prediction = predictions.get(match.match_id)
+        coef = coefficients.get(match.match_id)
+        if prediction is None or coef is None:
+            entry.update({'match_prediction': None, 'result_bet': None, 'score_bet': None})
+        else:
+            match_pred, result_bet, score_bet = _score_match(match, prediction, coef)
+            entry.update({'match_prediction': match_pred, 'result_bet': result_bet, 'score_bet': score_bet})
+        user_result_data[match.match_id] = entry
     return user_result_data
+
+
+def get_all_users_results_for_match(match, users):
+    """Get prediction results for all users for a single match. 2-3 queries total."""
+    entry_base = {
+        'match_name': match, 'match_score': match.result,
+        'result_bet': 0, 'score_bet': 0}
+
+    if match.home_score is None or match.guest_score is None:
+        return {user: {match.match_id: dict(entry_base)} for user in users}
+
+    predictions = {
+        p.user_id_id: p
+        for p in (Prediction.objects
+                  .filter(match_id=match.match_id)
+                  .order_by('user_id_id', '-submit_time')
+                  .distinct('user_id_id'))}
+    try:
+        coef = Coefficient.objects.get(match_id_id=match.match_id)
+    except ObjectDoesNotExist:
+        coef = None
+
+    users_results = {}
+    for user in users:
+        entry = dict(entry_base)
+        prediction = predictions.get(user.id)
+        if prediction is None or coef is None:
+            entry.update({'match_prediction': None, 'result_bet': None, 'score_bet': None})
+        else:
+            match_pred, result_bet, score_bet = _score_match(match, prediction, coef)
+            entry.update({'match_prediction': match_pred, 'result_bet': result_bet, 'score_bet': score_bet})
+        users_results[user] = {match.match_id: entry}
+    return users_results
 
 
 def load_matches(path):
