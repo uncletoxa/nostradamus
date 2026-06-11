@@ -18,18 +18,18 @@
 
 <div class="card mb-4">
   <div class="card-body">
-    <div class="d-flex align-items-center">
+    <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start">
       {% if user_profile.photo %}
         <img src="{{ user_profile.photo.url }}" alt="{{ user_data.first_name }}"
-             class="rounded-circle mr-4 flex-shrink-0"
+             class="rounded-circle mb-3 mb-sm-0 mr-sm-4 flex-shrink-0"
              style="width: 140px; height: 140px; object-fit: cover;">
       {% else %}
-        <div class="rounded-circle mr-4 flex-shrink-0 bg-secondary d-flex align-items-center justify-content-center"
+        <div class="rounded-circle mb-3 mb-sm-0 mr-sm-4 flex-shrink-0 bg-secondary d-flex align-items-center justify-content-center"
              style="width: 140px; height: 140px;">
           <span class="text-white font-weight-bold" style="font-size: 3rem;">{{ user_data.first_name|slice:":1" }}</span>
         </div>
       {% endif %}
-      <div class="flex-fill">
+      <div class="flex-fill text-center text-sm-left">
         <h4 class="mb-1">{{ user_data.first_name }} {{ user_data.last_name }}</h4>
         {% if user_profile.description %}
           <p class="text-muted mb-1">{{ user_profile.description|linebreaksbr }}</p>
