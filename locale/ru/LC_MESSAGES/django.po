@@ -25,8 +25,8 @@ msgstr "Победитель"
 msgid "Matches"
 msgstr "Матчи"
 
-msgid "Participants"
-msgstr "Участники"
+msgid "Former Participants"
+msgstr "Недоучастники"
 
 msgid "Admin"
 msgstr "Администратор"
@@ -138,9 +138,6 @@ msgid "Save teams"
 msgstr "Сохранить команды"
 
 # participants.html
-msgid "Previous Participants"
-msgstr "Прошлые участники"
-
 msgid "Profiles of participants from previous tournaments."
 msgstr "Профили участников прошлых турниров."
 
