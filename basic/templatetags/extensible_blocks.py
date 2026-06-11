@@ -78,6 +78,11 @@ def live_matches():
     return {'live_matches': matches}
 
 
+@register.simple_tag
+def get_live_matches():
+    return Match.objects.filter(status__in=['IN_PLAY', 'PAUSED'])
+
+
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
