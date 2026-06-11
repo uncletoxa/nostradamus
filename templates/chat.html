@@ -15,7 +15,7 @@
     <div id="chat-messages"
          style="height: 520px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.25rem; padding: 1rem; background: #fff;"
          class="mb-3">
-      {% for msg in messages %}
+      {% for msg in chat_messages %}
       <div class="media mb-3">
         <div class="mr-2" style="flex-shrink:0;">
           {% if msg.user.profile.photo %}

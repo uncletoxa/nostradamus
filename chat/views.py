@@ -13,9 +13,9 @@ def chat(request):
         if text:
             ChatMessage.objects.create(user=request.user, text=text)
         return redirect('chat')
-    messages = list(ChatMessage.objects.select_related('user', 'user__profile').order_by('created_at')[:200])
-    last_ts = messages[-1].created_at.isoformat() if messages else timezone.now().isoformat()
-    return render(request, 'chat.html', {'messages': messages, 'last_ts': last_ts})
+    chat_messages = list(ChatMessage.objects.select_related('user', 'user__profile').order_by('created_at')[:200])
+    last_ts = chat_messages[-1].created_at.isoformat() if chat_messages else timezone.now().isoformat()
+    return render(request, 'chat.html', {'chat_messages': chat_messages, 'last_ts': last_ts})
 
 
 @login_required
