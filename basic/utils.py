@@ -30,7 +30,7 @@ def get_score(home_team, guest_team, avail_scores):
 
 def last_prediction(queryset: QuerySet) -> QuerySet:
     return (queryset
-            .order_by('match_id', '-match_id__prediction__submit_time')
+            .order_by('match_id', '-submit_time')
             .distinct('match_id'))
 
 
