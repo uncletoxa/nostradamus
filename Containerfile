@@ -14,7 +14,8 @@ COPY . .
 ENV HOME=/app
 
 COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY docker/updater_entrypoint.sh /updater_entrypoint.sh
+RUN chmod +x /entrypoint.sh /updater_entrypoint.sh
 
 EXPOSE 8000
 

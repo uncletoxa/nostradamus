@@ -9,6 +9,16 @@ services:
     networks:
       - nostr_shared
 
+  updater:
+    build:
+      context: .
+      dockerfile: Containerfile
+    env_file: .env
+    entrypoint: ["/updater_entrypoint.sh"]
+    networks:
+      - nostr_shared
+    restart: unless-stopped
+
 networks:
   nostr_shared:
     external: true
