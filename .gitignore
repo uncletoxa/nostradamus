@@ -5,3 +5,8 @@ __pycache__/
 .idea
 venv/
 sftp-config.json
+.serena/
+.playwright-mcp/
+tmp/
+listing*.yml
+/*.png
