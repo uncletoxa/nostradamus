@@ -68,6 +68,8 @@ def new_prediction(request, match_id):
                 else:
                     score_coefs['away'][score] = odd
     if request.method == 'POST':
+        if not coef:
+            return redirect('predictions:details', match_id)
         frm = NewPredictionForm(
             request.POST, initial={'home_score': 0, 'guest_score': 0})
         home_score = request.POST['home_score']

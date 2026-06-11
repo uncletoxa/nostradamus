@@ -15,7 +15,7 @@
 
       <!-- Left: prediction form -->
       <div class="col-md-4">
-        {% if match.status == "SCHEDULED" %}
+        {% if match.status == "SCHEDULED" and coef %}
           <form class="form-horizontal" method="post">
             {% csrf_token %}
             {{ form.home_score|as_crispy_field }}
