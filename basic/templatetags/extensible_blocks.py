@@ -28,8 +28,8 @@ def champ_supporters():
     return {'team_champ_supporters': team_champ_supporters, 'submissions_closed': submissions_closed}
 
 
-@register.inclusion_tag('includes/cup_standings.html')
-def cup_standings(long_standings=False, live_standings=False):
+@register.inclusion_tag('includes/cup_standings.html', takes_context=True)
+def cup_standings(context, long_standings=False, live_standings=False):
     def zero_if_none(val):
         return val if val is not None else 0
 
@@ -60,8 +60,11 @@ def cup_standings(long_standings=False, live_standings=False):
             'score_bet': score_bet,
             'winner_points': winner_points}})
 
+    request = context.get('request')
+    current_user = request.user if request else None
     return {'results': dict(sorted(standings.items(), key=lambda x: x[1]['total_points'], reverse=True)),
-            'long_standings': long_standings}
+            'long_standings': long_standings,
+            'current_user': current_user}
 
 
 @register.inclusion_tag('includes/next_matches.html')

@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
 
 {% load extensible_blocks %}
+{% load i18n %}
 
 {% block title %}
-    Results: Champions — {{ block.super }}
+    {% trans "Results" %}: {% trans "Champions" %} — {{ block.super }}
 {% endblock %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-  <li class="breadcrumb-item"><a href="{% url 'results:results_index' %}">Results</a></li>
-  <li class="breadcrumb-item">Champions</li>
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'results:results_index' %}">{% trans "Results" %}</a></li>
+  <li class="breadcrumb-item">{% trans "Champions" %}</li>
 {% endblock %}
 
 {% block content %}

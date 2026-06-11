@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Participants{% endblock %}
+{% block title %}{% trans "Participants" %}{% endblock %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item active" aria-current="page">Participants</li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans "Participants" %}</li>
 {% endblock %}
 
 {% block content %}
-  <h3>Previous Participants</h3>
-  <p class="text-muted">Profiles of participants from previous tournaments.</p>
+  <h3>{% trans "Previous Participants" %}</h3>
+  <p class="text-muted">{% trans "Profiles of participants from previous tournaments." %}</p>
   {% if profiles %}
     <div class="row">
       {% for profile in profiles %}
@@ -28,6 +29,6 @@
       {% endfor %}
     </div>
   {% else %}
-    <p class="text-muted">No previous participants yet.</p>
+    <p class="text-muted">{% trans "No previous participants yet." %}</p>
   {% endif %}
 {% endblock %}

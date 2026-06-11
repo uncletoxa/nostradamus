@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}News{% endblock %}
+{% block title %}{% trans "News" %}{% endblock %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item active" aria-current="page">News</li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans "News" %}</li>
 {% endblock %}
 
 {% block content %}
-  <h3>News</h3>
+  <h3>{% trans "News" %}</h3>
   {% if posts %}
     {% for post in posts %}
       <div class="card mb-4">
@@ -20,11 +21,11 @@
           </h5>
           <p class="card-text text-muted"><small>{{ post.created_at|date:"j F Y" }}</small></p>
           <p class="card-text">{{ post.body|truncatewords:40 }}</p>
-          <a href="{% url 'news_detail' post.pk %}" class="btn btn-sm btn-outline-primary">Read more</a>
+          <a href="{% url 'news_detail' post.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Read more" %}</a>
         </div>
       </div>
     {% endfor %}
   {% else %}
-    <p class="text-muted">No news yet.</p>
+    <p class="text-muted">{% trans "No news yet." %}</p>
   {% endif %}
 {% endblock %}

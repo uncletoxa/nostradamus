@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}My account{% endblock %}
+{% block title %}{% trans "My account" %}{% endblock %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item active" aria-current="page">My account</li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans "My account" %}</li>
 {% endblock %}
 
 {% block content %}
@@ -12,21 +13,21 @@
       <form method="post" novalidate>
         {% csrf_token %}
         {% include 'includes/form.html' %}
-        <button type="submit" name="update_account" class="btn btn-success">Save changes</button>
+        <button type="submit" name="update_account" class="btn btn-success">{% trans "Save changes" %}</button>
       </form>
     </div>
   </div>
 
   <div class="row">
     <div class="col-lg-6 col-md-8 col-sm-10">
-      <h4>Teams you support</h4>
-      <p class="text-muted">Pick up to three teams you're cheering for — this is just for fun and isn't tied to any predictions or odds.</p>
+      <h4>{% trans "Teams you support" %}</h4>
+      <p class="text-muted">{% trans "Pick up to three teams you're cheering for — this is just for fun and isn't tied to any predictions or odds." %}</p>
       <form method="post" novalidate>
         {% csrf_token %}
         {% with form=supported_teams_form %}
           {% include 'includes/form.html' %}
         {% endwith %}
-        <button type="submit" name="update_supported_teams" class="btn btn-success">Save teams</button>
+        <button type="submit" name="update_supported_teams" class="btn btn-success">{% trans "Save teams" %}</button>
       </form>
     </div>
   </div>

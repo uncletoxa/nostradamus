@@ -207,7 +207,7 @@ podman compose --project-name nostr-2026 \
     -f /srv/nostradamus/2026/compose.yaml up -d
 ```
 
-On startup the web container runs `collectstatic` then launches gunicorn. Check logs:
+On startup the web container compiles translation catalogs, runs `collectstatic`, then launches gunicorn. Check logs:
 
 ```bash
 podman compose --project-name nostr-2026 \
@@ -217,6 +217,7 @@ podman compose --project-name nostr-2026 \
 Expected output:
 
 ```
+processing file django.po in /app/locale/ru/LC_MESSAGES
 N static files copied to '/app/staticfiles'.
 [INFO] Starting gunicorn 22.0.0
 [INFO] Listening at: http://0.0.0.0:8000
@@ -359,6 +360,26 @@ podman compose --project-name nostr-2026 \
 
 ---
 
+## Routine deploy
+
+To push a code update to the live site:
+
+```bash
+cd /srv/nostradamus/2026
+git pull
+podman compose --project-name nostr-2026 -f compose.yaml up -d --build
+```
+
+The container entrypoint runs `compilemessages` and `collectstatic` automatically on every start, so no extra steps are needed after a build. Check logs to confirm a clean startup:
+
+```bash
+podman compose --project-name nostr-2026 -f compose.yaml logs --tail=20 web
+```
+
+> **Translations note:** `.mo` compiled translation files are not tracked in git. They are compiled from the `.po` source files inside the container at startup. If you add or edit translations locally, commit only the `.po` file — the `.mo` is regenerated automatically on the next deploy.
+
+---
+
 ## Database operations
 
 ### Create a snapshot
@@ -387,7 +408,7 @@ zcat db_nostr_2026_backup.sql.gz \
 
 | Symptom | Check |
 |---------|-------|
-| Blank page, no CSS | `podman compose --project-name nostr-2026 -f /srv/nostradamus/2026/compose.yaml logs web` — confirm `collectstatic` ran |
+| Blank page, no CSS | `podman compose --project-name nostr-2026 -f /srv/nostradamus/2026/compose.yaml logs web` — confirm `compilemessages` and `collectstatic` ran |
 | 502 Bad Gateway | Gunicorn not running — check logs; confirm port in Caddyfile matches `compose.yaml` |
 | Database connection refused | Shared postgres not running — `podman ps` and `systemctl --user status nostr-postgres` |
 | TLS certificate not issued | DNS A record must exist before Caddy first starts; check `sudo journalctl -u caddy` |

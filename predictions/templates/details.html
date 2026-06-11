@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
 {% load humanize crispy_forms_tags %}
+{% load i18n %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
-  <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">Predictions</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a>
+  <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">{% trans "Predictions" %}</a></li>
   <li class="breadcrumb-item active" aria-current="page"> <a href="{% url 'predictions:details' match.match_id %}"> {{ match }} </a></li>
 {% endblock %}
 
@@ -22,20 +23,20 @@
             {% if match.is_playoff %}
               {{ form.penalty_winner|as_crispy_field }}
             {% endif %}
-            <button type="submit" class="btn btn-success">Predict</button>
+            <button type="submit" class="btn btn-success">{% trans "Predict" %}</button>
           </form>
         {% else %}
           <div class="card">
-            <div class="card-body">No more predictions available</div>
+            <div class="card-body">{% trans "No more predictions available" %}</div>
           </div>
         {% endif %}
 
         <div class="mt-3">
           <div class="alert alert-info" role="alert">
             {% if curr_prediction %}
-              Current prediction: <strong>{{ curr_prediction }}</strong>
+              {% trans "Current prediction:" %} <strong>{{ curr_prediction }}</strong>
             {% else %}
-              No predictions given
+              {% trans "No predictions given" %}
             {% endif %}
           </div>
         </div>
@@ -44,7 +45,7 @@
       <!-- Right: odds -->
       {% if coef %}
       <div class="col-md-8">
-        <h6 class="text-muted mb-2">Match odds</h6>
+        <h6 class="text-muted mb-2">{% trans "Match odds" %}</h6>
         <table class="table table-sm table-bordered text-center mb-4" style="max-width: 300px;">
           <thead class="thead-dark">
             <tr>
@@ -62,10 +63,10 @@
           </tbody>
         </table>
 
-        <h6 class="text-muted mb-2">Correct score odds</h6>
+        <h6 class="text-muted mb-2">{% trans "Correct score odds" %}</h6>
         <div class="row text-center">
           <div class="col">
-            <div class="fw-bold mb-1">Home win</div>
+            <div class="fw-bold mb-1">{% trans "Home win" %}</div>
             <table class="table table-sm table-bordered">
               {% for score, odd in score_coefs.home.items %}
               <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
@@ -73,7 +74,7 @@
             </table>
           </div>
           <div class="col">
-            <div class="fw-bold mb-1">Draw</div>
+            <div class="fw-bold mb-1">{% trans "Draw" %}</div>
             <table class="table table-sm table-bordered">
               {% for score, odd in score_coefs.draw.items %}
               <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
@@ -81,7 +82,7 @@
             </table>
           </div>
           <div class="col">
-            <div class="fw-bold mb-1">Away win</div>
+            <div class="fw-bold mb-1">{% trans "Away win" %}</div>
             <table class="table table-sm table-bordered">
               {% for score, odd in score_coefs.away.items %}
               <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
@@ -90,7 +91,7 @@
           </div>
         </div>
         {% if score_coefs.other %}
-        <div class="text-muted small">Any other score: {{ score_coefs.other }}</div>
+        <div class="text-muted small">{% trans "Any other score:" %} {{ score_coefs.other }}</div>
         {% endif %}
       </div>
       {% endif %}

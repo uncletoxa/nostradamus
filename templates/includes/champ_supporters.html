@@ -1,8 +1,9 @@
+{% load i18n %}
 <table class="table table-hover">
   <thead class="thead-dark">
     <tr>
-      <th>User</th>
-      <th>Supported Team</th>
+      <th>{% trans "User" %}</th>
+      <th>{% trans "Supported Team" %}</th>
     </tr>
   </thead>
   <tbody>
@@ -12,7 +13,7 @@
         {% if submissions_closed %}
           <td>{{ supporter.team_id }}</td>
         {% else %}
-          <td class="text-muted">Hidden until deadline</td>
+          <td class="text-muted">{% trans "Hidden until deadline" %}</td>
         {% endif %}
       </tr>
     {% endfor %}

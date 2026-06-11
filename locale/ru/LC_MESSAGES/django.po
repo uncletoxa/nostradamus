@@ -1,0 +1,326 @@
+# Russian translations for Nostradamus Cup.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+# Navigation
+msgid "History"
+msgstr "История"
+
+msgid "News"
+msgstr "Новости"
+
+msgid "Chat"
+msgstr "Чат"
+
+msgid "Results"
+msgstr "Результаты"
+
+msgid "Winner"
+msgstr "Победитель"
+
+msgid "Matches"
+msgstr "Матчи"
+
+msgid "Participants"
+msgstr "Участники"
+
+msgid "Admin"
+msgstr "Администратор"
+
+msgid "Change password"
+msgstr "Изменить пароль"
+
+msgid "My account"
+msgstr "Мой аккаунт"
+
+msgid "Log out"
+msgstr "Выйти"
+
+msgid "Log in"
+msgstr "Войти"
+
+msgid "Sign up"
+msgstr "Зарегистрироваться"
+
+# Warning banner
+msgid "&#9888; You haven't made your <a href=\"%(url)s\">tournament winner prediction</a> yet."
+msgstr "&#9888; Вы ещё не сделали <a href=\"%(url)s\">прогноз на победителя турнира</a>."
+
+# Common breadcrumbs / buttons
+msgid "Home"
+msgstr "Главная"
+
+msgid "Read more"
+msgstr "Читать далее"
+
+msgid "Make prediction"
+msgstr "Сделать прогноз"
+
+msgid "No predictions given"
+msgstr "Прогноз не дан"
+
+msgid "No prediction given"
+msgstr "Прогноз не дан"
+
+msgid "Current prediction:"
+msgstr "Текущий прогноз:"
+
+msgid "Predict"
+msgstr "Сохранить"
+
+# Table headers
+msgid "Match"
+msgstr "Матч"
+
+msgid "Result"
+msgstr "Результат"
+
+msgid "Prediction"
+msgstr "Прогноз"
+
+msgid "Result Bet"
+msgstr "За исход"
+
+msgid "Score Bet"
+msgstr "За счёт"
+
+msgid "Total Points"
+msgstr "Итого очков"
+
+msgid "User"
+msgstr "Участник"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "you"
+msgstr "вы"
+
+# home.html
+msgid "Cup Standings"
+msgstr "Турнирная таблица"
+
+msgid "Next Matches"
+msgstr "Ближайшие матчи"
+
+# login.html
+msgid "Log in to Nostradamus Cup"
+msgstr "Войти в Nostradamus Cup"
+
+msgid "New to Nostradamus Cup?"
+msgstr "Впервые в Nostradamus Cup?"
+
+# signup.html
+msgid "Sign up to Nostradamus Cup"
+msgstr "Регистрация в Nostradamus Cup"
+
+msgid "Create an account"
+msgstr "Создать аккаунт"
+
+msgid "Already have an account?"
+msgstr "Уже есть аккаунт?"
+
+# my_account.html
+msgid "Save changes"
+msgstr "Сохранить"
+
+msgid "Teams you support"
+msgstr "Команды, за которые болеете"
+
+msgid "Pick up to three teams you're cheering for — this is just for fun and isn't tied to any predictions or odds."
+msgstr "Выберите до трёх команд, за которые болеете — это чисто для развлечения и не связано с прогнозами."
+
+msgid "Save teams"
+msgstr "Сохранить команды"
+
+# participants.html
+msgid "Previous Participants"
+msgstr "Прошлые участники"
+
+msgid "Profiles of participants from previous tournaments."
+msgstr "Профили участников прошлых турниров."
+
+msgid "No previous participants yet."
+msgstr "Пока нет участников."
+
+# news
+msgid "No news yet."
+msgstr "Новостей пока нет."
+
+# chat.html
+msgid "No messages yet. Be the first to write!"
+msgstr "Пока нет сообщений. Будь первым!"
+
+msgid "Write a message…"
+msgstr "Написать сообщение…"
+
+msgid "Send"
+msgstr "Отправить"
+
+# password_change_done.html
+msgid "Change password successful"
+msgstr "Пароль успешно изменён"
+
+msgid "Success"
+msgstr "Успешно"
+
+msgid "Success!"
+msgstr "Успешно!"
+
+msgid "Your password has been changed!"
+msgstr "Ваш пароль изменён."
+
+msgid "Return to home page"
+msgstr "На главную"
+
+
+# results
+msgid "standings"
+msgstr "таблица"
+
+msgid "Champions"
+msgstr "Чемпионы"
+
+msgid "Table"
+msgstr "Таблица"
+
+# single_match.html
+msgid "No prediction table available."
+msgstr "Таблица прогнозов недоступна."
+
+# predictions/winner.html
+msgid "Prediction: Cup Winner"
+msgstr "Прогноз: победитель кубка"
+
+msgid "Cup Winner"
+msgstr "Победитель кубка"
+
+msgid "Cup winner prediction is not available now"
+msgstr "Прогноз на победителя кубка недоступен"
+
+msgid "Winner odds"
+msgstr "Коэффициенты на победителя"
+
+msgid "Team"
+msgstr "Команда"
+
+msgid "Odds"
+msgstr "Коэффициент"
+
+# predictions/details.html
+msgid "Predictions"
+msgstr "Прогнозы"
+
+msgid "No more predictions available"
+msgstr "Прогнозы больше не принимаются"
+
+msgid "Match odds"
+msgstr "Коэффициенты на матч"
+
+msgid "Correct score odds"
+msgstr "Коэффициенты на точный счёт"
+
+msgid "Home win"
+msgstr "Победа хозяев"
+
+msgid "Draw"
+msgstr "Ничья"
+
+msgid "Away win"
+msgstr "Победа гостей"
+
+msgid "Any other score:"
+msgstr "Любой другой счёт:"
+
+# predictions/index.html
+msgid "Your Prediction"
+msgstr "Ваш прогноз"
+
+msgid "Show Past Matches"
+msgstr "Показать прошлые матчи"
+
+msgid "Last Prediction"
+msgstr "Последний прогноз"
+
+# includes/cup_standings.html
+msgid "Winner Points"
+msgstr "За победителя"
+
+# includes/champ_standings.html + champ_supporters.html
+msgid "Champion"
+msgstr "Чемпион"
+
+msgid "Hidden until deadline"
+msgstr "Скрыто до дедлайна"
+
+msgid "Supported Team"
+msgstr "Болеет за"
+
+# includes/live_matches.html
+msgid "Live Results"
+msgstr "Результаты Live"
+
+msgid "start time:"
+msgstr "начало:"
+
+# includes/next_matches.html
+msgid "Start Time"
+msgstr "Время начала"
+
+# includes/pagination.html
+msgid "First"
+msgstr "Первая"
+
+msgid "Previous"
+msgstr "Предыдущая"
+
+msgid "current"
+msgstr "текущая"
+
+msgid "Next"
+msgstr "Следующая"
+
+msgid "Last"
+msgstr "Последняя"
+
+# Python forms (predictions/forms.py)
+msgid "No Penalty"
+msgstr "Без пенальти"
+
+msgid "Home Wins"
+msgstr "Победа хозяев"
+
+msgid "Guest Wins"
+msgstr "Победа гостей"
+
+msgid "Your Champion"
+msgstr "Ваш чемпион"
+
+# Python forms (accounts/forms.py)
+msgid "Favourite team"
+msgstr "Любимая команда"
+
+msgid "2nd favourite team"
+msgstr "2-я любимая команда"
+
+msgid "3rd favourite team"
+msgstr "3-я любимая команда"
+
+msgid "Please select three different teams."
+msgstr "Пожалуйста, выберите три разные команды."
+
+msgid "1st team you support"
+msgstr "1-я команда, за которую болеете"
+
+msgid "2nd team you support"
+msgstr "2-я команда, за которую болеете"
+
+msgid "3rd team you support"
+msgstr "3-я команда, за которую болеете"
+
+msgid "Please select different teams."
+msgstr "Пожалуйста, выберите разные команды."

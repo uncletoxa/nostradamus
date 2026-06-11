@@ -2,6 +2,7 @@
 
 {% load extensible_blocks %}
 {% load mathfilters %}
+{% load i18n %}
 
 {% block title %}
     {{ match }} - {{ block.super }}
@@ -9,8 +10,8 @@
 
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-  <li class="breadcrumb-item"><a href="{% url 'matches:matches_index' %}">Matches</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'matches:matches_index' %}">{% trans "Matches" %}</a></li>
   <li class="breadcrumb-item active" aria-current="page">{{ match }}</li>
 {% endblock %}
 {% block content %}
@@ -41,11 +42,11 @@
     <table class="table">
       <thead class="thead-dark">
         <tr>
-          <th>User</th>
-          <th>Prediction</th>
-          <th>Result Bet</th>
-          <th>Score Bet</th>
-          <th>Total Points</th>
+          <th>{% trans "User" %}</th>
+          <th>{% trans "Prediction" %}</th>
+          <th>{% trans "Result Bet" %}</th>
+          <th>{% trans "Score Bet" %}</th>
+          <th>{% trans "Total Points" %}</th>
         </tr>
       </thead>
       <tbody>
@@ -59,9 +60,9 @@
                 <td>{{ match.score_bet }}</td>
                 <td>{{ match.result_bet|addition:match.score_bet }}</td>
               {% else %}
-                <td>No prediction given</td>
-                <td>No prediction given</td>
-                <td>No prediction given</td>
+                <td>{% trans "No prediction given" %}</td>
+                <td>{% trans "No prediction given" %}</td>
+                <td>{% trans "No prediction given" %}</td>
               {% endif %}
             </tr>
           {% endfor %}
@@ -69,6 +70,6 @@
       </tbody>
     </table>
   {% else %}
-    <h3>No prediction table available.</h3>
+    <h3>{% trans "No prediction table available." %}</h3>
   {% endif %}
 {% endblock %}

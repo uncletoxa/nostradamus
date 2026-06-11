@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% load extensible_blocks static %}
+{% load extensible_blocks static i18n %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item active" aria-current="page">Home</li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans "Home" %}</li>
 {% endblock %}
 
 {% block content %}
@@ -24,14 +24,14 @@
         </h5>
         <p class="card-text text-muted"><small>{{ latest_news.created_at|date:"j F Y" }}</small></p>
         <p class="card-text">{{ latest_news.body|truncatewords:30 }}</p>
-        <a href="{% url 'news_detail' latest_news.pk %}" class="btn btn-sm btn-outline-primary">Read more</a>
+        <a href="{% url 'news_detail' latest_news.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Read more" %}</a>
       </div>
     </div>
   {% endif %}
   <div class="row">
     <div class="col-5">
       <h3>
-        <small class="text-muted"><a href={% url 'results:results_index' %}>Сup Standings</a> <span class="text-danger">Live</span></small>
+        <small class="text-muted"><a href={% url 'results:results_index' %}>{% trans "Cup Standings" %}</a> <span class="text-danger">Live</span></small>
       </h3>
         {% cup_standings False True %}
     </div>
@@ -44,7 +44,7 @@
       <div class="row">
         <div class="col">
           <h3>
-            <small class="text-muted"><a href={% url 'matches:matches_index' %}>Next Matches</a></small>
+            <small class="text-muted"><a href={% url 'matches:matches_index' %}>{% trans "Next Matches" %}</a></small>
           </h3>
             {% next_matches user %}
         </div>

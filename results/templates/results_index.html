@@ -2,19 +2,20 @@
 
 {% load mathfilters %}
 {% load extensible_blocks %}
+{% load i18n %}
 
 {% block title %}
-    Results — {{ block.super }}
+    {% trans "Results" %} — {{ block.super }}
 {% endblock %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-  <li class="breadcrumb-item active" aria-current="page">Results</li>
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans "Results" %}</li>
 {% endblock %}
 
 {% block content %}
   <h3>
-    <small class="text-muted"><a href="{% url 'results:points_table' %}">standings</a></small>
+    <small class="text-muted"><a href="{% url 'results:points_table' %}">{% trans "standings" %}</a></small>
   </h3>
   {% cup_standings True False %}
 {% endblock %}

@@ -2,15 +2,16 @@
 
 {% load extensible_blocks %}
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block title %}
-  Prediction: Cup Winner
+  {% trans "Prediction: Cup Winner" %}
 {% endblock %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-  <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">Predictions</a></li>
-  <li class="breadcrumb-item active" aria-current="page">Cup Winner</li>
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">{% trans "Predictions" %}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans "Cup Winner" %}</li>
 {% endblock %}
 
 {% block content %}
@@ -20,22 +21,22 @@
       <div class="col-md-3">
         {% if submissions_closed %}
           <div class="card">
-            <div class="card-body">Cup winner prediction is not available now</div>
+            <div class="card-body">{% trans "Cup winner prediction is not available now" %}</div>
           </div>
         {% else %}
           <form class="form-horizontal" method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <button type="submit" class="btn btn-success">Predict</button>
+            <button type="submit" class="btn btn-success">{% trans "Predict" %}</button>
           </form>
         {% endif %}
 
         <div class="mt-3">
           <div class="alert alert-info" role="alert">
             {% if curr_prediction %}
-              Current prediction: <strong>{{ curr_prediction.prediction_id.team_id }}</strong>
+              {% trans "Current prediction:" %} <strong>{{ curr_prediction.prediction_id.team_id }}</strong>
             {% else %}
-              No predictions given
+              {% trans "No predictions given" %}
             {% endif %}
           </div>
         </div>
@@ -44,12 +45,12 @@
       <!-- Right: odds table -->
       {% if winner_coef %}
       <div class="col-md-3">
-        <h6 class="text-muted mb-2">Winner odds</h6>
+        <h6 class="text-muted mb-2">{% trans "Winner odds" %}</h6>
         <table class="table table-sm table-bordered">
           <thead class="thead-dark">
             <tr>
-              <th>Team</th>
-              <th>Odds</th>
+              <th>{% trans "Team" %}</th>
+              <th>{% trans "Odds" %}</th>
             </tr>
           </thead>
           <tbody>

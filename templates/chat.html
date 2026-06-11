@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static i18n %}
 
 {% block title %}Chat{% endblock %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item active" aria-current="page">Chat</li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans "Chat" %}</li>
 {% endblock %}
 
 {% block content %}
 <div class="row">
   <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
-    <h3 class="mb-3">Chat</h3>
+    <h3 class="mb-3">{% trans "Chat" %}</h3>
 
     <div id="chat-messages"
          style="height: 520px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.25rem; padding: 1rem; background: #fff;"
@@ -41,7 +41,7 @@
         </div>
       </div>
       {% empty %}
-      <p class="text-muted text-center mt-4" id="no-messages">No messages yet. Be the first to write!</p>
+      <p class="text-muted text-center mt-4" id="no-messages">{% trans "No messages yet. Be the first to write!" %}</p>
       {% endfor %}
     </div>
 
@@ -50,11 +50,11 @@
       <div class="input-group">
         <input type="text" name="text" id="chat-input"
                class="form-control"
-               placeholder="Write a message…"
+               placeholder="{% trans "Write a message…" %}"
                maxlength="1000"
                required>
         <div class="input-group-append">
-          <button type="submit" class="btn btn-primary">Send</button>
+          <button type="submit" class="btn btn-primary">{% trans "Send" %}</button>
         </div>
       </div>
     </form>

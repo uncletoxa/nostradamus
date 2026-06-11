@@ -1,8 +1,9 @@
+{% load i18n %}
 <table class="table table-hover">
   <thead class="thead-dark">
     <tr>
-      <th>User</th>
-      <th>Champion</th>
+      <th>{% trans "User" %}</th>
+      <th>{% trans "Champion" %}</th>
     </tr>
   </thead>
   <tbody>
@@ -18,7 +19,7 @@
             <td>{{ prediction.prediction_id.team_id }}</td>
           {% endif %}
         {% else %}
-          <td class="text-muted">Hidden until deadline</td>
+          <td class="text-muted">{% trans "Hidden until deadline" %}</td>
         {% endif %}
       </tr>
     {% endfor %}
