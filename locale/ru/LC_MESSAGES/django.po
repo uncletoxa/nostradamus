@@ -26,7 +26,7 @@ msgid "Matches"
 msgstr "Матчи"
 
 msgid "Former Participants"
-msgstr "Недоучастники"
+msgstr "Незаявленные эксперты"
 
 msgid "Admin"
 msgstr "Администратор"
@@ -139,7 +139,7 @@ msgstr "Сохранить команды"
 
 # participants.html
 msgid "Profiles of participants from previous tournaments."
-msgstr "Профили участников прошлых турниров."
+msgstr "Любители футбола, которые находились в расширенном пуле и рассматривались как потенциальные участники"
 
 msgid "No previous participants yet."
 msgstr "Пока нет участников."
