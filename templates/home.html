@@ -29,13 +29,13 @@
     </div>
   {% endif %}
   <div class="row">
-    <div class="col-5">
+    <div class="col-12 col-md-5">
       <h3>
         <small class="text-muted"><a href={% url 'results:results_index' %}>{% trans "Cup Standings" %}</a> <span class="text-danger">Live</span></small>
       </h3>
         {% cup_standings False True %}
     </div>
-    <div class="col-7">
+    <div class="col-12 col-md-7">
       <div class="row">
         <div class="col">
           {% live_matches %}
