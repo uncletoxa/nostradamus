@@ -54,7 +54,7 @@
           {% for _, match in user_result.items %}
             <tr>
               <td> <a href="{% url 'results:user_results' user.id %}"> {{ user.first_name }} </a></td>
-              {% if match %}
+              {% if match.match_prediction != None %}
                 <td>{{ match.match_prediction }}</td>
                 <td>{{ match.result_bet }}</td>
                 <td>{{ match.score_bet }}</td>
@@ -63,6 +63,7 @@
                 <td>{% trans "No prediction given" %}</td>
                 <td>{% trans "No prediction given" %}</td>
                 <td>{% trans "No prediction given" %}</td>
+                <td>—</td>
               {% endif %}
             </tr>
           {% endfor %}

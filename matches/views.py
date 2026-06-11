@@ -15,7 +15,7 @@ class MatchListView(ListView):
 
 def single_match(request, match_id):
     match = get_object_or_404(Match, match_id=match_id)
-    users = User.objects.filter(is_superuser=False)
+    users = User.objects.filter(is_superuser=False, is_active=True)
     users_results = get_all_users_results_for_match(match, users)
     return render(request, 'single_match.html',
                   {'match': match,
