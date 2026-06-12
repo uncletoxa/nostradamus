@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import localtime, now
 
-from basic.utils import last_prediction
 from predictions.models import Prediction, Coefficient, WinnerPrediction, WinnerPredictionCoef
 from matches.models import Match, Team
 from predictions.forms import NewPredictionForm, WinnerPredictionForm
@@ -14,13 +13,15 @@ COMPETITION_START_DATE_UTC = datetime(2026, 6, 11, 19, 0, 0, tzinfo=timezone.utc
 
 def available_coefficients(request):
     user_preds = {}
-    avail_coefs = last_prediction(
-        Coefficient.objects
-        .filter(coef_ready=True, match_id__status='SCHEDULED'))
-    not_avail_coefs = last_prediction(
-        Coefficient.objects
+    avail_coefs = (Coefficient.objects
+        .filter(coef_ready=True, match_id__status='SCHEDULED')
+        .order_by('match_id', '-update_time')
+        .distinct('match_id'))
+    not_avail_coefs = (Coefficient.objects
         .filter(coef_ready=True)
-        .exclude(match_id__status='SCHEDULED'))
+        .exclude(match_id__status='SCHEDULED')
+        .order_by('match_id', '-update_time')
+        .distinct('match_id'))
 
     preds_q = Prediction.objects.filter(user_id=request.user.id).order_by('match_id_id', '-submit_time').distinct('match_id_id')
     for i in preds_q:
