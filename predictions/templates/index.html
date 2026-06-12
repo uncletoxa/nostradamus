@@ -4,7 +4,7 @@
 {% load i18n %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a>
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
   <li class="breadcrumb-item active" aria-current="page">{% trans "Predictions" %}</li>
 {% endblock %}
 
@@ -50,7 +50,7 @@
   </a>
         <div class="collapse" id="pastMatches">
         <table class="table table-borderless">
-          <thead class="table-light">
+          <thead class="thead-light">
       <tr>
         <th>{% trans "Match" %}</th>
         <th>{% trans "Result" %}</th>

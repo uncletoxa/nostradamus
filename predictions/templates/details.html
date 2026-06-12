@@ -4,14 +4,13 @@
 {% load i18n %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a>
+  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
   <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">{% trans "Predictions" %}</a></li>
   <li class="breadcrumb-item active" aria-current="page"> <a href="{% url 'predictions:details' match.match_id %}"> {{ match }} </a></li>
 {% endblock %}
 
 {% block content %}
-  <div class="container">
-    <div class="row">
+  <div class="row">
 
       <!-- Left: prediction form -->
       <div class="col-md-4">
@@ -66,7 +65,7 @@
         <h6 class="text-muted mb-2">{% trans "Correct score odds" %}</h6>
         <div class="row text-center">
           <div class="col">
-            <div class="fw-bold mb-1">{% trans "Home win" %}</div>
+            <div class="font-weight-bold mb-1">{% trans "Home win" %}</div>
             <table class="table table-sm table-bordered">
               {% for score, odd in score_coefs.home.items %}
               <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
@@ -74,7 +73,7 @@
             </table>
           </div>
           <div class="col">
-            <div class="fw-bold mb-1">{% trans "Draw" %}</div>
+            <div class="font-weight-bold mb-1">{% trans "Draw" %}</div>
             <table class="table table-sm table-bordered">
               {% for score, odd in score_coefs.draw.items %}
               <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
@@ -82,7 +81,7 @@
             </table>
           </div>
           <div class="col">
-            <div class="fw-bold mb-1">{% trans "Away win" %}</div>
+            <div class="font-weight-bold mb-1">{% trans "Away win" %}</div>
             <table class="table table-sm table-bordered">
               {% for score, odd in score_coefs.away.items %}
               <tr><td>{{ score }}</td><td>{{ odd }}</td></tr>
@@ -96,6 +95,5 @@
       </div>
       {% endif %}
 
-    </div>
   </div>
 {% endblock %}
