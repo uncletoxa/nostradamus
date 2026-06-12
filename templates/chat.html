@@ -36,6 +36,12 @@
           <div>
             <strong>{{ msg.user.get_full_name|default:msg.user.username }}</strong>
             <small class="text-muted ml-2">{{ msg.created_at|time:"H:i" }}</small>
+            {% if msg.match %}
+              <small class="text-muted ml-1">·
+                {% if msg.match.status == 'FINISHED' %}watched{% else %}watching{% endif %}
+                {{ msg.match.home_team.emoji_symbol }} vs {{ msg.match.guest_team.emoji_symbol }}
+              </small>
+            {% endif %}
           </div>
           <div>{{ msg.text }}</div>
         </div>
@@ -91,6 +97,12 @@
            '</div>';
   }
 
+  function matchHtml(match) {
+    if (!match) return '';
+    var verb = match.finished ? 'watched' : 'watching';
+    return ' <small class="text-muted ml-1">· ' + verb + ' ' + escapeHtml(match.teams) + '</small>';
+  }
+
   function appendMessage(msg) {
     var noMsg = document.getElementById('no-messages');
     if (noMsg) noMsg.remove();
@@ -98,7 +110,8 @@
       '<div class="mr-2" style="flex-shrink:0;">' + avatarHtml(msg) + '</div>' +
       '<div class="media-body">' +
         '<div><strong>' + escapeHtml(msg.user) + '</strong>' +
-        '<small class="text-muted ml-2">' + escapeHtml(msg.time) + '</small></div>' +
+        '<small class="text-muted ml-2">' + escapeHtml(msg.time) + '</small>' +
+        matchHtml(msg.match) + '</div>' +
         '<div>' + escapeHtml(msg.text) + '</div>' +
       '</div></div>';
     var atBottom = messagesDiv.scrollHeight - messagesDiv.clientHeight <= messagesDiv.scrollTop + 10;
