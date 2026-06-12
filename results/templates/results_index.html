@@ -14,8 +14,5 @@
 {% endblock %}
 
 {% block content %}
-  <h3>
-    <small class="text-muted"><a href="{% url 'results:points_table' %}">{% trans "standings" %}</a></small>
-  </h3>
   {% cup_standings True False %}
 {% endblock %}

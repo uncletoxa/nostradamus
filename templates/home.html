@@ -9,14 +9,14 @@
 {% block content %}
   <div class="mb-4">
     <p class="lead font-weight-bold">Смотреть всем перед стартом Чемпионата мира по футболу-2026!</p>
-    <video controls playsinline class="w-100" style="max-height: 400px; object-fit: cover;">
+    <video controls playsinline class="w-100 home-video">
       <source src="{% static 'video/preview.mp4' %}" type="video/mp4">
     </video>
   </div>
   {% if latest_news %}
     <div class="card mb-4">
       {% if latest_news.photo %}
-        <img src="{{ latest_news.photo.url }}" class="card-img-top" alt="{{ latest_news.title }}" style="max-height: 250px; object-fit: cover;">
+        <img src="{{ latest_news.photo.url }}" class="card-img-top news-card-img" alt="{{ latest_news.title }}">
       {% endif %}
       <div class="card-body">
         <h5 class="card-title">
@@ -36,8 +36,8 @@
       {% endif %}
       <h3>
         <small class="text-muted">
-          <a href={% url 'results:results_index' %}>{% trans "Cup Standings" %}</a>
-          {% if current_live_matches %}<span class="badge badge-danger ml-1" style="font-size: 0.55rem; vertical-align: middle;">live</span>{% endif %}
+          <a href="{% url 'results:results_index' %}">{% trans "Cup Standings" %}</a>
+          {% if current_live_matches %}<span class="badge badge-danger ml-1 badge-live">live</span>{% endif %}
         </small>
       </h3>
         {% cup_standings False True %}
@@ -46,7 +46,7 @@
       <div class="row">
         <div class="col">
           <h3>
-            <small class="text-muted"><a href={% url 'matches:matches_index' %}>{% trans "Next Matches" %}</a></small>
+            <small class="text-muted"><a href="{% url 'matches:matches_index' %}">{% trans "Next Matches" %}</a></small>
           </h3>
             {% next_matches user %}
         </div>

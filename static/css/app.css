@@ -7,8 +7,8 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-.alert {
-  display:inline-block;
+.navbar-brand img {
+  height: 30px;
 }
 
 .logo {
@@ -29,4 +29,48 @@ body {
   aspect-ratio: 4 / 3;
   object-fit: cover;
   object-position: top center;
+}
+
+.home-video {
+  max-height: 400px;
+  object-fit: cover;
+}
+
+.news-card-img {
+  max-height: 250px;
+  object-fit: cover;
+}
+
+.badge-live {
+  font-size: 0.55rem;
+  vertical-align: middle;
+}
+
+.match-team-emoji {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.match-result-badge {
+  font-size: 1.6rem;
+  letter-spacing: 3px;
+}
+
+.odds-table {
+  max-width: 300px;
+}
+
+.user-avatar {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+}
+
+.user-avatar-placeholder {
+  width: 140px;
+  height: 140px;
+}
+
+.user-avatar-initial {
+  font-size: 3rem;
 }

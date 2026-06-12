@@ -21,12 +21,10 @@
     <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start">
       {% if user_profile.photo %}
         <img src="{{ user_profile.photo.url }}" alt="{{ user_data.first_name }}"
-             class="rounded-circle mb-3 mb-sm-0 mr-sm-4 flex-shrink-0"
-             style="width: 140px; height: 140px; object-fit: cover;">
+             class="rounded-circle mb-3 mb-sm-0 mr-sm-4 flex-shrink-0 user-avatar">
       {% else %}
-        <div class="rounded-circle mb-3 mb-sm-0 mr-sm-4 flex-shrink-0 bg-secondary d-flex align-items-center justify-content-center"
-             style="width: 140px; height: 140px;">
-          <span class="text-white font-weight-bold" style="font-size: 3rem;">{{ user_data.first_name|slice:":1" }}</span>
+        <div class="rounded-circle mb-3 mb-sm-0 mr-sm-4 flex-shrink-0 bg-secondary d-flex align-items-center justify-content-center user-avatar-placeholder">
+          <span class="text-white font-weight-bold user-avatar-initial">{{ user_data.first_name|slice:":1" }}</span>
         </div>
       {% endif %}
       <div class="flex-fill text-center text-sm-left">
@@ -72,6 +70,7 @@
           <td>{% trans "No prediction given" %}</td>
           <td>{% trans "No prediction given" %}</td>
           <td>{% trans "No prediction given" %}</td>
+          <td>—</td>
         {% endif %}
       </tr>
     {% endfor %}
