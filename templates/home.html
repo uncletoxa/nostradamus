@@ -29,11 +29,11 @@
     </div>
   {% endif %}
   {% get_live_matches as current_live_matches %}
+  {% if current_live_matches %}
+    <div class="mb-3">{% live_matches %}</div>
+  {% endif %}
   <div class="row">
     <div class="col-12 col-md-5">
-      {% if current_live_matches %}
-        <div class="mb-3">{% live_matches %}</div>
-      {% endif %}
       <h3>
         <small class="text-muted">
           <a href="{% url 'results:results_index' %}">{% trans "Cup Standings" %}</a>
