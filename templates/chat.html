@@ -38,7 +38,7 @@
             <small class="text-muted ml-2">{{ msg.created_at|time:"H:i" }}</small>
             {% if msg.match %}
               <small class="text-muted ml-1">·
-                {% if msg.match.status == 'FINISHED' %}watched{% else %}watching{% endif %}
+                {% if msg.match.status == 'FINISHED' %}{% trans "watched" %}{% else %}{% trans "watching" %}{% endif %}
                 {{ msg.match.home_team.emoji_symbol }} vs {{ msg.match.guest_team.emoji_symbol }}
               </small>
             {% endif %}

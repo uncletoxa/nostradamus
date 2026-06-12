@@ -155,6 +155,12 @@ msgstr "Пока нет сообщений. Будь первым!"
 msgid "Write a message…"
 msgstr "Написать сообщение…"
 
+msgid "watching"
+msgstr "смотрит"
+
+msgid "watched"
+msgstr "смотрел"
+
 msgid "Send"
 msgstr "Отправить"
 
