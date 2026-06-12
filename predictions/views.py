@@ -17,9 +17,9 @@ def available_coefficients(request):
         .filter(coef_ready=True, match_id__status='SCHEDULED')
         .order_by('match_id', '-update_time')
         .distinct('match_id')
-        .values_list('id', flat=True))
+        .values_list('coef_id', flat=True))
     avail_coefs = (Coefficient.objects
-        .filter(id__in=avail_coef_ids)
+        .filter(coef_id__in=avail_coef_ids)
         .order_by('match_id__start_time'))
 
     not_avail_coef_ids = (Coefficient.objects
@@ -27,9 +27,9 @@ def available_coefficients(request):
         .exclude(match_id__status='SCHEDULED')
         .order_by('match_id', '-update_time')
         .distinct('match_id')
-        .values_list('id', flat=True))
+        .values_list('coef_id', flat=True))
     not_avail_coefs = (Coefficient.objects
-        .filter(id__in=not_avail_coef_ids)
+        .filter(coef_id__in=not_avail_coef_ids)
         .order_by('match_id__start_time'))
 
     preds_q = Prediction.objects.filter(user_id=request.user.id).order_by('match_id_id', '-submit_time').distinct('match_id_id')
