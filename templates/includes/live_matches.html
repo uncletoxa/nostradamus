@@ -3,7 +3,7 @@
   <span class="badge badge-danger">{% trans "Live Results" %}</span>
     <div class="row">
       {% for live_match in live_matches %}
-        <div class="col-12 col-sm-6 col-md-4 mb-2">
+        <div class="col-12 col-md-6 mb-2">
           <div class="card h-100">
             <div class="card-header"><a href="{% url 'matches:single_match' live_match.match_id %}">{{ live_match }}</a></div>
             <div class="card-body">
