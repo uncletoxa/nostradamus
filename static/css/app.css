@@ -16,14 +16,18 @@ body {
 
 .navbar-cup-title {
   display: inline-block;
-  font-size: 0.65rem;
-  color: #888;
+  font-size: 0.85rem;
+  font-weight: 700;
   line-height: 1.2;
   vertical-align: middle;
-  margin-left: 6px;
-  max-width: 70px;
+  margin-left: 8px;
+  max-width: 90px;
   white-space: normal;
 }
+
+.nct-word1 { color: #c0392b; }
+.nct-word2 { color: #27ae60; }
+.nct-word3 { color: #4b0082; }
 
 .navbar .nav-link {
   font-size: 1.25rem;
