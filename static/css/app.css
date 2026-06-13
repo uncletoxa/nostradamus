@@ -14,6 +14,17 @@ body {
   }
 }
 
+.navbar-cup-title {
+  display: inline-block;
+  font-size: 0.65rem;
+  color: #888;
+  line-height: 1.2;
+  vertical-align: middle;
+  margin-left: 6px;
+  max-width: 70px;
+  white-space: normal;
+}
+
 .navbar .nav-link {
   font-size: 1.25rem;
 }
