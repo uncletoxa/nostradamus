@@ -45,7 +45,10 @@ def cup_standings(context, long_standings=False, live_standings=False):
         for match_data in results_data.values():
             result_bet += zero_if_none(match_data['result_bet'])
             score_bet += zero_if_none(match_data['score_bet'])
-        total_points = result_bet + score_bet + winner_points
+        result_bet = round(result_bet, 2)
+        score_bet = round(score_bet, 2)
+        winner_points = round(winner_points, 2)
+        total_points = round(result_bet + score_bet + winner_points, 2)
         standings.update({user: {
             'total_points': total_points,
             'result_bet': result_bet,
