@@ -15,11 +15,13 @@
 {% endblock %}
 
 {% block content %}
+  <div class="row">
 
-  <!-- Prediction form -->
-  <div class="row mb-4">
-    <div class="col-md-5 col-lg-4">
-      <div class="card">
+    <!-- Left column: form + odds -->
+    <div class="col-md-4 col-lg-3">
+
+      <!-- Prediction form -->
+      <div class="card mb-3">
         <div class="card-body">
           {% if submissions_closed %}
             <p class="text-muted mb-0">{% trans "Cup winner prediction is not available now" %}</p>
@@ -33,20 +35,15 @@
         </div>
         <div class="card-footer text-muted small">
           {% if curr_prediction %}
-            {% trans "Your prediction:" %} <strong class="text-dark">{{ curr_prediction.prediction_id.team_id }}</strong>
+            {% trans "Current prediction:" %} <strong class="text-dark">{{ curr_prediction.prediction_id.team_id }}</strong>
           {% else %}
-            {% trans "No prediction given yet" %}
+            {% trans "No predictions given" %}
           {% endif %}
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Odds and standings -->
-  <div class="row">
-
-    {% if winner_coef %}
-    <div class="col-md-4 col-lg-3 mb-4">
+      <!-- Odds table -->
+      {% if winner_coef %}
       <div class="card">
         <div class="card-header">
           <h6 class="mb-0">{% trans "Winner odds" %}</h6>
@@ -70,10 +67,12 @@
           </table>
         </div>
       </div>
-    </div>
-    {% endif %}
+      {% endif %}
 
-    <div class="col-md-8 col-lg-6 mb-4">
+    </div>
+
+    <!-- Right column: standings -->
+    <div class="col-md-8 col-lg-9">
       <div class="card">
         <div class="card-header">
           <h6 class="mb-0">{% trans "All predictions" %}</h6>
@@ -85,5 +84,4 @@
     </div>
 
   </div>
-
 {% endblock %}

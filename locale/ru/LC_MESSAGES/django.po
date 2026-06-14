@@ -217,6 +217,9 @@ msgstr "Команда"
 msgid "Odds"
 msgstr "Коэффициент"
 
+msgid "All predictions"
+msgstr "Все прогнозы"
+
 # predictions/details.html
 msgid "Predictions"
 msgstr "Прогнозы"
