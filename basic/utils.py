@@ -48,7 +48,11 @@ def _score_match(match, prediction, coef):
         prediction_result = get_result(prediction.home_score, prediction.guest_score)
 
     result_bet = getattr(coef, match_result) if prediction_result == match_result else 0
-    score_bet = coef.score[match_score_cr] if predicted_score_cr == match_score_cr else 0
+    exact_score_match = (match.home_score == prediction.home_score and
+                         match.guest_score == prediction.guest_score)
+    score_correct = (predicted_score_cr == match_score_cr and
+                     (match_score_cr != 'Any other score' or exact_score_match))
+    score_bet = coef.score[match_score_cr] if score_correct else 0
     return prediction.score(), result_bet, score_bet
 
 
