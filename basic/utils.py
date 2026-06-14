@@ -53,7 +53,7 @@ def _score_match(match, prediction, coef):
     score_correct = (predicted_score_cr == match_score_cr and
                      (match_score_cr != 'Any other score' or exact_score_match))
     score_bet = coef.score[match_score_cr] if score_correct else 0
-    return prediction.score(), result_bet, score_bet
+    return prediction.score(), round(result_bet, 2), round(score_bet, 2)
 
 
 def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
