@@ -15,60 +15,75 @@
 {% endblock %}
 
 {% block content %}
-  <div class="row">
 
-      <!-- Left: prediction form -->
-      <div class="col-md-3">
-        {% if submissions_closed %}
-          <div class="card">
-            <div class="card-body">{% trans "Cup winner prediction is not available now" %}</div>
-          </div>
-        {% else %}
-          <form class="form-horizontal" method="post">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button type="submit" class="btn btn-success">{% trans "Predict" %}</button>
-          </form>
-        {% endif %}
-
-        <div class="mt-3">
-          <div class="alert alert-info" role="alert">
-            {% if curr_prediction %}
-              {% trans "Current prediction:" %} <strong>{{ curr_prediction.prediction_id.team_id }}</strong>
-            {% else %}
-              {% trans "No predictions given" %}
-            {% endif %}
-          </div>
+  <!-- Prediction form -->
+  <div class="row mb-4">
+    <div class="col-md-5 col-lg-4">
+      <div class="card">
+        <div class="card-body">
+          {% if submissions_closed %}
+            <p class="text-muted mb-0">{% trans "Cup winner prediction is not available now" %}</p>
+          {% else %}
+            <form class="form-horizontal" method="post">
+              {% csrf_token %}
+              {{ form|crispy }}
+              <button type="submit" class="btn btn-success">{% trans "Predict" %}</button>
+            </form>
+          {% endif %}
+        </div>
+        <div class="card-footer text-muted small">
+          {% if curr_prediction %}
+            {% trans "Your prediction:" %} <strong class="text-dark">{{ curr_prediction.prediction_id.team_id }}</strong>
+          {% else %}
+            {% trans "No prediction given yet" %}
+          {% endif %}
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Right: odds table -->
-      {% if winner_coef %}
-      <div class="col-md-3">
-        <h6 class="text-muted mb-2">{% trans "Winner odds" %}</h6>
-        <table class="table table-sm table-bordered">
-          <thead class="thead-dark">
-            <tr>
-              <th>{% trans "Team" %}</th>
-              <th>{% trans "Odds" %}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for coef in winner_coef %}
-            <tr>
-              <td>{{ coef.team_id }}</td>
-              <td>{{ coef.coef }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <!-- Odds and standings -->
+  <div class="row">
+
+    {% if winner_coef %}
+    <div class="col-md-4 col-lg-3 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">{% trans "Winner odds" %}</h6>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-sm table-hover mb-0">
+            <thead class="thead-dark">
+              <tr>
+                <th>{% trans "Team" %}</th>
+                <th class="text-right">{% trans "Odds" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for coef in winner_coef %}
+              <tr>
+                <td>{{ coef.team_id }}</td>
+                <td class="text-right">{{ coef.coef }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-      {% endif %}
+    </div>
+    {% endif %}
 
-      <div class="col">
-        {% champ_standings %}
+    <div class="col-md-8 col-lg-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">{% trans "All predictions" %}</h6>
+        </div>
+        <div class="card-body p-0">
+          {% champ_standings %}
+        </div>
       </div>
-
+    </div>
 
   </div>
+
 {% endblock %}
