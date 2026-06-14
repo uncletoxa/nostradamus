@@ -17,29 +17,45 @@
 {% block content %}
   <div class="row">
 
-    <!-- Left column: form + odds -->
+    <!-- Left column: prediction card + odds -->
     <div class="col-md-4 col-lg-3">
 
-      <!-- Prediction form -->
+      <!-- Prediction card -->
       <div class="card mb-3">
-        <div class="card-body">
-          {% if submissions_closed %}
-            <p class="text-muted mb-0">{% trans "Cup winner prediction is not available now" %}</p>
-          {% else %}
+        {% if curr_prediction %}
+          <div class="card-body text-center">
+            <div class="display-4 mb-1">
+              {{ curr_prediction.prediction_id.team_id }}
+            </div>
+            {% if curr_prediction.prediction_id.is_winner == True %}
+              <div class="text-success font-weight-bold">
+                +{{ curr_prediction.prediction_id.coef }} {% trans "pts" %}
+              </div>
+            {% elif curr_prediction.prediction_id.is_winner == False %}
+              <div class="text-muted">
+                <s>{{ curr_prediction.prediction_id.coef }} {% trans "pts" %}</s>
+              </div>
+            {% else %}
+              <div class="text-muted">
+                {% blocktrans with pts=curr_prediction.prediction_id.coef %}{{ pts }} pts if correct{% endblocktrans %}
+              </div>
+            {% endif %}
+          </div>
+        {% else %}
+          <div class="card-body text-center text-muted py-4">
+            {% trans "No predictions given" %}
+          </div>
+        {% endif %}
+
+        {% if not submissions_closed %}
+          <div class="card-footer">
             <form class="form-horizontal" method="post">
               {% csrf_token %}
               {{ form|crispy }}
-              <button type="submit" class="btn btn-success">{% trans "Predict" %}</button>
+              <button type="submit" class="btn btn-success btn-block">{% trans "Predict" %}</button>
             </form>
-          {% endif %}
-        </div>
-        <div class="card-footer text-muted small">
-          {% if curr_prediction %}
-            {% trans "Current prediction:" %} <strong class="text-dark">{{ curr_prediction.prediction_id.team_id }}</strong>
-          {% else %}
-            {% trans "No predictions given" %}
-          {% endif %}
-        </div>
+          </div>
+        {% endif %}
       </div>
 
       <!-- Odds table -->
@@ -58,13 +74,32 @@
             </thead>
             <tbody>
               {% for coef in winner_coef %}
-              <tr>
-                <td>{{ coef.team_id }}</td>
-                <td class="text-right">{{ coef.coef }}</td>
-              </tr>
+                {% if forloop.counter <= 10 %}
+                  <tr>
+                    <td>{{ coef.team_id }}</td>
+                    <td class="text-right">{{ coef.coef }}</td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+            <tbody class="collapse" id="oddsExtra">
+              {% for coef in winner_coef %}
+                {% if forloop.counter > 10 %}
+                  <tr>
+                    <td>{{ coef.team_id }}</td>
+                    <td class="text-right">{{ coef.coef }}</td>
+                  </tr>
+                {% endif %}
               {% endfor %}
             </tbody>
           </table>
+        </div>
+        <div class="card-footer text-center p-1">
+          <a class="btn btn-link btn-sm" data-toggle="collapse" href="#oddsExtra"
+             aria-expanded="false" aria-controls="oddsExtra"
+             id="oddsToggle">
+            {% trans "Show more" %} ▾
+          </a>
         </div>
       </div>
       {% endif %}
@@ -84,4 +119,12 @@
     </div>
 
   </div>
+
+  <script>
+    document.getElementById('oddsToggle').addEventListener('click', function () {
+      var expanded = this.getAttribute('aria-expanded') === 'true';
+      this.textContent = expanded ? '{% trans "Show more" %} ▾' : '{% trans "Show less" %} ▴';
+    });
+  </script>
+
 {% endblock %}

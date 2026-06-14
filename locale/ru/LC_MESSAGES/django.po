@@ -220,6 +220,18 @@ msgstr "Коэффициент"
 msgid "All predictions"
 msgstr "Все прогнозы"
 
+msgid "pts"
+msgstr "очков"
+
+msgid "%(pts)s pts if correct"
+msgstr "%(pts)s очков при победе"
+
+msgid "Show more"
+msgstr "Показать ещё"
+
+msgid "Show less"
+msgstr "Свернуть"
+
 # predictions/details.html
 msgid "Predictions"
 msgstr "Прогнозы"
