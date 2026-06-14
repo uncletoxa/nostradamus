@@ -16,13 +16,20 @@ body {
 
 .navbar-cup-title {
   display: inline-block;
-  font-size: 0.85rem;
+  font-size: 1.1rem;
   font-weight: 700;
   line-height: 1.2;
   vertical-align: middle;
   margin-left: 8px;
-  max-width: 90px;
+  max-width: 110px;
   white-space: normal;
+}
+
+@media (max-width: 576px) {
+  .navbar-cup-title {
+    font-size: 0.85rem;
+    max-width: 90px;
+  }
 }
 
 .nct-word1 { color: #cc2027; }
