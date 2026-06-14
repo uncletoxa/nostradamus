@@ -38,17 +38,22 @@
                     <li class="nav-item{% if request.resolver_match.namespace == 'results' %} active{% endif %}">
                       <a class="nav-link" href="{% url 'results:results_index' %}">{% trans "Results" %}</a>
                     </li>
-                    <li class="nav-item{% if request.resolver_match.namespace == 'predictions' %} active{% endif %}">
-                      <a class="nav-link" href="{% url 'predictions:winner' %}">{% trans "Winner" %}</a>
+                    <li class="nav-item dropdown{% if request.resolver_match.namespace == 'predictions' %} active{% endif %}">
+                      <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{% trans "Predictions" %}</a>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'predictions:predictions_index' %}">{% trans "Predictions" %}</a>
+                        <a class="dropdown-item" href="{% url 'predictions:winner' %}">{% trans "Winner" %}</a>
+                      </div>
                     </li>
                     <li class="nav-item{% if request.resolver_match.namespace == 'matches' %} active{% endif %}">
                       <a class="nav-link" href="{% url 'matches:matches_index' %}">{% trans "Matches" %}</a>
                     </li>
-                    <li class="nav-item{% if request.resolver_match.url_name == 'participants' %} active{% endif %}">
-                      <a class="nav-link" href="{% url 'participants' %}">{% trans "Former Participants" %}</a>
-                    </li>
-                    <li class="nav-item{% if request.resolver_match.url_name == 'history' %} active{% endif %}">
-                      <a class="nav-link" href="{% url 'history' %}">{% trans "History" %}</a>
+                    <li class="nav-item dropdown{% if request.resolver_match.url_name == 'participants' or request.resolver_match.url_name == 'history' %} active{% endif %}">
+                      <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{% trans "More" %}</a>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'participants' %}">{% trans "Former Participants" %}</a>
+                        <a class="dropdown-item" href="{% url 'history' %}">{% trans "History" %}</a>
+                      </div>
                     </li>
                 </ul>
                 {% if user.is_authenticated %}
