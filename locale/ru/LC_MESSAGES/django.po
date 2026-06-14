@@ -25,6 +25,9 @@ msgstr "Победитель"
 msgid "Matches"
 msgstr "Матчи"
 
+msgid "More"
+msgstr "Ещё"
+
 msgid "Former Participants"
 msgstr "Незаявленные эксперты"
 
