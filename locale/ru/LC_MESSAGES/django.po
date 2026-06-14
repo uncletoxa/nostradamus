@@ -226,6 +226,9 @@ msgstr "очков"
 msgid "%(pts)s pts if correct"
 msgstr "%(pts)s очков при победе"
 
+msgid "Your pick"
+msgstr "Ваш выбор"
+
 msgid "Show more"
 msgstr "Показать ещё"
 

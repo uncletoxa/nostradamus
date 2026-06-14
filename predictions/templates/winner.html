@@ -24,6 +24,7 @@
       <div class="card mb-3">
         {% if curr_prediction %}
           <div class="card-body text-center">
+            <div class="text-muted small text-uppercase mb-2">{% trans "Your pick" %}</div>
             <div class="display-4 mb-1">
               {{ curr_prediction.prediction_id.team_id }}
             </div>
