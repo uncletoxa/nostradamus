@@ -29,7 +29,7 @@
             </div>
           {% endif %}
         </div>
-        <div class="flex-grow-1">
+        <div class="flex-grow-1" style="min-width:0;">
           <div>
             <strong>{{ msg.user.get_full_name|default:msg.user.username }}</strong>
             <small class="text-muted ms-2">{{ msg.created_at|time:"H:i" }}</small>
@@ -44,7 +44,15 @@
                     style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;text-decoration:none;"
                     title="{% trans "React" %}">😊+</button>
           </div>
-          <div>{{ msg.text }}</div>
+          {% if msg.text %}<div>{{ msg.text }}</div>{% endif %}
+          {% if msg.image %}
+            <div class="mt-1">
+              <a href="{{ msg.image.url }}" target="_blank" rel="noopener">
+                <img src="{{ msg.image.url }}"
+                     style="max-width:280px;max-height:280px;object-fit:contain;border-radius:6px;display:block;">
+              </a>
+            </div>
+          {% endif %}
           <div class="reaction-bar mt-1" data-id="{{ msg.id }}"></div>
         </div>
       </div>
@@ -53,16 +61,34 @@
       {% endfor %}
     </div>
 
-    <form method="post" id="chat-form" autocomplete="off">
+    <!-- image preview strip -->
+    <div id="image-preview-wrap" style="display:none;" class="mb-2">
+      <div class="position-relative d-inline-block">
+        <img id="image-preview" src="" alt=""
+             style="max-width:120px;max-height:120px;object-fit:contain;border-radius:6px;border:1px solid #dee2e6;">
+        <button type="button" id="image-clear-btn"
+                class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                style="padding:0 4px;font-size:11px;line-height:1.4;transform:translate(40%,-40%);">✕</button>
+      </div>
+    </div>
+
+    <form id="chat-form" autocomplete="off" enctype="multipart/form-data">
       {% csrf_token %}
+      <input type="file" id="chat-image-input" name="image" accept="image/*" style="display:none;">
       <div class="input-group">
+        <button type="button" id="attach-btn" class="btn btn-outline-secondary" title="{% trans "Attach image" %}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+            <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/>
+          </svg>
+        </button>
         <input type="text" name="text" id="chat-input"
                class="form-control"
                placeholder="{% trans "Write a message…" %}"
-               maxlength="1000"
-               required>
+               maxlength="1000">
         <button type="submit" class="btn btn-primary">{% trans "Send" %}</button>
       </div>
+      <div id="chat-error" class="text-danger mt-1" style="display:none;font-size:13px;"></div>
     </form>
   </div>
 </div>
@@ -214,10 +240,40 @@
         if (!data.reactions) return;
         var bar = messagesDiv.querySelector('.reaction-bar[data-id="' + msgId + '"]');
         if (bar) renderReactionBar(bar, data.reactions);
-        /* update initReactions cache */
         initReactions[msgId] = data.reactions;
       })
       .catch(function () {});
+  }
+
+  /* ── image attach ───────────────────────────────────────────── */
+  var imageInput = document.getElementById('chat-image-input');
+  var previewWrap = document.getElementById('image-preview-wrap');
+  var previewImg = document.getElementById('image-preview');
+  var clearBtn = document.getElementById('image-clear-btn');
+  var attachBtn = document.getElementById('attach-btn');
+  var chatError = document.getElementById('chat-error');
+
+  attachBtn.addEventListener('click', function () { imageInput.click(); });
+
+  imageInput.addEventListener('change', function () {
+    var file = imageInput.files[0];
+    if (!file) { clearImagePreview(); return; }
+    var url = URL.createObjectURL(file);
+    previewImg.src = url;
+    previewWrap.style.display = 'block';
+    chatError.style.display = 'none';
+  });
+
+  clearBtn.addEventListener('click', clearImagePreview);
+
+  function clearImagePreview() {
+    imageInput.value = '';
+    previewImg.src = '';
+    previewWrap.style.display = 'none';
+    if (previewImg.dataset.objectUrl) {
+      URL.revokeObjectURL(previewImg.dataset.objectUrl);
+      delete previewImg.dataset.objectUrl;
+    }
   }
 
   /* ── message helpers ────────────────────────────────────────── */
@@ -239,6 +295,14 @@
     return ' <small class="text-muted ms-1">· ' + verb + ' ' + escapeHtml(match.teams) + '</small>';
   }
 
+  function imageHtml(url) {
+    if (!url) return '';
+    return '<div class="mt-1"><a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' +
+           '<img src="' + escapeHtml(url) + '" ' +
+           'style="max-width:280px;max-height:280px;object-fit:contain;border-radius:6px;display:block;">' +
+           '</a></div>';
+  }
+
   function appendMessage(msg) {
     var noMsg = document.getElementById('no-messages');
     if (noMsg) noMsg.remove();
@@ -248,14 +312,15 @@
     row.dataset.id = msg.id;
     row.innerHTML =
       '<div class="me-2" style="flex-shrink:0;">' + avatarHtml(msg) + '</div>' +
-      '<div class="flex-grow-1">' +
+      '<div class="flex-grow-1" style="min-width:0;">' +
         '<div><strong>' + escapeHtml(msg.user) + '</strong>' +
         '<small class="text-muted ms-2">' + escapeHtml(msg.time) + '</small>' +
         matchHtml(msg.match) +
         '<button class="btn btn-link btn-sm p-0 ms-2 reaction-add-btn" data-id="' + msg.id + '" ' +
           'style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;text-decoration:none;" title="React">😊+</button>' +
         '</div>' +
-        '<div>' + escapeHtml(msg.text) + '</div>' +
+        (msg.text ? '<div>' + escapeHtml(msg.text) + '</div>' : '') +
+        imageHtml(msg.image_url) +
         '<div class="reaction-bar mt-1" data-id="' + msg.id + '"></div>' +
       '</div>';
     messagesDiv.appendChild(row);
@@ -288,15 +353,26 @@
     e.preventDefault();
     var input = document.getElementById('chat-input');
     var text = input.value.trim();
-    if (!text) return;
-    var form = this;
-    var data = new FormData(form);
+    var hasImage = imageInput.files.length > 0;
+    if (!text && !hasImage) return;
+    chatError.style.display = 'none';
+    var data = new FormData(this);
     fetch(chatUrl, {method: 'POST', body: data})
-      .then(function () {
+      .then(function (r) { return r.json().then(function(j) { return {ok: r.ok, body: j}; }); })
+      .then(function (res) {
+        if (!res.ok) {
+          chatError.textContent = res.body.error || 'Error sending message';
+          chatError.style.display = 'block';
+          return;
+        }
         input.value = '';
+        clearImagePreview();
         poll();
       })
-      .catch(function () { form.submit(); });
+      .catch(function () {
+        chatError.textContent = 'Network error';
+        chatError.style.display = 'block';
+      });
   });
 }());
 </script>

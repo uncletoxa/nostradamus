@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 
 class ChatMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chat_messages')
-    text = models.TextField(max_length=1000)
+    text = models.TextField(max_length=1000, blank=True)
+    image = models.ImageField(upload_to='chat/images/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     match = models.ForeignKey(
         'matches.Match', null=True, blank=True,

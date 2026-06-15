@@ -1,5 +1,8 @@
+import io
 import json
-from django.shortcuts import render, redirect
+from PIL import Image
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.utils.dateparse import parse_datetime
@@ -7,6 +10,41 @@ from django.utils import timezone
 from django.db.models import Count
 from .models import ChatMessage, MessageReaction
 from matches.models import Match
+
+_MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+_MAX_DIMENSION = 1024  # resize to fit within 1024×1024
+_ALLOWED_FORMATS = {'JPEG', 'PNG', 'GIF', 'WEBP'}
+_FORMAT_EXT = {'JPEG': 'jpg', 'PNG': 'png', 'GIF': 'gif', 'WEBP': 'webp'}
+_FORMAT_CT = {'JPEG': 'image/jpeg', 'PNG': 'image/png', 'GIF': 'image/gif', 'WEBP': 'image/webp'}
+
+
+def _process_image(file):
+    """Validate and resize an uploaded image. Returns (InMemoryUploadedFile, error_str)."""
+    if file.size > _MAX_FILE_SIZE:
+        return None, 'Image too large (max 5 MB)'
+    try:
+        file.seek(0)
+        img = Image.open(file)
+        fmt = img.format
+        img.load()
+    except Exception:
+        return None, 'Invalid image file'
+    if fmt not in _ALLOWED_FORMATS:
+        return None, 'Unsupported format (JPEG, PNG, GIF, WebP only)'
+    if img.width > _MAX_DIMENSION or img.height > _MAX_DIMENSION:
+        img.thumbnail((_MAX_DIMENSION, _MAX_DIMENSION), Image.LANCZOS)
+    if fmt == 'JPEG' and img.mode in ('RGBA', 'P', 'LA'):
+        img = img.convert('RGB')
+    buf = io.BytesIO()
+    save_kw = {'format': fmt}
+    if fmt == 'JPEG':
+        save_kw['quality'] = 85
+    img.save(buf, **save_kw)
+    size = buf.tell()
+    buf.seek(0)
+    out = InMemoryUploadedFile(
+        buf, 'image', f'chat.{_FORMAT_EXT[fmt]}', _FORMAT_CT[fmt], size, None)
+    return out, None
 
 ALLOWED_EMOJI = {'👍', '❤️', '😂', '😮', '😢', '😡'}
 
@@ -24,12 +62,23 @@ def _match_context(match):
 def chat(request):
     if request.method == 'POST':
         text = request.POST.get('text', '').strip()
-        if text:
-            live_match = Match.objects.filter(
-                status__in=[Match.IN_PLAY, Match.PAUSED]
-            ).first()
-            ChatMessage.objects.create(user=request.user, text=text, match=live_match)
-        return redirect('chat')
+        image_file = request.FILES.get('image')
+        image = None
+        error = None
+        if image_file:
+            image, error = _process_image(image_file)
+        if not text and not image:
+            if not error:
+                error = 'Message cannot be empty'
+            return JsonResponse({'error': error}, status=400)
+        if error:
+            return JsonResponse({'error': error}, status=400)
+        live_match = Match.objects.filter(
+            status__in=[Match.IN_PLAY, Match.PAUSED]
+        ).first()
+        ChatMessage.objects.create(
+            user=request.user, text=text, image=image, match=live_match)
+        return JsonResponse({'ok': True})
     chat_messages = list(ChatMessage.objects
                          .select_related('user', 'user__profile',
                                          'match', 'match__home_team', 'match__guest_team')
@@ -106,6 +155,7 @@ def chat_poll(request):
             'user': msg.user.get_full_name() or msg.user.username,
             'username': msg.user.username,
             'text': msg.text,
+            'image_url': msg.image.url if msg.image else None,
             'avatar': avatar,
             'created_at': msg.created_at.isoformat(),
             'time': msg.created_at.strftime('%H:%M'),
