@@ -183,7 +183,7 @@ var darkMode = (function () {
       <form id="cw-form" autocomplete="off">
         {% csrf_token %}
         <div class="input-group input-group-sm">
-          <input type="text" id="cw-input" class="form-control"
+          <input type="text" id="cw-input" name="text" class="form-control"
                  placeholder="{% trans "Message…" %}" maxlength="1000" required>
           <button type="submit" class="btn btn-primary">&#9658;</button>
         </div>
