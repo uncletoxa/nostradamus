@@ -41,7 +41,7 @@
             {% endif %}
             <button class="btn btn-link btn-sm p-0 ms-2 reaction-add-btn"
                     data-id="{{ msg.id }}"
-                    style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;"
+                    style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;text-decoration:none;"
                     title="{% trans "React" %}">😊+</button>
           </div>
           <div>{{ msg.text }}</div>
@@ -253,7 +253,7 @@
         '<small class="text-muted ms-2">' + escapeHtml(msg.time) + '</small>' +
         matchHtml(msg.match) +
         '<button class="btn btn-link btn-sm p-0 ms-2 reaction-add-btn" data-id="' + msg.id + '" ' +
-          'style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;" title="React">😊+</button>' +
+          'style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;text-decoration:none;" title="React">😊+</button>' +
         '</div>' +
         '<div>' + escapeHtml(msg.text) + '</div>' +
         '<div class="reaction-bar mt-1" data-id="' + msg.id + '"></div>' +
