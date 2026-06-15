@@ -128,8 +128,8 @@ body {
 }
 
 [data-bs-theme="dark"] .table-secondary {
-  --bs-table-bg: #2a2f35;
-  --bs-table-border-color: #3f464f;
+  --bs-table-bg: #4a5260;
+  --bs-table-border-color: #636e80;
 }
 
 [data-bs-theme="dark"] .table-bronze {
