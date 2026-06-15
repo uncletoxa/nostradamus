@@ -8,7 +8,7 @@
 
 {% block content %}
   <div class="mb-4">
-    <p class="lead font-weight-bold">Смотреть всем перед стартом Чемпионата мира по футболу-2026!</p>
+    <p class="lead fw-bold">Смотреть всем перед стартом Чемпионата мира по футболу-2026!</p>
     <video controls playsinline class="w-100 home-video">
       <source src="{% static 'video/preview.mp4' %}" type="video/mp4">
     </video>
@@ -37,7 +37,7 @@
       <h3>
         <small class="text-muted">
           <a href="{% url 'results:results_index' %}">{% trans "Cup Standings" %}</a>
-          {% if current_live_matches %}<span class="badge badge-danger ml-1 badge-live">live</span>{% endif %}
+          {% if current_live_matches %}<span class="badge text-bg-danger ms-1 badge-live">live</span>{% endif %}
         </small>
       </h3>
         {% cup_standings False True %}

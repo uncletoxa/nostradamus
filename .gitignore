@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 *.mo
 .env
+.env.local
 .idea
 venv/
 sftp-config.json

@@ -195,8 +195,8 @@ msgid "Table"
 msgstr "Таблица"
 
 # single_match.html
-msgid "No prediction table available."
-msgstr "Таблица прогнозов недоступна."
+msgid "Prediction table will be available after the match starts."
+msgstr "Таблица прогнозов будет доступна после старта матча."
 
 # predictions/winner.html
 msgid "Prediction: Cup Winner"

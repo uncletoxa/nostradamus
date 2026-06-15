@@ -20,19 +20,19 @@
       <div class="d-flex align-items-center justify-content-between">
         <div class="text-center flex-fill">
           <div class="match-team-emoji">{{ match.home_team.emoji_symbol }}</div>
-          <div class="font-weight-bold mt-1">{{ match.home_team.name }}</div>
+          <div class="fw-bold mt-1">{{ match.home_team.name }}</div>
         </div>
         <div class="text-center mx-4">
           {% if match.result %}
-            <span class="badge badge-dark py-2 px-3 match-result-badge">{{ match.result }}</span>
+            <span class="badge text-bg-dark py-2 px-3 match-result-badge">{{ match.result }}</span>
           {% else %}
-            <span class="text-muted font-weight-bold" style="font-size: 1.4rem;">vs</span>
+            <span class="text-muted fw-bold" style="font-size: 1.4rem;">vs</span>
           {% endif %}
           <div class="text-muted mt-2"><small>{{ match.start_time|date:"j F Y, H:i" }}</small></div>
         </div>
         <div class="text-center flex-fill">
           <div class="match-team-emoji">{{ match.guest_team.emoji_symbol }}</div>
-          <div class="font-weight-bold mt-1">{{ match.guest_team.name }}</div>
+          <div class="fw-bold mt-1">{{ match.guest_team.name }}</div>
         </div>
       </div>
     </div>
@@ -40,7 +40,7 @@
 
   {% if match.result %}
     <table class="table">
-      <thead class="thead-dark">
+      <thead class="table-dark">
         <tr>
           <th>{% trans "User" %}</th>
           <th>{% trans "Prediction" %}</th>
@@ -71,6 +71,6 @@
       </tbody>
     </table>
   {% else %}
-    <h3>{% trans "No prediction table available." %}</h3>
+    <h3>{% trans "Prediction table will be available after the match starts." %}</h3>
   {% endif %}
 {% endblock %}
