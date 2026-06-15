@@ -13,7 +13,7 @@
          style="height: 520px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.25rem; padding: 1rem;"
          class="mb-3 bg-body">
       {% for msg in chat_messages %}
-      <div class="d-flex mb-3">
+      <div class="d-flex mb-2 chat-msg" data-id="{{ msg.id }}">
         <div class="me-2" style="flex-shrink:0;">
           {% if msg.user.profile.photo %}
             <img src="{{ msg.user.profile.photo.url }}"
@@ -39,8 +39,13 @@
                 {{ msg.match.home_team.emoji_symbol }} vs {{ msg.match.guest_team.emoji_symbol }}
               </small>
             {% endif %}
+            <button class="btn btn-link btn-sm p-0 ms-2 reaction-add-btn"
+                    data-id="{{ msg.id }}"
+                    style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;"
+                    title="{% trans "React" %}">😊+</button>
           </div>
           <div>{{ msg.text }}</div>
+          <div class="reaction-bar mt-1" data-id="{{ msg.id }}"></div>
         </div>
       </div>
       {% empty %}
@@ -61,17 +66,31 @@
     </form>
   </div>
 </div>
+
+<!-- Emoji picker popover (populated by JS) -->
+<div id="emoji-picker"
+     style="display:none;position:fixed;z-index:9999;background:var(--bs-body-bg);
+            border:1px solid #dee2e6;border-radius:.5rem;padding:.4rem .5rem;
+            box-shadow:0 4px 12px rgba(0,0,0,.15);"></div>
 {% endblock %}
 
 {% block javascript %}
 <script>
 (function () {
+  var CSRF = '{{ csrf_token }}';
+  var reactUrl = '{% url "chat_react" %}';
+  var pollUrl = '{% url "chat_poll" %}';
+  var chatUrl = '{% url "chat" %}';
+  var EMOJI = ['👍','❤️','😂','😮','😢','😡'];
+
   var messagesDiv = document.getElementById('chat-messages');
   var lastTs = '{{ last_ts|escapejs }}';
 
-  function scrollToBottom() {
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }
+  /* ── initial reaction data from server ──────────────────────── */
+  var initReactions = {{ reactions_json|safe }};
+
+  /* ── utilities ──────────────────────────────────────────────── */
+  function scrollToBottom() { messagesDiv.scrollTop = messagesDiv.scrollHeight; }
   scrollToBottom();
 
   function escapeHtml(s) {
@@ -80,6 +99,128 @@
     return d.innerHTML;
   }
 
+  /* ── reaction bar rendering ─────────────────────────────────── */
+  function renderReactionBar(bar, reactions) {
+    bar.innerHTML = '';
+    reactions.forEach(function (r) {
+      var btn = document.createElement('button');
+      btn.className = 'btn btn-sm me-1 mb-1 reaction-pill' + (r.mine ? ' active' : '');
+      btn.style.cssText = 'padding:1px 6px;font-size:13px;line-height:1.4;border-radius:12px;' +
+        (r.mine
+          ? 'background:var(--bs-primary);color:#fff;border:1px solid var(--bs-primary);'
+          : 'background:var(--bs-secondary-bg);border:1px solid var(--bs-border-color);');
+      btn.dataset.emoji = r.emoji;
+      btn.textContent = r.emoji + ' ' + r.count;
+      bar.appendChild(btn);
+    });
+  }
+
+  /* render initial reactions */
+  document.querySelectorAll('.chat-msg').forEach(function (row) {
+    var id = parseInt(row.dataset.id);
+    var bar = row.querySelector('.reaction-bar');
+    if (bar && initReactions[id]) renderReactionBar(bar, initReactions[id]);
+  });
+
+  /* ── emoji picker ───────────────────────────────────────────── */
+  var picker = document.getElementById('emoji-picker');
+  picker.innerHTML = '';
+  EMOJI.forEach(function (e) {
+    var b = document.createElement('button');
+    b.className = 'btn btn-link p-1';
+    b.style.cssText = 'font-size:22px;line-height:1;text-decoration:none;';
+    b.textContent = e;
+    picker.appendChild(b);
+  });
+
+  var activeMsgId = null;
+
+  function showPicker(msgId, anchor) {
+    activeMsgId = msgId;
+    var rect = anchor.getBoundingClientRect();
+    picker.style.display = 'block';
+    var left = rect.left;
+    var top = rect.bottom + 4;
+    if (left + 200 > window.innerWidth) left = window.innerWidth - 210;
+    picker.style.left = left + 'px';
+    picker.style.top = top + window.scrollY + 'px';
+  }
+
+  function hidePicker() {
+    picker.style.display = 'none';
+    activeMsgId = null;
+  }
+
+  picker.addEventListener('click', function (e) {
+    var btn = e.target.closest('button');
+    if (!btn || activeMsgId === null) return;
+    sendReaction(activeMsgId, btn.textContent.trim());
+    hidePicker();
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!picker.contains(e.target) && !e.target.classList.contains('reaction-add-btn')) {
+      hidePicker();
+    }
+  });
+
+  /* ── hover to show + button ─────────────────────────────────── */
+  messagesDiv.addEventListener('mouseover', function (e) {
+    var row = e.target.closest('.chat-msg');
+    if (!row) return;
+    var btn = row.querySelector('.reaction-add-btn');
+    if (btn) btn.style.opacity = '1';
+  });
+  messagesDiv.addEventListener('mouseout', function (e) {
+    var row = e.target.closest('.chat-msg');
+    if (!row) return;
+    if (row.contains(e.relatedTarget)) return;
+    var btn = row.querySelector('.reaction-add-btn');
+    if (btn) btn.style.opacity = '0';
+  });
+
+  /* ── click handlers (delegation) ───────────────────────────── */
+  messagesDiv.addEventListener('click', function (e) {
+    /* + button */
+    var addBtn = e.target.closest('.reaction-add-btn');
+    if (addBtn) {
+      e.stopPropagation();
+      var msgId = parseInt(addBtn.dataset.id);
+      if (picker.style.display !== 'none' && activeMsgId === msgId) {
+        hidePicker();
+      } else {
+        showPicker(msgId, addBtn);
+      }
+      return;
+    }
+    /* existing reaction pill */
+    var pill = e.target.closest('.reaction-pill');
+    if (pill) {
+      var bar = pill.closest('.reaction-bar');
+      var msgId2 = parseInt(bar.dataset.id);
+      sendReaction(msgId2, pill.dataset.emoji);
+    }
+  });
+
+  /* ── send reaction to server ────────────────────────────────── */
+  function sendReaction(msgId, emoji) {
+    var fd = new FormData();
+    fd.append('csrfmiddlewaretoken', CSRF);
+    fd.append('message_id', msgId);
+    fd.append('emoji', emoji);
+    fetch(reactUrl, {method: 'POST', body: fd})
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data.reactions) return;
+        var bar = messagesDiv.querySelector('.reaction-bar[data-id="' + msgId + '"]');
+        if (bar) renderReactionBar(bar, data.reactions);
+        /* update initReactions cache */
+        initReactions[msgId] = data.reactions;
+      })
+      .catch(function () {});
+  }
+
+  /* ── message helpers ────────────────────────────────────────── */
   function avatarHtml(msg) {
     if (msg.avatar) {
       return '<img src="' + escapeHtml(msg.avatar) + '" class="rounded-circle" ' +
@@ -101,21 +242,33 @@
   function appendMessage(msg) {
     var noMsg = document.getElementById('no-messages');
     if (noMsg) noMsg.remove();
-    var html = '<div class="d-flex mb-3">' +
+    var atBottom = messagesDiv.scrollHeight - messagesDiv.clientHeight <= messagesDiv.scrollTop + 10;
+    var row = document.createElement('div');
+    row.className = 'd-flex mb-2 chat-msg';
+    row.dataset.id = msg.id;
+    row.innerHTML =
       '<div class="me-2" style="flex-shrink:0;">' + avatarHtml(msg) + '</div>' +
       '<div class="flex-grow-1">' +
         '<div><strong>' + escapeHtml(msg.user) + '</strong>' +
         '<small class="text-muted ms-2">' + escapeHtml(msg.time) + '</small>' +
-        matchHtml(msg.match) + '</div>' +
+        matchHtml(msg.match) +
+        '<button class="btn btn-link btn-sm p-0 ms-2 reaction-add-btn" data-id="' + msg.id + '" ' +
+          'style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;" title="React">😊+</button>' +
+        '</div>' +
         '<div>' + escapeHtml(msg.text) + '</div>' +
-      '</div></div>';
-    var atBottom = messagesDiv.scrollHeight - messagesDiv.clientHeight <= messagesDiv.scrollTop + 10;
-    messagesDiv.insertAdjacentHTML('beforeend', html);
+        '<div class="reaction-bar mt-1" data-id="' + msg.id + '"></div>' +
+      '</div>';
+    messagesDiv.appendChild(row);
+    if (msg.reactions && msg.reactions.length) {
+      renderReactionBar(row.querySelector('.reaction-bar'), msg.reactions);
+      initReactions[msg.id] = msg.reactions;
+    }
     if (atBottom) scrollToBottom();
   }
 
+  /* ── polling ────────────────────────────────────────────────── */
   function poll() {
-    fetch('{% url "chat_poll" %}?since=' + encodeURIComponent(lastTs))
+    fetch(pollUrl + '?since=' + encodeURIComponent(lastTs))
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (data.messages && data.messages.length) {
@@ -130,7 +283,7 @@
 
   setInterval(poll, 5000);
 
-  /* Submit via AJAX so the page doesn't reload */
+  /* ── send form ──────────────────────────────────────────────── */
   document.getElementById('chat-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var input = document.getElementById('chat-input');
@@ -138,7 +291,7 @@
     if (!text) return;
     var form = this;
     var data = new FormData(form);
-    fetch('{% url "chat" %}', {method: 'POST', body: data})
+    fetch(chatUrl, {method: 'POST', body: data})
       .then(function () {
         input.value = '';
         poll();

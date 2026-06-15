@@ -15,3 +15,12 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f'{self.user.username}: {self.text[:50]}'
+
+
+class MessageReaction(models.Model):
+    message = models.ForeignKey(ChatMessage, on_delete=models.CASCADE, related_name='reactions')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chat_reactions')
+    emoji = models.CharField(max_length=10)
+
+    class Meta:
+        unique_together = ('message', 'user', 'emoji')
