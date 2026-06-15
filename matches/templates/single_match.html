@@ -9,11 +9,6 @@
 {% endblock %}
 
 
-{% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
-  <li class="breadcrumb-item"><a href="{% url 'matches:matches_index' %}">{% trans "Matches" %}</a></li>
-  <li class="breadcrumb-item active" aria-current="page">{{ match }}</li>
-{% endblock %}
 {% block content %}
   <div class="card mb-4">
     <div class="card-body">

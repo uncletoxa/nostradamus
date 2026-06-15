@@ -3,11 +3,6 @@
 {% load humanize crispy_forms_tags %}
 {% load i18n %}
 
-{% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
-  <li class="breadcrumb-item"><a href="{% url 'predictions:predictions_index' %}">{% trans "Predictions" %}</a></li>
-  <li class="breadcrumb-item active" aria-current="page"> <a href="{% url 'predictions:details' match.match_id %}"> {{ match }} </a></li>
-{% endblock %}
 
 {% block content %}
   <div class="row">

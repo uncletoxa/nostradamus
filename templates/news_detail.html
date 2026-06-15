@@ -3,10 +3,6 @@
 
 {% block title %}{{ post.title }}{% endblock %}
 
-{% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'news_list' %}">{% trans "News" %}</a></li>
-  <li class="breadcrumb-item active" aria-current="page">{{ post.title }}</li>
-{% endblock %}
 
 {% block content %}
   <h3>{{ post.title }}</h3>

@@ -2,10 +2,6 @@
 {% load static %}
 {% load i18n %}
 
-{% block breadcrumb %}
-  <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
-  <li class="breadcrumb-item active" aria-current="page">{% trans "Matches" %}</li>
-{% endblock %}
 
 {% block content %}
   <table class="table">
