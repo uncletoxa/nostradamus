@@ -112,5 +112,201 @@
 {% endblock body %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 {% block javascript %}{% endblock %}
+
+{% if user.is_authenticated and request.resolver_match.url_name != 'chat' %}
+<div id="cw-btn-wrap" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:1050;">
+  <button id="cw-toggle" type="button" class="btn btn-primary shadow"
+          style="width:52px;height:52px;border-radius:50%;padding:0;position:relative;"
+          onclick="chatWidget.toggle()" title="{% trans "Chat" %}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414L2 14.414V2zm2-1a1 1 0 0 0-1 1v10.586l1.707-1.707A1 1 0 0 1 5.414 11H12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z"/>
+    </svg>
+    <span id="cw-badge"
+          style="display:none;position:absolute;top:2px;right:2px;min-width:18px;height:18px;
+                 border-radius:9px;background:#dc3545;color:#fff;font-size:11px;
+                 font-weight:bold;line-height:18px;text-align:center;padding:0 3px;">0</span>
+  </button>
+</div>
+
+<div id="cw-panel" style="display:none;position:fixed;bottom:5rem;right:1.5rem;
+     width:320px;max-width:calc(100vw - 2rem);z-index:1049;">
+  <div class="card shadow-lg" style="border-radius:0.5rem;overflow:hidden;">
+    <div class="card-header d-flex justify-content-between align-items-center py-2 px-3">
+      <strong style="font-size:0.95rem;">{% trans "Chat" %}</strong>
+      <a href="{% url 'chat' %}" class="text-muted me-2" style="font-size:0.8rem;">{% trans "Open full chat" %}</a>
+      <button type="button" class="btn-close btn-close-sm" onclick="chatWidget.close()"></button>
+    </div>
+    <div id="cw-messages"
+         style="height:260px;overflow-y:auto;padding:0.6rem 0.75rem;background:#fff;">
+      <p id="cw-loading" class="text-muted text-center mt-4" style="font-size:0.85rem;">{% trans "Loading…" %}</p>
+    </div>
+    <div class="card-footer p-2" style="background:#f8f9fa;">
+      <form id="cw-form" autocomplete="off">
+        {% csrf_token %}
+        <div class="input-group input-group-sm">
+          <input type="text" id="cw-input" class="form-control"
+                 placeholder="{% trans "Message…" %}" maxlength="1000" required>
+          <button type="submit" class="btn btn-primary">&#9658;</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+var chatWidget = (function () {
+  var STORE_KEY = 'chat_last_read';
+  var panel = document.getElementById('cw-panel');
+  var msgsDiv = document.getElementById('cw-messages');
+  var badge = document.getElementById('cw-badge');
+  var loading = document.getElementById('cw-loading');
+  var isOpen = false;
+  var initialized = false;
+  var lastTs = new Date().toISOString();
+  var unread = 0;
+  var lastReadTs = localStorage.getItem(STORE_KEY) || '';
+
+  function esc(s) {
+    var d = document.createElement('div');
+    d.appendChild(document.createTextNode(s));
+    return d.innerHTML;
+  }
+
+  function avatarHtml(msg) {
+    if (msg.avatar) {
+      return '<img src="' + esc(msg.avatar) + '" class="rounded-circle" ' +
+             'style="width:28px;height:28px;object-fit:cover;" alt="">';
+    }
+    return '<div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" ' +
+           'style="width:28px;height:28px;flex-shrink:0;">' +
+           '<span class="text-white" style="font-size:11px;font-weight:bold;">' +
+           esc(msg.user.charAt(0).toUpperCase()) + '</span></div>';
+  }
+
+  function appendMsg(msg, isUnread) {
+    var dot = isUnread
+      ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;' +
+        'background:#0d6efd;vertical-align:middle;margin-right:3px;flex-shrink:0;"></span>'
+      : '';
+    var html = '<div class="d-flex mb-2" style="gap:0.4rem;">' +
+      '<div style="flex-shrink:0;">' + avatarHtml(msg) + '</div>' +
+      '<div style="min-width:0;">' +
+        '<div style="font-size:0.78rem;">' + dot + '<strong>' + esc(msg.user) + '</strong>' +
+        ' <span class="text-muted">' + esc(msg.time) + '</span></div>' +
+        '<div style="font-size:0.85rem;word-break:break-word;">' + esc(msg.text) + '</div>' +
+      '</div></div>';
+    msgsDiv.insertAdjacentHTML('beforeend', html);
+  }
+
+  function scrollBottom() { msgsDiv.scrollTop = msgsDiv.scrollHeight; }
+
+  function updateBadge() {
+    if (unread > 0) {
+      badge.textContent = unread > 9 ? '9+' : String(unread);
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  function markRead() {
+    lastReadTs = new Date().toISOString();
+    localStorage.setItem(STORE_KEY, lastReadTs);
+    unread = 0;
+    updateBadge();
+  }
+
+  function poll() {
+    fetch('{% url "chat_poll" %}?since=' + encodeURIComponent(lastTs))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data.messages || !data.messages.length) return;
+        var atBottom = msgsDiv.scrollHeight - msgsDiv.clientHeight <= msgsDiv.scrollTop + 10;
+        data.messages.forEach(function (msg) {
+          appendMsg(msg, !isOpen);
+          lastTs = msg.created_at;
+        });
+        if (!isOpen) {
+          unread += data.messages.length;
+          updateBadge();
+        } else {
+          markRead();
+          if (atBottom) scrollBottom();
+        }
+      })
+      .catch(function () {});
+  }
+
+  function loadHistory() {
+    var since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+    fetch('{% url "chat_poll" %}?since=' + encodeURIComponent(since) + '&limit=20')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (loading) loading.remove();
+        if (data.messages && data.messages.length) {
+          data.messages.forEach(function (msg) {
+            appendMsg(msg, lastReadTs && msg.created_at > lastReadTs);
+          });
+          lastTs = data.messages[data.messages.length - 1].created_at;
+        } else {
+          msgsDiv.insertAdjacentHTML('beforeend',
+            '<p class="text-muted text-center mt-4" style="font-size:0.85rem;">{% trans "No messages yet." %}</p>');
+        }
+        scrollBottom();
+        markRead();
+      })
+      .catch(function () { if (loading) loading.remove(); });
+  }
+
+  function open() {
+    isOpen = true;
+    panel.style.display = '';
+    if (!initialized) {
+      initialized = true;
+      loadHistory();
+    } else {
+      markRead();
+      scrollBottom();
+    }
+    document.getElementById('cw-input').focus();
+  }
+
+  function close() {
+    isOpen = false;
+    panel.style.display = 'none';
+  }
+
+  function toggle() { if (isOpen) close(); else open(); }
+
+  // On page load, show badge for messages since last read
+  if (lastReadTs) {
+    fetch('{% url "chat_poll" %}?since=' + encodeURIComponent(lastReadTs) + '&limit=50')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.messages && data.messages.length) {
+          unread = data.messages.length;
+          updateBadge();
+        }
+      })
+      .catch(function () {});
+  }
+
+  setInterval(poll, 5000);
+
+  document.getElementById('cw-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var input = document.getElementById('cw-input');
+    var text = input.value.trim();
+    if (!text) return;
+    var data = new FormData(this);
+    fetch('{% url "chat" %}', {method: 'POST', body: data})
+      .then(function () { input.value = ''; poll(); })
+      .catch(function () {});
+  });
+
+  return {toggle: toggle, close: close};
+}());
+</script>
+{% endif %}
 </body>
 </html>

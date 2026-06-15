@@ -45,10 +45,15 @@ def chat_poll(request):
     qs = (ChatMessage.objects
           .filter(created_at__gt=since)
           .select_related('user', 'user__profile',
-                          'match', 'match__home_team', 'match__guest_team')
-          .order_by('created_at'))
+                          'match', 'match__home_team', 'match__guest_team'))
+    try:
+        limit = int(request.GET.get('limit', ''))
+        msgs = list(qs.order_by('-created_at')[:limit])
+        msgs.reverse()
+    except (ValueError, TypeError):
+        msgs = list(qs.order_by('created_at'))
     data = []
-    for msg in qs:
+    for msg in msgs:
         try:
             avatar = msg.user.profile.photo.url if msg.user.profile.photo else None
         except Exception:
