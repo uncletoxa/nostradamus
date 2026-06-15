@@ -122,9 +122,8 @@
       <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414L2 14.414V2zm2-1a1 1 0 0 0-1 1v10.586l1.707-1.707A1 1 0 0 1 5.414 11H12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z"/>
     </svg>
     <span id="cw-badge"
-          style="display:none;position:absolute;top:2px;right:2px;min-width:18px;height:18px;
-                 border-radius:9px;background:#dc3545;color:#fff;font-size:11px;
-                 font-weight:bold;line-height:18px;text-align:center;padding:0 3px;">0</span>
+          style="display:none;position:absolute;top:3px;right:3px;width:11px;height:11px;
+                 border-radius:50%;background:#dc3545;border:2px solid #fff;"></span>
   </button>
 </div>
 
@@ -156,6 +155,7 @@
 <script>
 var chatWidget = (function () {
   var STORE_KEY = 'chat_last_read';
+  var DISMISSED_KEY = 'chat_widget_dismissed';
   var panel = document.getElementById('cw-panel');
   var msgsDiv = document.getElementById('cw-messages');
   var badge = document.getElementById('cw-badge');
@@ -165,6 +165,7 @@ var chatWidget = (function () {
   var lastTs = new Date().toISOString();
   var unread = 0;
   var lastReadTs = localStorage.getItem(STORE_KEY) || '';
+  var dismissed = localStorage.getItem(DISMISSED_KEY) === '1';
 
   function esc(s) {
     var d = document.createElement('div');
@@ -201,12 +202,7 @@ var chatWidget = (function () {
   function scrollBottom() { msgsDiv.scrollTop = msgsDiv.scrollHeight; }
 
   function updateBadge() {
-    if (unread > 0) {
-      badge.textContent = unread > 9 ? '9+' : String(unread);
-      badge.style.display = '';
-    } else {
-      badge.style.display = 'none';
-    }
+    badge.style.display = unread > 0 ? '' : 'none';
   }
 
   function markRead() {
@@ -274,12 +270,17 @@ var chatWidget = (function () {
   function close() {
     isOpen = false;
     panel.style.display = 'none';
+    dismissed = true;
+    localStorage.setItem(DISMISSED_KEY, '1');
   }
 
   function toggle() { if (isOpen) close(); else open(); }
 
-  // On page load, show badge for messages since last read
-  if (lastReadTs) {
+  // Auto-open unless user has explicitly dismissed it
+  if (!dismissed) {
+    setTimeout(open, 300);
+  } else if (lastReadTs) {
+    // Dismissed: just show the red dot if there are unreads
     fetch('{% url "chat_poll" %}?since=' + encodeURIComponent(lastReadTs) + '&limit=50')
       .then(function (r) { return r.json(); })
       .then(function (data) {
