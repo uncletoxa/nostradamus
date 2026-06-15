@@ -1,6 +1,6 @@
 
-:root {
-  --bs-link-decoration: none;
+a {
+  text-decoration: none;
 }
 
 body {
