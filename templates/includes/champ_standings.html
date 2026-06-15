@@ -1,5 +1,6 @@
 {% load i18n %}
-<table class="table table-sm table-hover mb-0">
+<div class="table-responsive">
+<table class="table table-hover mb-0">
   <thead class="table-dark">
     <tr>
       <th>{% trans "User" %}</th>
@@ -8,8 +9,8 @@
   </thead>
   <tbody>
     {% for prediction in champ_predictions %}
-      <tr>
-        <td><a href="{% url 'results:user_results' prediction.user_id.id %}">{{ prediction.user_id.first_name }}</a></td>
+      <tr class="{% if prediction.user_id == current_user %}fw-bold{% endif %}">
+        <td><a href="{% url 'results:user_results' prediction.user_id.id %}">{{ prediction.user_id.first_name }}</a>{% if prediction.user_id == current_user %} <span class="text-muted">({% trans "you" %})</span>{% endif %}</td>
         {% if submissions_closed %}
           {% if prediction.prediction_id.is_winner == False %}
             <td><s>{{ prediction.prediction_id.team_id }}</s></td>
@@ -25,3 +26,4 @@
     {% endfor %}
   </tbody>
 </table>
+</div>

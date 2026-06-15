@@ -12,12 +12,15 @@ from basic.utils import last_prediction, get_user_results_by_matches
 register = template.Library()
 
 
-@register.inclusion_tag('includes/champ_standings.html')
-def champ_standings():
+@register.inclusion_tag('includes/champ_standings.html', takes_context=True)
+def champ_standings(context):
     champ_predictions = WinnerPrediction.objects.exclude(
         user_id__profile__previous_participant=True).order_by('id')
     submissions_closed = datetime.datetime.now(datetime.timezone.utc) > COMPETITION_START_DATE_UTC
-    return {'champ_predictions': champ_predictions, 'submissions_closed': submissions_closed}
+    request = context.get('request')
+    current_user = request.user if request else None
+    return {'champ_predictions': champ_predictions, 'submissions_closed': submissions_closed,
+            'current_user': current_user}
 
 
 @register.inclusion_tag('includes/cup_standings.html', takes_context=True)
