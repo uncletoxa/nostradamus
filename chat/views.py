@@ -60,6 +60,7 @@ def chat_poll(request):
             avatar = None
         data.append({
             'user': msg.user.get_full_name() or msg.user.username,
+            'username': msg.user.username,
             'text': msg.text,
             'avatar': avatar,
             'created_at': msg.created_at.isoformat(),

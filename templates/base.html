@@ -194,6 +194,7 @@ var darkMode = (function () {
 
 <script>
 var chatWidget = (function () {
+  var ME = '{{ user.username|escapejs }}';
   var STORE_KEY = 'chat_last_read';
   var DISMISSED_KEY = 'chat_widget_dismissed';
   var panel = document.getElementById('cw-panel');
@@ -225,7 +226,7 @@ var chatWidget = (function () {
   }
 
   function appendMsg(msg, isUnread) {
-    var dot = isUnread
+    var dot = (isUnread && msg.username !== ME)
       ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;' +
         'background:#0d6efd;vertical-align:middle;margin-right:3px;flex-shrink:0;"></span>'
       : '';
@@ -263,7 +264,7 @@ var chatWidget = (function () {
           lastTs = msg.created_at;
         });
         if (!isOpen) {
-          unread += data.messages.length;
+          unread += data.messages.filter(function (m) { return m.username !== ME; }).length;
           updateBadge();
         } else {
           markRead();
@@ -325,7 +326,7 @@ var chatWidget = (function () {
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (data.messages && data.messages.length) {
-          unread = data.messages.length;
+          unread = data.messages.filter(function (m) { return m.username !== ME; }).length;
           updateBadge();
         }
       })
