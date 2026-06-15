@@ -1,18 +1,12 @@
 {% extends 'base.html' %}
 
-{% load extensible_blocks static i18n %}
+{% load extensible_blocks i18n %}
 
 {% block breadcrumb %}
   <li class="breadcrumb-item active" aria-current="page">{% trans "Home" %}</li>
 {% endblock %}
 
 {% block content %}
-  <div class="mb-4">
-    <p class="lead fw-bold">Смотреть всем перед стартом Чемпионата мира по футболу-2026!</p>
-    <video controls playsinline class="w-100 home-video">
-      <source src="{% static 'video/preview.mp4' %}" type="video/mp4">
-    </video>
-  </div>
   {% if latest_news %}
     <div class="card mb-4">
       {% if latest_news.photo %}

@@ -24,3 +24,8 @@ def news_detail(request, pk):
 @login_required
 def history(request):
     return render(request, 'history.html')
+
+
+@login_required
+def intro(request):
+    return render(request, 'intro.html')
