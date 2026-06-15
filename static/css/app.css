@@ -125,11 +125,13 @@ body {
 [data-bs-theme="dark"] .table-warning {
   --bs-table-bg: #4a3800;
   --bs-table-border-color: #6b5200;
+  --bs-table-color: #e0e0e0;
 }
 
 [data-bs-theme="dark"] .table-secondary {
   --bs-table-bg: #4a5260;
   --bs-table-border-color: #636e80;
+  --bs-table-color: #e0e0e0;
 }
 
 [data-bs-theme="dark"] .table-bronze {
