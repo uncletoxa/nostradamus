@@ -115,3 +115,14 @@ body {
 .user-avatar-initial {
   font-size: 3rem;
 }
+
+.table-bronze {
+  --bs-table-bg: #f5e0c3;
+  --bs-table-border-color: #e8c89a;
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .table-bronze {
+  --bs-table-bg: #3a2510;
+  --bs-table-border-color: #5a3a1a;
+}
