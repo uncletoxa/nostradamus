@@ -122,6 +122,16 @@ body {
   color: var(--bs-body-color);
 }
 
+[data-bs-theme="dark"] .table-warning {
+  --bs-table-bg: #4a3800;
+  --bs-table-border-color: #6b5200;
+}
+
+[data-bs-theme="dark"] .table-secondary {
+  --bs-table-bg: #2a2f35;
+  --bs-table-border-color: #3f464f;
+}
+
 [data-bs-theme="dark"] .table-bronze {
   --bs-table-bg: #3a2510;
   --bs-table-border-color: #5a3a1a;
