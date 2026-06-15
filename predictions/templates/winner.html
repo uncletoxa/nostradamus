@@ -65,8 +65,8 @@
         <div class="card-header">
           <h6 class="mb-0">{% trans "Winner odds" %}</h6>
         </div>
-        <div class="card-body p-0">
-          <table class="table table-sm table-hover mb-0">
+        <div class="card-body">
+          <table class="table table-sm table-hover">
             <thead class="table-dark">
               <tr>
                 <th>{% trans "Team" %}</th>
@@ -109,14 +109,8 @@
 
     <!-- Right column: standings -->
     <div class="col-md-8 col-lg-9">
-      <div class="card">
-        <div class="card-header">
-          <h6 class="mb-0">{% trans "All predictions" %}</h6>
-        </div>
-        <div class="card-body p-0">
-          {% champ_standings %}
-        </div>
-      </div>
+      <h6 class="mb-2">{% trans "All predictions" %}</h6>
+      {% champ_standings %}
     </div>
 
   </div>
