@@ -57,6 +57,14 @@ body {
   text-decoration: none;
 }
 
+[data-bs-theme="dark"] .logo a {
+  color: rgba(255,255,255,.9);
+}
+
+[data-bs-theme="dark"] body {
+  background-image: url(../img/sports-dark.png);
+}
+
 .participant-photo {
   width: 100%;
   aspect-ratio: 4 / 3;
