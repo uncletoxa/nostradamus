@@ -1,4 +1,8 @@
 
+:root {
+  --bs-link-decoration: none;
+}
+
 body {
   font-family: 'PT Sans', sans-serif;
   background-image: url(../img/sports.png);
