@@ -8,10 +8,8 @@
             <div class="card-header"><a href="{% url 'matches:single_match' live_match.match_id %}">{{ live_match }}</a></div>
             <div class="card-body">
               <h3 class="card-title">{{ live_match.result }}
-                <span class="badge {% if live_match.status == 'PAUSED' %}text-bg-secondary{% else %}text-bg-danger{% endif %} fs-6 ms-1">
-                  {% if live_match.current_minute %}{{ live_match.current_minute }}'{% endif %}
-                  {% if live_match.status == 'PAUSED' %}{% trans "HT" %}{% else %}LIVE{% endif %}
-                </span>
+                {% if live_match.current_minute %}<small class="text-muted ms-1">{{ live_match.current_minute }}'</small>{% endif %}
+                <span class="badge {% if live_match.status == 'PAUSED' %}text-bg-secondary{% else %}text-bg-danger{% endif %} fs-6 ms-1">{% if live_match.status == 'PAUSED' %}{% trans "HT" %}{% else %}LIVE{% endif %}</span>
               </h3>
               <p class="text-muted mb-0">{% trans "start time:" %} {{ live_match.start_time|date:"d-m-Y H:i" }}</p>
             </div>

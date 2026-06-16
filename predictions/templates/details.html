@@ -20,10 +20,8 @@
           {% endif %}
           {% if match.status == 'IN_PLAY' or match.status == 'PAUSED' %}
             <div class="mt-1">
-              <span class="badge {% if match.status == 'PAUSED' %}text-bg-secondary{% else %}text-bg-danger{% endif %} small">
-                {% if match.current_minute %}{{ match.current_minute }}'{% endif %}
-                {% if match.status == 'PAUSED' %}{% trans "HT" %}{% else %}LIVE{% endif %}
-              </span>
+              {% if match.current_minute %}<small class="text-muted me-1">{{ match.current_minute }}'</small>{% endif %}
+              <span class="badge {% if match.status == 'PAUSED' %}text-bg-secondary{% else %}text-bg-danger{% endif %} small">{% if match.status == 'PAUSED' %}{% trans "HT" %}{% else %}LIVE{% endif %}</span>
             </div>
           {% endif %}
           <div class="text-muted mt-2"><small>{{ match.start_time|date:"j F Y, H:i" }}</small></div>
