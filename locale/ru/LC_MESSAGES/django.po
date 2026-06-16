@@ -354,3 +354,148 @@ msgstr "3-я команда, за которую болеете"
 
 msgid "Please select different teams."
 msgstr "Пожалуйста, выберите разные команды."
+
+# Country / team names
+msgid "Argentina"
+msgstr "Аргентина"
+
+msgid "France"
+msgstr "Франция"
+
+msgid "England"
+msgstr "Англия"
+
+msgid "Spain"
+msgstr "Испания"
+
+msgid "Brazil"
+msgstr "Бразилия"
+
+msgid "Belgium"
+msgstr "Бельгия"
+
+msgid "Portugal"
+msgstr "Португалия"
+
+msgid "Netherlands"
+msgstr "Нидерланды"
+
+msgid "Germany"
+msgstr "Германия"
+
+msgid "Mexico"
+msgstr "Мексика"
+
+msgid "Canada"
+msgstr "Канада"
+
+msgid "United States"
+msgstr "США"
+
+msgid "Croatia"
+msgstr "Хорватия"
+
+msgid "Austria"
+msgstr "Австрия"
+
+msgid "Senegal"
+msgstr "Сенегал"
+
+msgid "Colombia"
+msgstr "Колумбия"
+
+msgid "Uruguay"
+msgstr "Уругвай"
+
+msgid "Morocco"
+msgstr "Марокко"
+
+msgid "Egypt"
+msgstr "Египет"
+
+msgid "Japan"
+msgstr "Япония"
+
+msgid "Ecuador"
+msgstr "Эквадор"
+
+msgid "Australia"
+msgstr "Австралия"
+
+msgid "Switzerland"
+msgstr "Швейцария"
+
+msgid "South Korea"
+msgstr "Южная Корея"
+
+msgid "Panama"
+msgstr "Панама"
+
+msgid "Uzbekistan"
+msgstr "Узбекистан"
+
+msgid "Algeria"
+msgstr "Алжир"
+
+msgid "Norway"
+msgstr "Норвегия"
+
+msgid "Saudi Arabia"
+msgstr "Саудовская Аравия"
+
+msgid "Iran"
+msgstr "Иран"
+
+msgid "Tunisia"
+msgstr "Тунис"
+
+msgid "Ivory Coast"
+msgstr "Кот-д'Ивуар"
+
+msgid "Paraguay"
+msgstr "Парагвай"
+
+msgid "Scotland"
+msgstr "Шотландия"
+
+msgid "Qatar"
+msgstr "Катар"
+
+msgid "South Africa"
+msgstr "ЮАР"
+
+msgid "Ghana"
+msgstr "Гана"
+
+msgid "DR Congo"
+msgstr "ДР Конго"
+
+msgid "Iraq"
+msgstr "Ирак"
+
+msgid "Jordan"
+msgstr "Иордания"
+
+msgid "Cape Verde"
+msgstr "Кабо-Верде"
+
+msgid "New Zealand"
+msgstr "Новая Зеландия"
+
+msgid "Sweden"
+msgstr "Швеция"
+
+msgid "Curaçao"
+msgstr "Кюрасао"
+
+msgid "Turkey"
+msgstr "Турция"
+
+msgid "Haiti"
+msgstr "Гаити"
+
+msgid "Bosnia and Herzegovina"
+msgstr "Босния и Герцеговина"
+
+msgid "Czech Republic"
+msgstr "Чехия"

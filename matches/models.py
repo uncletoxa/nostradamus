@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext as _
 
 
 class Team(models.Model):
@@ -8,7 +9,7 @@ class Team(models.Model):
     emoji_symbol = models.CharField(max_length=30)
 
     def __str__(self):
-        return '{} {}'.format(self.emoji_symbol, self.name)
+        return '{} {}'.format(self.emoji_symbol, _(self.name))
 
 
 class Match(models.Model):

@@ -15,7 +15,7 @@
       <div class="d-flex align-items-center justify-content-between">
         <div class="text-center flex-fill">
           <div class="match-team-emoji">{{ match.home_team.emoji_symbol }}</div>
-          <div class="fw-bold mt-1">{{ match.home_team.name }}</div>
+          <div class="fw-bold mt-1">{% trans match.home_team.name %}</div>
         </div>
         <div class="text-center mx-4">
           {% if match.result %}
@@ -34,7 +34,7 @@
         </div>
         <div class="text-center flex-fill">
           <div class="match-team-emoji">{{ match.guest_team.emoji_symbol }}</div>
-          <div class="fw-bold mt-1">{{ match.guest_team.name }}</div>
+          <div class="fw-bold mt-1">{% trans match.guest_team.name %}</div>
         </div>
       </div>
     </div>
