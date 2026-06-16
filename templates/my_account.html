@@ -22,13 +22,24 @@
     <div class="col-lg-6 col-md-8 col-sm-10">
       <h4>{% trans "Teams you support" %}</h4>
       <p class="text-muted">{% trans "Pick up to three teams you're cheering for — this is just for fun and isn't tied to any predictions or odds." %}</p>
-      <form method="post" novalidate>
-        {% csrf_token %}
-        {% with form=supported_teams_form %}
-          {% include 'includes/form.html' %}
-        {% endwith %}
-        <button type="submit" name="update_supported_teams" class="btn btn-success">{% trans "Save teams" %}</button>
-      </form>
+      {% if cup_started %}
+        {% if current_teams %}
+          <ul class="list-unstyled mb-2">
+            {% for team in current_teams %}
+              <li>{{ team }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <p class="text-muted small">{% trans "The cup has started — your favourite teams are locked." %}</p>
+      {% else %}
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {% with form=supported_teams_form %}
+            {% include 'includes/form.html' %}
+          {% endwith %}
+          <button type="submit" name="update_supported_teams" class="btn btn-success">{% trans "Save teams" %}</button>
+        </form>
+      {% endif %}
     </div>
   </div>
 

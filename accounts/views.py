@@ -2,13 +2,22 @@ from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from matches.models import Team
+from django.utils import timezone
+from matches.models import Match, Team
 from .forms import SignUpForm, UserUpdateForm, SupportedTeamsForm
 from .models import SupportedTeam, UserProfile
 
 
-def _supported_teams_initial(user):
-    teams = list(Team.objects.filter(supporters__user_id=user).order_by('supporters__id'))
+def _cup_started():
+    first_match = Match.objects.order_by('start_time').values('start_time').first()
+    return first_match is not None and first_match['start_time'] <= timezone.now()
+
+
+def _supported_teams(user):
+    return list(Team.objects.filter(supporters__user_id=user).order_by('supporters__id'))
+
+
+def _supported_teams_initial(teams):
     return {
         'favourite_team_1': teams[0] if len(teams) > 0 else None,
         'favourite_team_2': teams[1] if len(teams) > 1 else None,
@@ -17,8 +26,10 @@ def _supported_teams_initial(user):
 
 @login_required
 def my_account(request):
+    cup_started = _cup_started()
     account_form = UserUpdateForm(instance=request.user)
-    supported_teams_form = SupportedTeamsForm(initial=_supported_teams_initial(request.user))
+    current_teams = _supported_teams(request.user)
+    supported_teams_form = SupportedTeamsForm(initial=_supported_teams_initial(current_teams))
 
     if request.method == 'POST':
         if 'update_account' in request.POST:
@@ -26,7 +37,7 @@ def my_account(request):
             if account_form.is_valid():
                 account_form.save()
                 return redirect('my_account')
-        elif 'update_supported_teams' in request.POST:
+        elif 'update_supported_teams' in request.POST and not cup_started:
             supported_teams_form = SupportedTeamsForm(request.POST)
             if supported_teams_form.is_valid():
                 cd = supported_teams_form.cleaned_data
@@ -38,7 +49,8 @@ def my_account(request):
                 return redirect('my_account')
 
     return render(request, 'my_account.html',
-                  {'form': account_form, 'supported_teams_form': supported_teams_form})
+                  {'form': account_form, 'supported_teams_form': supported_teams_form,
+                   'cup_started': cup_started, 'current_teams': current_teams})
 
 
 @login_required
