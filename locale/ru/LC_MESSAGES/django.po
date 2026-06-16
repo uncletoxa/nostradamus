@@ -499,3 +499,6 @@ msgstr "Босния и Герцеговина"
 
 msgid "Czech Republic"
 msgstr "Чехия"
+
+msgid "Language"
+msgstr "Язык"

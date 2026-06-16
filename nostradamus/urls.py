@@ -11,6 +11,7 @@ from basic import views as basic_views
 
 
 urlpatterns = [
+    path('i18n/', include('django.conf.urls.i18n')),
     path('matches/', include('matches.urls')),
     path('predictions/', include('predictions.urls')),
     path('results/', include('results.urls')),

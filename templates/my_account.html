@@ -5,6 +5,8 @@
 
 
 {% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
   <h3 class="mb-3">{% trans "My account" %}</h3>
   <div class="row">
     <div class="col-lg-6 col-md-8 col-sm-10">
@@ -26,6 +28,24 @@
           {% include 'includes/form.html' %}
         {% endwith %}
         <button type="submit" name="update_supported_teams" class="btn btn-success">{% trans "Save teams" %}</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-lg-6 col-md-8 col-sm-10">
+      <h4>{% trans "Language" %}</h4>
+      <form method="post" action="{% url 'set_language' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <div class="d-flex gap-2">
+          {% for lang_code, lang_name in LANGUAGES %}
+            <button type="submit" name="language" value="{{ lang_code }}"
+                    class="btn {% if lang_code == LANGUAGE_CODE %}btn-success{% else %}btn-outline-secondary{% endif %}">
+              {{ lang_name }}
+            </button>
+          {% endfor %}
+        </div>
       </form>
     </div>
   </div>
