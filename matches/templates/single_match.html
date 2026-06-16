@@ -30,7 +30,7 @@
             </div>
           {% endif %}
           <div class="text-muted mt-2"><small>{{ match.start_time|date:"j F Y, H:i" }}</small></div>
-          <div class="mt-1"><a href="{% url 'predictions:details' match.match_id %}" class="text-muted small">{% trans "Odds" %}</a></div>
+          <div class="mt-1"><a href="{% url 'predictions:details' match.match_id %}" class="small">{% trans "Odds" %}</a></div>
         </div>
         <div class="text-center flex-fill">
           <div class="match-team-emoji">{{ match.guest_team.emoji_symbol }}</div>
