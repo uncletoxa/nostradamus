@@ -31,7 +31,7 @@ STATUS_MAP = {
 def fetch_match(token, fixture_id):
     conn = http.client.HTTPSConnection(API_HOST)
     conn.request('GET', '/v4/matches/{}'.format(fixture_id),
-                 headers={'X-Auth-Token': token})
+                 headers={'X-Auth-Token': token, 'X-Api-Version': 'v4.1'})
     resp = conn.getresponse()
     if resp.status != 200:
         raise RuntimeError('API error {}: {}'.format(resp.status, resp.reason))
@@ -69,6 +69,12 @@ def main():
         full_time = api_match.get('score', {}).get('fullTime', {})
         api_home_score = full_time.get('home')
         api_away_score = full_time.get('away')
+        api_minute = api_match.get('minute')
+        api_injury_time = api_match.get('injuryTime')
+        if api_status == Match.FINISHED:
+            api_minute = None
+        elif api_minute is not None and api_injury_time:
+            api_minute = api_minute + api_injury_time
 
         changed = []
 
@@ -84,6 +90,10 @@ def main():
                 match.home_score = api_home_score
                 match.guest_score = api_away_score
                 changed.extend(['home_score', 'guest_score'])
+
+        if match.current_minute != api_minute:
+            match.current_minute = api_minute
+            changed.append('current_minute')
 
         if changed:
             match.save(update_fields=changed)
