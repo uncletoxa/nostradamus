@@ -5,8 +5,7 @@
 
 
 {% block content %}
-  <div class="card mb-4 position-relative">
-    <a href="{% url 'matches:single_match' match.match_id %}" class="position-absolute top-0 end-0 m-2 badge rounded-pill text-bg-secondary text-decoration-none">{% trans "Match Results" %}</a>
+  <div class="card mb-4">
     <div class="card-body">
       <div class="d-flex align-items-center justify-content-between">
         <div class="text-center flex-fill">
@@ -26,6 +25,7 @@
             </div>
           {% endif %}
           <div class="text-muted mt-2"><small>{{ match.start_time|date:"j F Y, H:i" }}</small></div>
+          <div class="mt-1"><a href="{% url 'matches:single_match' match.match_id %}" class="text-muted small">{% trans "Prediction results" %}</a></div>
         </div>
         <div class="text-center flex-fill">
           <div class="match-team-emoji">{{ match.guest_team.emoji_symbol }}</div>

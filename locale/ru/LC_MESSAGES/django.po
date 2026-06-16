@@ -198,6 +198,9 @@ msgid "Table"
 msgstr "Таблица"
 
 # single_match.html
+msgid "Prediction results"
+msgstr "Результаты прогнозов"
+
 msgid "Prediction table will be available after the match starts."
 msgstr "Таблица прогнозов будет доступна после старта матча."
 
