@@ -69,13 +69,13 @@
                       </div>
                     </li>
                 </ul>
-                {% if user.is_authenticated %}
+                {% comment %}{% if user.is_authenticated %}
                 <button id="notif-toggle" type="button" class="btn btn-sm ms-auto me-1"
                         title="Enable push notifications"
                         style="width:32px;height:32px;padding:0;border:none;background:none;font-size:1.15rem;line-height:1;display:none;">
                   <span id="notif-icon">🔔</span>
                 </button>
-                {% endif %}
+                {% endif %}{% endcomment %}
                 <button id="dm-toggle" type="button" class="btn btn-sm {% if not user.is_authenticated %}ms-auto{% endif %} me-2"
                         onclick="darkMode.toggle()" title="Toggle dark mode"
                         style="width:32px;height:32px;padding:0;border:none;background:none;font-size:1.15rem;line-height:1;">
