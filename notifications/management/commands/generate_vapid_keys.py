@@ -29,4 +29,4 @@ class Command(BaseCommand):
         self.stdout.write('\nAdd to your .env / .env.local:\n')
         self.stdout.write('VAPID_PRIVATE_KEY={}'.format(pem_path))
         self.stdout.write('VAPID_PUBLIC_KEY={}'.format(public_key_b64))
-        self.stdout.write('VAPID_CONTACT_EMAIL=dangerous@duck.com')
+        self.stdout.write('VAPID_CONTACT_EMAIL=gizmo-bundle-filth@duck.com')
