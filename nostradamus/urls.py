@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 
 from accounts import views as accounts_views
 from basic import views as basic_views
+from notifications import views as notifications_views
 
 
 urlpatterns = [
@@ -35,5 +36,7 @@ urlpatterns = [
         name='password_change_done'),
 
     path('chat/', include('chat.urls')),
+    path('push/', include('notifications.urls')),
+    path('sw.js', notifications_views.service_worker, name='service_worker'),
     re_path(r'^robots.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", content_type="text/plain"))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

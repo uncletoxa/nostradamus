@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'accounts',
     'matches',
     'results',
-    'chat'
+    'chat',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'basic.context_processors.winner_prediction_status',
+                'basic.context_processors.vapid_public_key',
             ],
         },
     },
@@ -128,3 +130,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 from django.contrib.messages import constants as message_constants
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
+
+VAPID_PRIVATE_KEY = config('VAPID_PRIVATE_KEY', default=None)
+VAPID_PUBLIC_KEY = config('VAPID_PUBLIC_KEY', default='')
+VAPID_CONTACT_EMAIL = config('VAPID_CONTACT_EMAIL', default='admin@example.com')

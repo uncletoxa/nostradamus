@@ -1,6 +1,7 @@
 import io
 import json
 from PIL import Image
+from django.contrib.auth.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -10,6 +11,16 @@ from django.utils import timezone
 from django.db.models import Count
 from .models import ChatMessage, MessageReaction
 from matches.models import Match
+
+
+def _notify_chat(sender, text):
+    from notifications.utils import send_push_to_users
+    others = User.objects.filter(
+        push_subscriptions__isnull=False,
+        is_active=True).exclude(pk=sender.pk).distinct()
+    name = sender.get_full_name() or sender.username
+    body = text[:100] if text else '📷 Image'
+    send_push_to_users(others, title=name, body=body, url='/chat/')
 
 _MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 _MAX_DIMENSION = 1024  # resize to fit within 1024×1024
@@ -78,6 +89,7 @@ def chat(request):
         ).first()
         ChatMessage.objects.create(
             user=request.user, text=text, image=image, match=live_match)
+        _notify_chat(request.user, text)
         return JsonResponse({'ok': True})
     chat_messages = list(ChatMessage.objects
                          .select_related('user', 'user__profile',

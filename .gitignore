@@ -9,5 +9,6 @@ sftp-config.json
 .serena/
 .playwright-mcp/
 tmp/
+vapid_private.pem
 listing*.yml
 /*.png
