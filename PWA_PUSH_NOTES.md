@@ -49,35 +49,30 @@ No iOS / no app store / no APK — Android Chrome installs straight from the URL
 
 ---
 
-## TODO — not done yet (blockers)
+## Completed TODO items
 
-These could not be completed locally because the host `venv` is missing the
-project dependencies (`crispy_bootstrap5`, etc.). Run inside the Docker dev env.
+1. **DB migration** — `0001_initial.py` generated and applied (PushSubscription + PredictionReminderSent).
+2. **VAPID keys** — generated for local dev, added to `.env.local`.
+   NOTE: prod needs its OWN keypair (`python manage.py generate_vapid_keys` on the server).
+3. **Verified locally**:
+   - Bell button renders in navbar for authenticated users.
+   - `/sw.js` serves correctly with `Service-Worker-Allowed: /`.
+   - `send_prediction_reminders --hours 24` found upcoming matches, attempted pushes,
+     and created dedupe records in `PredictionReminderSent`.
+   - Chat notification hook (`_notify_chat`) is wired in `chat/views.py`.
 
-1. **Generate the DB migration** (the `notifications` app has NO migration yet):
-   ```
-   docker compose -f compose.local.yaml exec web python manage.py makemigrations notifications
-   docker compose -f compose.local.yaml exec web python manage.py migrate
-   ```
+## TODO — remaining
 
-2. **Generate VAPID keys** and add them to `.env.local` (and prod `.env`):
-   ```
-   docker compose -f compose.local.yaml exec web python manage.py generate_vapid_keys
-   ```
-   Then copy the printed `VAPID_PRIVATE_KEY` / `VAPID_PUBLIC_KEY` /
-   `VAPID_CONTACT_EMAIL` lines into the env file. The private key is written to
-   `vapid_private.pem` (gitignored) — `VAPID_PRIVATE_KEY` points at that path.
-   NOTE: prod and local should each get their OWN keypair.
-
-3. **Wire the reminder cron** alongside the existing score updater:
+1. **Wire the reminder cron** on prod alongside the existing score updater:
    ```
    python manage.py send_prediction_reminders --hours 3
    ```
    Run every 30–60 min.
 
-4. **Test end to end** — nothing has been run or verified yet:
-   - Web Push requires HTTPS (works on `localhost` for dev).
-   - Install prompt + 🔔 toggle subscribes/unsubscribes.
+2. **Deploy to prod** — rebuild image, generate prod VAPID keys, add to `.env`, run migrate.
+
+3. **End-to-end test on prod** (Web Push requires HTTPS):
+   - Install prompt + bell toggle subscribes/unsubscribes.
    - Post a chat message from another user → push arrives.
    - `send_prediction_reminders` with an upcoming SCHEDULED match → push arrives.
 

@@ -10,5 +10,6 @@ sftp-config.json
 .playwright-mcp/
 tmp/
 vapid_private.pem
+staticfiles/
 listing*.yml
 /*.png
