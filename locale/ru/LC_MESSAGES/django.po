@@ -505,3 +505,18 @@ msgstr "Язык"
 
 msgid "The cup has started — your favourite teams are locked."
 msgstr "Кубок начался — ваши любимые команды зафиксированы."
+
+msgid "Push notifications"
+msgstr "Push-уведомления"
+
+msgid "Prediction reminders"
+msgstr "Напоминания о прогнозах"
+
+msgid "Chat messages"
+msgstr "Сообщения в чате"
+
+msgid "Enable push notifications in your browser first (use the 🔔 button in the navbar)."
+msgstr "Сначала включите push-уведомления в браузере (кнопка 🔔 в навигации)."
+
+msgid "Use the 🔔 button in the navbar to manage push notifications."
+msgstr "Используйте кнопку 🔔 в навигации для управления push-уведомлениями."

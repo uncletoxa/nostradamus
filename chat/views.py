@@ -14,10 +14,15 @@ from matches.models import Match
 
 
 def _notify_chat(sender, text):
+    from notifications.models import NotificationPreferences
     from notifications.utils import send_push_to_users
+    opted_out = set(
+        NotificationPreferences.objects.filter(notify_chat=False)
+        .values_list('user_id', flat=True))
     others = User.objects.filter(
         push_subscriptions__isnull=False,
-        is_active=True).exclude(pk=sender.pk).distinct()
+        is_active=True).exclude(
+        pk__in=opted_out | {sender.pk}).distinct()
     name = sender.get_full_name() or sender.username
     body = text[:100] if text else '📷 Image'
     send_push_to_users(others, title=name, body=body, url='/chat/')

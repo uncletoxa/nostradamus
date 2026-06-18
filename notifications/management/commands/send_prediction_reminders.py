@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from matches.models import Match
 from predictions.models import Prediction
-from notifications.models import PushSubscription, PredictionReminderSent
+from notifications.models import PushSubscription, PredictionReminderSent, NotificationPreferences
 from notifications.utils import send_push
 
 
@@ -30,9 +30,12 @@ class Command(BaseCommand):
             self.stdout.write('No matches starting within {} hours.'.format(hours))
             return
 
+        opted_out = set(
+            NotificationPreferences.objects.filter(notify_predictions=False)
+            .values_list('user_id', flat=True))
         subscribed_users = User.objects.filter(
             push_subscriptions__isnull=False,
-            is_active=True).distinct()
+            is_active=True).exclude(pk__in=opted_out).distinct()
 
         for match in upcoming:
             predicted_ids = set(

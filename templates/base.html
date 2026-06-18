@@ -69,13 +69,26 @@
                       </div>
                     </li>
                 </ul>
-                {% comment %}{% if user.is_authenticated %}
-                <button id="notif-toggle" type="button" class="btn btn-sm ms-auto me-1"
-                        title="Enable push notifications"
-                        style="width:32px;height:32px;padding:0;border:none;background:none;font-size:1.15rem;line-height:1;display:none;">
-                  <span id="notif-icon">🔔</span>
-                </button>
-                {% endif %}{% endcomment %}
+                {% if user.is_authenticated %}
+                <div class="dropdown ms-auto me-1" id="notif-dropdown" style="display:none;">
+                  <button type="button" class="btn btn-sm" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                          style="width:32px;height:32px;padding:0;border:none;background:none;font-size:1.15rem;line-height:1;">
+                    <span id="notif-icon">🔔</span>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-end p-2" style="min-width:200px;">
+                    <div class="form-check form-switch mb-1">
+                      <input class="form-check-input" type="checkbox" id="notif-predictions"
+                             {% if notif_prefs.notify_predictions %}checked{% endif %}>
+                      <label class="form-check-label small" for="notif-predictions">{% trans "Prediction reminders" %}</label>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="notif-chat"
+                             {% if notif_prefs.notify_chat %}checked{% endif %}>
+                      <label class="form-check-label small" for="notif-chat">{% trans "Chat messages" %}</label>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
                 <button id="dm-toggle" type="button" class="btn btn-sm {% if not user.is_authenticated %}ms-auto{% endif %} me-2"
                         onclick="darkMode.toggle()" title="Toggle dark mode"
                         style="width:32px;height:32px;padding:0;border:none;background:none;font-size:1.15rem;line-height:1;">
@@ -365,12 +378,17 @@ var chatWidget = (function () {
   var VAPID_PUBLIC_KEY = '{{ vapid_public_key }}';
   var subscribeUrl = '{% url "push_subscribe" %}';
   var unsubscribeUrl = '{% url "push_unsubscribe" %}';
+  var prefsUrl = '{% url "push_preferences" %}';
   var csrfToken = '{{ csrf_token }}';
 
   if (!('serviceWorker' in navigator) || !('PushManager' in window) || !VAPID_PUBLIC_KEY) return;
 
-  var btn = document.getElementById('notif-toggle');
+  var wrap = document.getElementById('notif-dropdown');
   var icon = document.getElementById('notif-icon');
+  var cbPred = document.getElementById('notif-predictions');
+  var cbChat = document.getElementById('notif-chat');
+  var sub = null;
+  var reg = null;
 
   function urlBase64ToUint8Array(base64String) {
     var padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -385,48 +403,67 @@ var chatWidget = (function () {
     return fetch(url, {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrfToken},
-      body: JSON.stringify(data)
-    });
+      body: JSON.stringify(data)});
   }
 
-  function updateButton(subscribed) {
-    icon.textContent = subscribed ? '🔕' : '🔔';
-    btn.title = subscribed ? 'Disable push notifications' : 'Enable push notifications';
+  function updateIcon() {
+    var any = cbPred.checked || cbChat.checked;
+    icon.textContent = any ? '🔔' : '🔕';
   }
 
-  navigator.serviceWorker.register('/sw.js').then(function (reg) {
-    btn.style.display = '';
-
-    reg.pushManager.getSubscription().then(function (sub) {
-      updateButton(!!sub);
-
-      btn.addEventListener('click', function () {
-        if (Notification.permission === 'denied') {
-          alert('Notifications are blocked in your browser settings.');
-          return;
-        }
-        if (sub) {
-          sub.unsubscribe().then(function () {
-            post(unsubscribeUrl, {endpoint: sub.endpoint});
-            sub = null;
-            updateButton(false);
-          });
-        } else {
-          Notification.requestPermission().then(function (permission) {
-            if (permission !== 'granted') return;
-            reg.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-            }).then(function (newSub) {
-              sub = newSub;
-              post(subscribeUrl, newSub.toJSON());
-              updateButton(true);
-            });
-          });
-        }
+  function ensureSubscribed() {
+    if (sub) return Promise.resolve();
+    if (Notification.permission === 'denied') {
+      alert('Notifications are blocked in your browser settings.');
+      return Promise.reject();
+    }
+    return Notification.requestPermission().then(function (perm) {
+      if (perm !== 'granted') return Promise.reject();
+      return reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      }).then(function (newSub) {
+        sub = newSub;
+        return post(subscribeUrl, newSub.toJSON());
       });
     });
+  }
+
+  function handleToggle() {
+    var wantPred = cbPred.checked, wantChat = cbChat.checked;
+    var any = wantPred || wantChat;
+    if (any) {
+      ensureSubscribed().then(function () {
+        post(prefsUrl, {notify_predictions: wantPred, notify_chat: wantChat});
+        updateIcon();
+      }, function () {
+        cbPred.checked = false;
+        cbChat.checked = false;
+        updateIcon();
+      });
+    } else {
+      post(prefsUrl, {notify_predictions: false, notify_chat: false});
+      if (sub) {
+        sub.unsubscribe().then(function () {
+          post(unsubscribeUrl, {endpoint: sub.endpoint});
+          sub = null;
+        });
+      }
+      updateIcon();
+    }
+  }
+
+  navigator.serviceWorker.register('/sw.js').then(function (swReg) {
+    reg = swReg;
+    wrap.style.display = '';
+    reg.pushManager.getSubscription().then(function (existing) {
+      sub = existing;
+      updateIcon();
+    });
   });
+
+  cbPred.addEventListener('change', handleToggle);
+  cbChat.addEventListener('change', handleToggle);
 }());
 </script>
 {% endif %}

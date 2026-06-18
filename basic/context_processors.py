@@ -10,4 +10,9 @@ def winner_prediction_status(request):
 
 
 def vapid_public_key(request):
-    return {'vapid_public_key': settings.VAPID_PUBLIC_KEY}
+    ctx = {'vapid_public_key': settings.VAPID_PUBLIC_KEY}
+    if request.user.is_authenticated:
+        from notifications.models import NotificationPreferences
+        prefs, _ = NotificationPreferences.objects.get_or_create(user=request.user)
+        ctx['notif_prefs'] = prefs
+    return ctx

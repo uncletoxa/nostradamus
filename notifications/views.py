@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.conf import settings
-from .models import PushSubscription
+from .models import PushSubscription, NotificationPreferences
 
 
 @login_required
@@ -34,6 +34,23 @@ def unsubscribe(request):
 
     PushSubscription.objects.filter(user=request.user, endpoint=endpoint).delete()
     return JsonResponse({'ok': True})
+
+
+@login_required
+@require_POST
+def update_preferences(request):
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'invalid'}, status=400)
+    prefs, _ = NotificationPreferences.objects.get_or_create(user=request.user)
+    for field in ('notify_predictions', 'notify_chat'):
+        if field in data:
+            setattr(prefs, field, bool(data[field]))
+    prefs.save()
+    return JsonResponse({
+        'notify_predictions': prefs.notify_predictions,
+        'notify_chat': prefs.notify_chat})
 
 
 def vapid_public_key(request):
