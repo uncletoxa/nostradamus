@@ -17,7 +17,8 @@ def send_push(subscription, title, body, url='/'):
                 }},
             data=json.dumps({'title': title, 'body': body, 'url': url}),
             vapid_private_key=settings.VAPID_PRIVATE_KEY,
-            vapid_claims={'sub': 'mailto:{}'.format(settings.VAPID_CONTACT_EMAIL)})
+            vapid_claims={'sub': 'mailto:{}'.format(settings.VAPID_CONTACT_EMAIL)},
+            ttl=86400)
     except WebPushException as e:
         logger.error('Push failed for subscription %s: %s', subscription.pk, e)
         if e.response is not None and e.response.status_code in (404, 410):
