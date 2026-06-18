@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% load static i18n %}
+
+{% block title %}Установка приложения — Nostradamus Cup 2026{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">Установка мобильного приложения</h3>
+<p>Nostradamus Cup можно установить на телефон как приложение — без App Store и Google Play. Оно будет работать как обычное приложение с иконкой на домашнем экране.</p>
+
+<div class="row g-4 mt-2">
+  <div class="col-12">
+    <h5>Шаг 1. Откройте меню браузера</h5>
+    <p>Зайдите на сайт <strong>nostradamus.football</strong> в Chrome и нажмите на три точки в правом верхнем углу. В появившемся меню выберите <strong>«Добавить на гл. экр...»</strong></p>
+    <img src="{% static 'img/install_step1.png' %}" alt="Шаг 1" class="img-fluid rounded shadow-sm" style="max-width: 300px;">
+  </div>
+
+  <div class="col-12">
+    <h5>Шаг 2. Подтвердите установку</h5>
+    <p>Появится окно с предложением установить приложение <strong>Nostradamus Cup 2026</strong>. Нажмите кнопку <strong>«Установить»</strong>.</p>
+    <img src="{% static 'img/install_step2.png' %}" alt="Шаг 2" class="img-fluid rounded shadow-sm" style="max-width: 300px;">
+  </div>
+
+  <div class="col-12">
+    <h5>Шаг 3. Готово!</h5>
+    <p>Иконка приложения появится на домашнем экране вашего телефона. Теперь можно открывать Nostradamus Cup одним нажатием, как обычное приложение.</p>
+    <img src="{% static 'img/install_step3.png' %}" alt="Шаг 3" class="img-fluid rounded shadow-sm" style="max-width: 300px;">
+  </div>
+</div>
+
+<div class="mt-4 mb-4">
+  <div class="alert alert-info">
+    <strong>Для iPhone (Safari):</strong> нажмите кнопку «Поделиться» (квадрат со стрелкой вверх) → «На экран "Домой"».
+  </div>
+</div>
+{% endblock %}

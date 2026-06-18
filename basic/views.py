@@ -29,3 +29,7 @@ def history(request):
 @login_required
 def intro(request):
     return render(request, 'intro.html')
+
+
+def install_app(request):
+    return render(request, 'install_app.html')
