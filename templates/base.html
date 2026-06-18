@@ -78,13 +78,11 @@
                   </button>
                   <div class="dropdown-menu dropdown-menu-end p-2" style="min-width:200px;">
                     <div class="form-check form-switch mb-1">
-                      <input class="form-check-input" type="checkbox" id="notif-predictions"
-                             {% if notif_prefs.notify_predictions %}checked{% endif %}>
+                      <input class="form-check-input" type="checkbox" id="notif-predictions">
                       <label class="form-check-label small" for="notif-predictions">{% trans "Prediction reminders" %}</label>
                     </div>
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="notif-chat"
-                             {% if notif_prefs.notify_chat %}checked{% endif %}>
+                      <input class="form-check-input" type="checkbox" id="notif-chat">
                       <label class="form-check-label small" for="notif-chat">{% trans "Chat messages" %}</label>
                     </div>
                   </div>
@@ -412,6 +410,12 @@ var chatWidget = (function () {
     icon.textContent = any ? '🔔' : '🔕';
   }
 
+  function applyPrefs(prefs) {
+    cbPred.checked = !!prefs.notify_predictions;
+    cbChat.checked = !!prefs.notify_chat;
+    updateIcon();
+  }
+
   function ensureSubscribed() {
     if (sub) return Promise.resolve();
     if (Notification.permission === 'denied') {
@@ -425,7 +429,7 @@ var chatWidget = (function () {
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
       }).then(function (newSub) {
         sub = newSub;
-        return post(subscribeUrl, newSub.toJSON());
+        return post(subscribeUrl, newSub.toJSON()).then(function (r) { return r.json(); });
       });
     });
   }
@@ -435,7 +439,7 @@ var chatWidget = (function () {
     var any = wantPred || wantChat;
     if (any) {
       ensureSubscribed().then(function () {
-        post(prefsUrl, {notify_predictions: wantPred, notify_chat: wantChat});
+        post(prefsUrl, {endpoint: sub.endpoint, notify_predictions: wantPred, notify_chat: wantChat});
         updateIcon();
       }, function () {
         cbPred.checked = false;
@@ -443,8 +447,8 @@ var chatWidget = (function () {
         updateIcon();
       });
     } else {
-      post(prefsUrl, {notify_predictions: false, notify_chat: false});
       if (sub) {
+        post(prefsUrl, {endpoint: sub.endpoint, notify_predictions: false, notify_chat: false});
         sub.unsubscribe().then(function () {
           post(unsubscribeUrl, {endpoint: sub.endpoint});
           sub = null;
@@ -459,11 +463,13 @@ var chatWidget = (function () {
     wrap.style.display = '';
     reg.pushManager.getSubscription().then(function (existing) {
       sub = existing;
-      if (!sub) {
-        cbPred.checked = false;
-        cbChat.checked = false;
+      if (sub) {
+        post(subscribeUrl, sub.toJSON())
+          .then(function (r) { return r.json(); })
+          .then(applyPrefs);
+      } else {
+        updateIcon();
       }
-      updateIcon();
     });
   });
 

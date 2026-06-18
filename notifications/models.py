@@ -7,19 +7,12 @@ class PushSubscription(models.Model):
     endpoint = models.TextField(unique=True)
     p256dh = models.TextField()
     auth = models.TextField()
+    notify_predictions = models.BooleanField(default=True)
+    notify_chat = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return '{} — {}'.format(self.user, self.endpoint[:60])
-
-
-class NotificationPreferences(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='notification_prefs')
-    notify_predictions = models.BooleanField(default=False)
-    notify_chat = models.BooleanField(default=False)
-
-    def __str__(self):
-        return '{} prefs'.format(self.user)
 
 
 class PredictionReminderSent(models.Model):

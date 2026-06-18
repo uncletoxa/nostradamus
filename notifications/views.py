@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.conf import settings
-from .models import PushSubscription, NotificationPreferences
+from .models import PushSubscription
 
 
 @login_required
@@ -17,10 +17,12 @@ def subscribe(request):
     except (json.JSONDecodeError, KeyError):
         return JsonResponse({'error': 'invalid'}, status=400)
 
-    PushSubscription.objects.update_or_create(
+    sub, _ = PushSubscription.objects.update_or_create(
         endpoint=endpoint,
         defaults={'user': request.user, 'p256dh': p256dh, 'auth': auth})
-    return JsonResponse({'ok': True})
+    return JsonResponse({
+        'notify_predictions': sub.notify_predictions,
+        'notify_chat': sub.notify_chat})
 
 
 @login_required
@@ -41,16 +43,22 @@ def unsubscribe(request):
 def update_preferences(request):
     try:
         data = json.loads(request.body)
+        endpoint = data.get('endpoint', '')
     except json.JSONDecodeError:
         return JsonResponse({'error': 'invalid'}, status=400)
-    prefs, _ = NotificationPreferences.objects.get_or_create(user=request.user)
+    if not endpoint:
+        return JsonResponse({'error': 'endpoint required'}, status=400)
+    try:
+        sub = PushSubscription.objects.get(user=request.user, endpoint=endpoint)
+    except PushSubscription.DoesNotExist:
+        return JsonResponse({'error': 'subscription not found'}, status=404)
     for field in ('notify_predictions', 'notify_chat'):
         if field in data:
-            setattr(prefs, field, bool(data[field]))
-    prefs.save()
+            setattr(sub, field, bool(data[field]))
+    sub.save(update_fields=['notify_predictions', 'notify_chat'])
     return JsonResponse({
-        'notify_predictions': prefs.notify_predictions,
-        'notify_chat': prefs.notify_chat})
+        'notify_predictions': sub.notify_predictions,
+        'notify_chat': sub.notify_chat})
 
 
 def vapid_public_key(request):

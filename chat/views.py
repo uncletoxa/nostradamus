@@ -14,18 +14,15 @@ from matches.models import Match
 
 
 def _notify_chat(sender, text):
-    from notifications.models import NotificationPreferences
-    from notifications.utils import send_push_to_users
-    opted_out = set(
-        NotificationPreferences.objects.filter(notify_chat=False)
-        .values_list('user_id', flat=True))
-    others = User.objects.filter(
-        push_subscriptions__isnull=False,
-        is_active=True).exclude(
-        pk__in=opted_out | {sender.pk}).distinct()
+    from notifications.models import PushSubscription
+    from notifications.utils import send_push
     name = sender.get_full_name() or sender.username
     body = text[:100] if text else '📷 Image'
-    send_push_to_users(others, title=name, body=body, url='/chat/')
+    subs = PushSubscription.objects.filter(
+        notify_chat=True,
+        user__is_active=True).exclude(user=sender)
+    for sub in subs:
+        send_push(sub, title=name, body=body, url='/chat/')
 
 _MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 _MAX_DIMENSION = 1024  # resize to fit within 1024×1024
