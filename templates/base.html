@@ -459,6 +459,10 @@ var chatWidget = (function () {
     wrap.style.display = '';
     reg.pushManager.getSubscription().then(function (existing) {
       sub = existing;
+      if (!sub) {
+        cbPred.checked = false;
+        cbChat.checked = false;
+      }
       updateIcon();
     });
   });
