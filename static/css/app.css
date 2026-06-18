@@ -138,3 +138,7 @@ body {
   --bs-table-bg: #3a2510;
   --bs-table-border-color: #5a3a1a;
 }
+
+@media (display-mode: standalone) {
+  .pwa-install-banner { display: none !important; }
+}
