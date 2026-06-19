@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import localtime, now
@@ -96,10 +97,21 @@ def new_prediction(request, match_id):
             return redirect('predictions:details', match_id)
     else:
         frm = NewPredictionForm()
+    team_matches = (Match.objects
+        .filter(Q(home_team=match_data.home_team) | Q(guest_team=match_data.home_team) |
+                Q(home_team=match_data.guest_team) | Q(guest_team=match_data.guest_team))
+        .exclude(match_id=match_data.match_id)
+        .exclude(status='SCHEDULED')
+        .order_by('-start_time'))
+    home_matches = [m for m in team_matches
+                    if m.home_team_id == match_data.home_team_id or m.guest_team_id == match_data.home_team_id]
+    guest_matches = [m for m in team_matches
+                     if m.home_team_id == match_data.guest_team_id or m.guest_team_id == match_data.guest_team_id]
     return render(request, 'details.html',
                   {'form': frm, 'match': match_data, 'cur_time': now(),
                    'curr_prediction': curr_prediction, 'coef': coef,
-                   'score_coefs': score_coefs})
+                   'score_coefs': score_coefs,
+                   'home_matches': home_matches, 'guest_matches': guest_matches})
 
 
 @login_required

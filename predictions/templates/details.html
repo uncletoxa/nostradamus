@@ -32,6 +32,25 @@
           <div class="fw-bold mt-1">{% trans match.guest_team.name %}</div>
         </div>
       </div>
+      {% if home_matches or guest_matches %}
+      <hr class="my-3">
+      <div class="d-flex justify-content-around">
+        <div>
+          {% for m in home_matches %}
+          <div class="small py-1 text-center text-nowrap {% if not forloop.last %}border-bottom{% endif %}">
+            <span class="text-muted me-2">{{ m.start_time|date:"j M" }}</span> {{ m.home_team.emoji_symbol }}&nbsp;{% trans m.home_team.name %} <span class="badge text-bg-light text-dark mx-1">{{ m.result }}</span> {{ m.guest_team.emoji_symbol }}&nbsp;{% trans m.guest_team.name %}
+          </div>
+          {% endfor %}
+        </div>
+        <div>
+          {% for m in guest_matches %}
+          <div class="small py-1 text-center text-nowrap {% if not forloop.last %}border-bottom{% endif %}">
+            <span class="text-muted me-2">{{ m.start_time|date:"j M" }}</span> {{ m.home_team.emoji_symbol }}&nbsp;{% trans m.home_team.name %} <span class="badge text-bg-light text-dark mx-1">{{ m.result }}</span> {{ m.guest_team.emoji_symbol }}&nbsp;{% trans m.guest_team.name %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
 
