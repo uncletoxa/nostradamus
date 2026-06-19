@@ -3,6 +3,7 @@ import datetime
 
 COMPETITION_START_DATE_UTC = datetime.datetime(2026, 6, 11, 19, 0, 0, tzinfo=datetime.timezone.utc)
 
+from decimal import Decimal
 from matches.models import Match
 from predictions.models import Prediction, WinnerPrediction
 from django import template
@@ -26,7 +27,7 @@ def champ_standings(context):
 @register.inclusion_tag('includes/cup_standings.html', takes_context=True)
 def cup_standings(context, long_standings=False, live_standings=False):
     def zero_if_none(val):
-        return val if val is not None else 0
+        return val if val is not None else Decimal(0)
 
     users = User.objects.filter(is_superuser=False).exclude(profile__previous_participant=True)
     if live_standings:
@@ -36,22 +37,19 @@ def cup_standings(context, long_standings=False, live_standings=False):
     standings = {}
 
     for user in users:
-        result_bet = 0
-        score_bet = 0
-        winner_points = 0
+        result_bet = Decimal(0)
+        score_bet = Decimal(0)
+        winner_points = Decimal(0)
 
         user_champion = WinnerPrediction.objects.filter(user_id=user.id).first()
         if user_champion and user_champion.prediction_id.is_winner:
-            winner_points = user_champion.prediction_id.coef
+            winner_points = Decimal(str(user_champion.prediction_id.coef))
 
         results_data = get_user_results_by_matches(user.id, matches_queryset)
         for match_data in results_data.values():
             result_bet += zero_if_none(match_data['result_bet'])
             score_bet += zero_if_none(match_data['score_bet'])
-        result_bet = round(result_bet, 2)
-        score_bet = round(score_bet, 2)
-        winner_points = round(winner_points, 2)
-        total_points = round(result_bet + score_bet + winner_points, 2)
+        total_points = result_bet + score_bet + winner_points
         standings.update({user: {
             'total_points': total_points,
             'result_bet': result_bet,

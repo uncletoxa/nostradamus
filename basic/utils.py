@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+from decimal import Decimal
 
 from collections import OrderedDict
 
@@ -47,13 +48,13 @@ def _score_match(match, prediction, coef):
         match_result = get_result(match.home_score, match.guest_score)
         prediction_result = get_result(prediction.home_score, prediction.guest_score)
 
-    result_bet = getattr(coef, match_result) if prediction_result == match_result else 0
+    result_bet = Decimal(str(getattr(coef, match_result))) if prediction_result == match_result else Decimal(0)
     exact_score_match = (match.home_score == prediction.home_score and
                          match.guest_score == prediction.guest_score)
     score_correct = (predicted_score_cr == match_score_cr and
                      (match_score_cr != 'Any other score' or exact_score_match))
-    score_bet = coef.score[match_score_cr] if score_correct else 0
-    return prediction.score(), round(result_bet, 2), round(score_bet, 2)
+    score_bet = Decimal(str(coef.score[match_score_cr])) if score_correct else Decimal(0)
+    return prediction.score(), result_bet, score_bet
 
 
 def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
@@ -78,7 +79,7 @@ def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
             continue
         entry = {
             'match_name': match, 'match_score': match.result,
-            'result_bet': 0, 'score_bet': 0}
+            'result_bet': Decimal(0), 'score_bet': Decimal(0)}
         prediction = predictions.get(match.match_id)
         coef = coefficients.get(match.match_id)
         if prediction is None or coef is None:
@@ -94,7 +95,7 @@ def get_all_users_results_for_match(match, users):
     """Get prediction results for all users for a single match. 2-3 queries total."""
     entry_base = {
         'match_name': match, 'match_score': match.result,
-        'result_bet': 0, 'score_bet': 0}
+        'result_bet': Decimal(0), 'score_bet': Decimal(0)}
 
     if match.home_score is None or match.guest_score is None:
         return {user: {match.match_id: dict(entry_base)} for user in users}
