@@ -8,6 +8,7 @@ from django.utils.timezone import localtime, now
 from predictions.models import Prediction, Coefficient, WinnerPrediction, WinnerPredictionCoef
 from matches.models import Match, Team
 from predictions.forms import NewPredictionForm, WinnerPredictionForm
+from basic.poisson_odds import generate_score_odd
 
 COMPETITION_START_DATE_UTC = datetime(2026, 6, 11, 19, 0, 0, tzinfo=timezone.utc)
 
@@ -65,21 +66,20 @@ def new_prediction(request, match_id):
             .filter(match_id=match_data, coef_ready=True)
             .order_by('-update_time')
             .first())
-    score_coefs = {'home': {}, 'draw': {}, 'away': {}, 'other': None}
-    if coef:
-        for score, odd in coef.score.items():
-            if score == 'Any other score':
-                score_coefs['other'] = odd
-            else:
-                h, g = map(int, score.split('-'))
-                if h > g:
-                    score_coefs['home'][score] = odd
-                elif h == g:
-                    score_coefs['draw'][score] = odd
-                else:
-                    score_coefs['away'][score] = odd
     if request.method == 'POST':
         if not coef:
+            return redirect('predictions:details', match_id)
+        if 'preview' in request.POST:
+            try:
+                h = int(request.POST.get('home_score', 0))
+                g = int(request.POST.get('guest_score', 0))
+            except (ValueError, TypeError):
+                return redirect('predictions:details', match_id)
+            if 0 <= h <= 15 and 0 <= g <= 15:
+                key = f'{h}-{g}'
+                if key not in coef.score:
+                    coef.score[key] = generate_score_odd(h, g, coef.score)
+                    Coefficient.objects.filter(pk=coef.pk).update(score=coef.score)
             return redirect('predictions:details', match_id)
         frm = NewPredictionForm(
             request.POST, initial={'home_score': 0, 'guest_score': 0})
@@ -97,6 +97,19 @@ def new_prediction(request, match_id):
             return redirect('predictions:details', match_id)
     else:
         frm = NewPredictionForm()
+    score_coefs = {'home': {}, 'draw': {}, 'away': {}}
+    if coef:
+        for score, odd in coef.score.items():
+            if score == 'Any other score':
+                continue
+            h, g = map(int, score.split('-'))
+            if h > g:
+                score_coefs['home'][score] = odd
+            elif h == g:
+                score_coefs['draw'][score] = odd
+            else:
+                score_coefs['away'][score] = odd
+        score_coefs = {k: dict(sorted(v.items())) for k, v in score_coefs.items()}
     team_matches = (Match.objects
         .filter(Q(home_team=match_data.home_team) | Q(guest_team=match_data.home_team) |
                 Q(home_team=match_data.guest_team) | Q(guest_team=match_data.guest_team))

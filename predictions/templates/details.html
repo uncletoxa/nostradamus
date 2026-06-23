@@ -73,7 +73,10 @@
               {{ form.penalty_winner|as_crispy_field }}
             {% endif %}
             <button type="submit" class="btn btn-success">{% trans "Predict" %}</button>
+            <button type="submit" name="preview" value="1" class="btn btn-outline-secondary"
+                    onclick="var h=document.getElementById('id_home_score').value,g=document.getElementById('id_guest_score').value;if(h>15||g>15||h<0||g<0){alert('{% trans "Score must be between 0 and 15" %}');return false;}">{% trans "Preview odds" %}</button>
           </form>
+          <div class="text-muted small mt-2">{% trans "Enter a score and press \"Preview odds\" to see what the odds would be. The score won't be submitted as a prediction." %}</div>
         {% else %}
           <div class="card">
             <div class="card-body">{% trans "No more predictions available" %}</div>
@@ -139,9 +142,6 @@
             </table>
           </div>
         </div>
-        {% if score_coefs.other %}
-        <div class="text-muted small">{% trans "Any other score:" %} {{ score_coefs.other }}</div>
-        {% endif %}
       </div>
       {% endif %}
 

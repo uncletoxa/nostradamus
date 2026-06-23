@@ -21,7 +21,7 @@ class PredictionsIndexTests(TestCase):
         )
         Coefficient.objects.create(
             coef_ready=True,
-            score={'0-0': 2, '1-0': 1.2, '1-1': 1.8, 'Any other score': 4},
+            score={'0-0': 2, '1-0': 1.2, '1-1': 1.8, '0-1': 3.5, '2-0': 4.0, '2-1': 5.0},
             home_win=1.4,
             tie=2,
             guest_win=3.2,

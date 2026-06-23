@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
 from predictions.models import Prediction, Coefficient
 from matches.models import Match
+from basic.poisson_odds import generate_score_odd
 
 
 def get_result(home_team: int, guest_team: int) -> str:
@@ -23,10 +24,7 @@ def get_playoff_result(home_team, guest_team, home_to_advance):
 
 
 def get_score(home_team, guest_team, avail_scores):
-    if f'{home_team}-{guest_team}' in avail_scores:
-        return f'{home_team}-{guest_team}'
-    else:
-        return 'Any other score'
+    return f'{home_team}-{guest_team}'
 
 
 def last_prediction(queryset: QuerySet) -> QuerySet:
@@ -35,9 +33,16 @@ def last_prediction(queryset: QuerySet) -> QuerySet:
             .distinct('match_id'))
 
 
+def _ensure_score_odd(coef, home, away):
+    key = f'{home}-{away}'
+    if key not in coef.score:
+        coef.score[key] = generate_score_odd(home, away, coef.score)
+        Coefficient.objects.filter(pk=coef.pk).update(score=coef.score)
+
+
 def _score_match(match, prediction, coef):
-    match_score_cr = get_score(match.home_score, match.guest_score, coef.score)
-    predicted_score_cr = get_score(prediction.home_score, prediction.guest_score, coef.score)
+    _ensure_score_odd(coef, match.home_score, match.guest_score)
+    match_score = f'{match.home_score}-{match.guest_score}'
 
     if match.is_playoff:
         match_result = get_playoff_result(
@@ -51,9 +56,7 @@ def _score_match(match, prediction, coef):
     result_bet = Decimal(str(getattr(coef, match_result))) if prediction_result == match_result else Decimal(0)
     exact_score_match = (match.home_score == prediction.home_score and
                          match.guest_score == prediction.guest_score)
-    score_correct = (predicted_score_cr == match_score_cr and
-                     (match_score_cr != 'Any other score' or exact_score_match))
-    score_bet = Decimal(str(coef.score[match_score_cr])) if score_correct else Decimal(0)
+    score_bet = Decimal(str(coef.score[match_score])) if exact_score_match else Decimal(0)
     return prediction.score(), result_bet, score_bet
 
 

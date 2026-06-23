@@ -78,6 +78,15 @@ msgstr "Текущий прогноз:"
 msgid "Predict"
 msgstr "Сохранить"
 
+msgid "Preview odds"
+msgstr "Показать коэффициент"
+
+msgid "Enter a score and press \"Preview odds\" to see what the odds would be. The score won't be submitted as a prediction."
+msgstr "Введите счёт и нажмите \"Показать коэффициент\", чтобы узнать коэффициент для этого счёта. Прогноз при этом не сохраняется."
+
+msgid "Score must be between 0 and 15"
+msgstr "Счёт должен быть от 0 до 15"
+
 # Table headers
 msgid "Match"
 msgstr "Матч"
