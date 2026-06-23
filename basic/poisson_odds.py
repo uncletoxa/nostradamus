@@ -46,8 +46,8 @@ def fit_poisson(score_odds):
     return best_lh, best_la
 
 
-def generate_score_odd(home, away, score_odds):
-    """Generate an odd for a single score using Poisson fitted to existing odds."""
+def generate_score_odd(home, away, score_odds, dampening=0.5):
+    """Generate an odd for a single score by extrapolating from the nearest listed score."""
     lh, la = fit_poisson(score_odds)
     listed_keys = {k for k in score_odds if k != 'Any other score'}
 
@@ -55,20 +55,23 @@ def generate_score_odd(home, away, score_odds):
     if target_prob < 1e-15:
         return 9999.0
 
-    listed_poisson = sum(
-        _poisson_pmf(int(k.split('-')[0]), lh) * _poisson_pmf(int(k.split('-')[1]), la)
-        for k in listed_keys)
-    unlisted_poisson = 1.0 - listed_poisson
+    best_k = None
+    best_dist = float('inf')
+    best_prob = -1.0
+    for k in listed_keys:
+        h, g = map(int, k.split('-'))
+        dist = abs(h - home) + abs(g - away)
+        p = _poisson_pmf(h, lh) * _poisson_pmf(g, la)
+        if dist < best_dist or (dist == best_dist and p > best_prob):
+            best_dist = dist
+            best_prob = p
+            best_k = k
 
-    if 'Any other score' in score_odds:
-        any_other_implied = 1.0 / float(score_odds['Any other score'])
-    else:
-        listed_implied = sum(1.0 / float(score_odds[k]) for k in listed_keys)
-        margin = listed_implied / listed_poisson if listed_poisson > 1e-15 else 1.0
-        any_other_implied = unlisted_poisson * margin
-
-    if unlisted_poisson < 1e-15:
+    if best_k is None:
         return 9999.0
 
-    share = target_prob / unlisted_poisson
-    return round(1.0 / (share * any_other_implied), 2)
+    anchor_h, anchor_g = map(int, best_k.split('-'))
+    anchor_prob = _poisson_pmf(anchor_h, lh) * _poisson_pmf(anchor_g, la)
+    anchor_odd = float(score_odds[best_k])
+    ratio = anchor_prob / target_prob
+    return round(anchor_odd * (ratio ** dampening), 2)
