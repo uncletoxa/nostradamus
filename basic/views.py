@@ -33,3 +33,8 @@ def intro(request):
 
 def install_app(request):
     return render(request, 'install_app.html')
+
+
+@login_required
+def how_odds_work(request):
+    return render(request, 'how_odds_work.html')

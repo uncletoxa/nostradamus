@@ -533,3 +533,6 @@ msgstr "Используйте кнопку 🔔 в навигации для у
 # install_app
 msgid "Install App"
 msgstr "Установить приложение"
+
+msgid "How odds work"
+msgstr "Как начисляются очки"
