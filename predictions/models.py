@@ -12,9 +12,9 @@ class Coefficient(models.Model):
     coef_ready = models.BooleanField(default=False)
     score = JSONField()
     home_win = models.FloatField()
-    tie = models.FloatField(null=True, default=None)
-    tie_home_win = models.FloatField(null=True, default=None)
-    tie_guest_win = models.FloatField(null=True, default=None)
+    tie = models.FloatField(null=True, blank=True, default=None)
+    tie_home_win = models.FloatField(null=True, blank=True, default=None)
+    tie_guest_win = models.FloatField(null=True, blank=True, default=None)
     guest_win = models.FloatField()
     update_time = models.DateTimeField()
 
@@ -28,6 +28,14 @@ class Coefficient(models.Model):
         if match.start_time <= timezone.now():
             raise ValidationError(
                 f"Cannot update odds: match '{match}' has already started.")
+        if match.is_playoff:
+            if self.tie_home_win is None or self.tie_guest_win is None:
+                raise ValidationError(
+                    "Playoff match requires tie_home_win and tie_guest_win odds.")
+        else:
+            if self.tie is None:
+                raise ValidationError(
+                    "Non-playoff match requires tie odds.")
 
     def save(self, *args, **kwargs):
         self.full_clean()

@@ -4,10 +4,19 @@
 
 
 {% block content %}
-  <div class="alert alert-primary d-flex align-items-center mb-3 py-2 pwa-install-banner" role="alert">
-    <span class="me-2" style="font-size:1.3rem;">📱</span>
-    <span>Установите <a href="{% url 'install_app' %}" class="alert-link">мобильное приложение</a> — работает без App Store и Google Play!</span>
+  <div class="alert alert-light alert-dismissible small py-2 mb-3" role="alert" id="playoff-notice">
+    ⚽ Турнир вышел в плей-офф — <a href="{% url 'how_odds_work' %}" class="alert-link">как считаются коэффициенты для матчей навылет</a>.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
   </div>
+  <script>
+    if (localStorage.getItem('playoff-notice-dismissed')) {
+      document.getElementById('playoff-notice').remove();
+    } else {
+      document.getElementById('playoff-notice').addEventListener('closed.bs.alert', function () {
+        localStorage.setItem('playoff-notice-dismissed', '1');
+      });
+    }
+  </script>
   {% if latest_news %}
     <div class="card mb-4">
       {% if latest_news.photo %}

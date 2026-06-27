@@ -102,14 +102,18 @@
           <thead class="table-dark">
             <tr>
               <th>1</th>
-              {% if coef.tie is not None %}<th>X</th>{% endif %}
+              {% if not match.is_playoff %}<th>X</th>{% endif %}
+              {% if match.is_playoff %}<th>DP1</th>{% endif %}
+              {% if match.is_playoff %}<th>DP2</th>{% endif %}
               <th>2</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>{{ coef.home_win }}</td>
-              {% if coef.tie is not None %}<td>{{ coef.tie }}</td>{% endif %}
+              {% if not match.is_playoff %}<td>{{ coef.tie }}</td>{% endif %}
+              {% if match.is_playoff %}<td>{{ coef.tie_home_win }}</td>{% endif %}
+              {% if match.is_playoff %}<td>{{ coef.tie_guest_win }}</td>{% endif %}
               <td>{{ coef.guest_win }}</td>
             </tr>
           </tbody>
