@@ -82,7 +82,7 @@ def new_prediction(request, match_id):
                     Coefficient.objects.filter(pk=coef.pk).update(score=coef.score)
             return redirect('predictions:details', match_id)
         frm = NewPredictionForm(
-            request.POST, initial={'home_score': 0, 'guest_score': 0})
+            request.POST, initial={'home_score': 0, 'guest_score': 0}, is_playoff=match_data.is_playoff)
         home_score = request.POST['home_score']
         guest_score = request.POST['guest_score']
         is_home_advance = request.POST.get('penalty_winner') if match_data.is_playoff else None
@@ -96,7 +96,7 @@ def new_prediction(request, match_id):
                 submit_time=localtime(now()))
             return redirect('predictions:details', match_id)
     else:
-        frm = NewPredictionForm()
+        frm = NewPredictionForm(is_playoff=match_data.is_playoff)
     score_coefs = {'home': {}, 'draw': {}, 'away': {}}
     if coef:
         for score, odd in coef.score.items():
