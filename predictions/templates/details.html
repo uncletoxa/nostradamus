@@ -97,14 +97,14 @@
       <!-- Right: odds -->
       {% if coef %}
       <div class="col-md-8">
-        <h6 class="text-muted mb-2">{% trans "Match odds" %}</h6>
+        <h6 class="text-muted mb-2">{% trans "Match odds" %} <a href="{% url 'how_odds_work' %}" class="small text-muted">{% trans "How odds work?" %}</a></h6>
         <table class="table table-sm table-bordered text-center mb-4 odds-table">
           <thead class="table-dark">
             <tr>
               <th>1</th>
               {% if not match.is_playoff %}<th>X</th>{% endif %}
-              {% if match.is_playoff %}<th>DP1</th>{% endif %}
-              {% if match.is_playoff %}<th>DP2</th>{% endif %}
+              {% if match.is_playoff %}<th title="Draw → home team advances (penalties)">X1</th>{% endif %}
+              {% if match.is_playoff %}<th title="Draw → away team advances (penalties)">X2</th>{% endif %}
               <th>2</th>
             </tr>
           </thead>
