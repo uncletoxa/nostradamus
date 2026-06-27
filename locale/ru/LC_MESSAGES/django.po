@@ -536,3 +536,6 @@ msgstr "Установить приложение"
 
 msgid "How odds work"
 msgstr "Как начисляются очки"
+
+msgid "How odds work?"
+msgstr "Как начисляются очки?"

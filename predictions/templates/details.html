@@ -97,7 +97,7 @@
       <!-- Right: odds -->
       {% if coef %}
       <div class="col-md-8">
-        <h6 class="text-muted mb-2">{% trans "Match odds" %} <a href="{% url 'how_odds_work' %}" class="small text-muted">{% trans "How odds work?" %}</a></h6>
+        <h6 class="text-muted mb-2">{% trans "Match odds" %}</h6>
         <table class="table table-sm table-bordered text-center mb-4 odds-table">
           <thead class="table-dark">
             <tr>
@@ -145,6 +145,9 @@
               {% endfor %}
             </table>
           </div>
+        </div>
+        <div class="text-end mt-2">
+          <a href="{% url 'how_odds_work' %}" class="small text-muted">{% trans "How odds work?" %}</a>
         </div>
       </div>
       {% endif %}
