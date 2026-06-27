@@ -539,3 +539,12 @@ msgstr "Как начисляются очки"
 
 msgid "How odds work?"
 msgstr "Как начисляются очки?"
+
+msgid "Home score"
+msgstr "Счёт хозяев"
+
+msgid "Guest score"
+msgstr "Счёт гостей"
+
+msgid "Score after 90 or 120 minutes, not including penalties"
+msgstr "Счёт после 90 или 120 минут, без учёта пенальти"
