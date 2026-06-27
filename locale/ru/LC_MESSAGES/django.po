@@ -327,6 +327,9 @@ msgid "Last"
 msgstr "Последняя"
 
 # Python forms (predictions/forms.py)
+msgid "Penalty winner"
+msgstr "Победитель по пенальти"
+
 msgid "No Penalty"
 msgstr "Без пенальти"
 

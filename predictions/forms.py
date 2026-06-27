@@ -11,7 +11,7 @@ class NewPredictionForm(forms.Form):
         (False, _('Guest Wins')))
     home_score = forms.IntegerField(label=_('Home score'), required=False)
     guest_score = forms.IntegerField(label=_('Guest score'), required=False)
-    penalty_winner = forms.NullBooleanField(widget=forms.widgets.Select(choices=CHOICES), required=False)
+    penalty_winner = forms.NullBooleanField(widget=forms.widgets.Select(choices=CHOICES), required=False, label=_('Penalty winner'))
 
     def __init__(self, *args, is_playoff=False, **kwargs):
         self.is_playoff = is_playoff
