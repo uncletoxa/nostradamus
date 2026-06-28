@@ -117,8 +117,15 @@
 
   /* ── utilities ──────────────────────────────────────────────── */
   function scrollToBottom() { messagesDiv.scrollTop = messagesDiv.scrollHeight; }
-  scrollToBottom();
-  window.addEventListener('load', scrollToBottom);
+
+  function scrollAfterImages(container) {
+    scrollToBottom();
+    container.querySelectorAll('img').forEach(function(img) {
+      if (!img.complete) img.addEventListener('load', scrollToBottom);
+    });
+  }
+
+  scrollAfterImages(messagesDiv);
 
   function escapeHtml(s) {
     var d = document.createElement('div');
@@ -329,7 +336,7 @@
       renderReactionBar(row.querySelector('.reaction-bar'), msg.reactions);
       initReactions[msg.id] = msg.reactions;
     }
-    if (atBottom) scrollToBottom();
+    if (atBottom) scrollAfterImages(row);
   }
 
   /* ── polling ────────────────────────────────────────────────── */
