@@ -52,7 +52,7 @@
                     style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;text-decoration:none;"
                     title="{% trans "React" %}">😊+</button>
           </div>
-          {% if msg.text %}<div>{{ msg.text }}</div>{% endif %}
+          {% if msg.text %}<div>{{ msg.text|urlize }}</div>{% endif %}
           {% if msg.image %}
             <div class="mt-1">
               <a href="{{ msg.image.url }}" target="_blank" rel="noopener">
@@ -162,6 +162,11 @@
     var d = document.createElement('div');
     d.appendChild(document.createTextNode(s));
     return d.innerHTML;
+  }
+
+  function linkify(s) {
+    return escapeHtml(s).replace(/(https?:\/\/[^\s<>"]+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
   }
 
   /* ── reaction bar rendering ─────────────────────────────────── */
@@ -358,7 +363,7 @@
         '<button class="btn btn-link btn-sm p-0 ms-2 reaction-add-btn" data-id="' + msg.id + '" ' +
           'style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;text-decoration:none;" title="React">😊+</button>' +
         '</div>' +
-        (msg.text ? '<div>' + escapeHtml(msg.text) + '</div>' : '') +
+        (msg.text ? '<div>' + linkify(msg.text) + '</div>' : '') +
         imageHtml(msg.image_url) +
         '<div class="reaction-bar mt-1" data-id="' + msg.id + '"></div>' +
       '</div>';
