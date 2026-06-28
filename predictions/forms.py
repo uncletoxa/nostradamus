@@ -34,7 +34,7 @@ class NewPredictionForm(forms.Form):
             self.add_error('guest_score', _('This field is required.'))
         if self.is_playoff and home is not None and guest is not None:
             if home == guest and cleaned_data.get('penalty_winner') is None:
-                raise forms.ValidationError(_('For a draw in a knockout match, you must select a penalty winner.'))
+                self.add_error('penalty_winner', _('For a draw in a knockout match, you must select a penalty winner.'))
         return cleaned_data
 
 
