@@ -1,13 +1,24 @@
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from matches.models import Match, Team
 from predictions.models import WinnerPrediction
 from accounts.models import UserProfile
-from basic.utils import get_user_results_by_matches
+from basic.utils import get_user_results_by_matches, get_simple_standings
 
 
 def results(request):
     return render(request, 'results_index.html')
+
+
+@login_required
+def simple_results(request):
+    users = User.objects.filter(is_superuser=False).exclude(profile__previous_participant=True)
+    matches = Match.objects.filter(status='FINISHED')
+    standings = get_simple_standings(users, matches)
+    return render(request, 'simple_results.html', {
+        'standings': standings,
+        'current_user': request.user})
 
 
 def user_result(request, user_id):

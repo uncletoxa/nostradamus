@@ -119,6 +119,12 @@ msgstr "вы"
 msgid "Cup Standings"
 msgstr "Турнирная таблица"
 
+msgid "Unofficial Standings"
+msgstr "Неофициальная таблица"
+
+msgid "5 pts — exact score · 3 pts — correct goal difference · 1 pt — correct result"
+msgstr "5 очков — точный счёт · 3 очка — правильная разница голов · 1 очко — правильный исход"
+
 msgid "Next Matches"
 msgstr "Ближайшие матчи"
 

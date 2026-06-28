@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}
+    {% trans "Unofficial Standings" %} — {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h4 class="mb-3"><small class="text-muted">{% trans "Unofficial Standings" %}</small></h4>
+<p class="text-muted small mb-3">
+  {% trans "5 pts — exact score · 3 pts — correct goal difference · 1 pt — correct result" %}
+</p>
+<div class="table-responsive">
+<table class="table table-hover">
+  <thead class="table-dark">
+    <tr>
+      <th>#</th>
+      <th>{% trans "User" %}</th>
+      <th>{% trans "Total" %}</th>
+      <th title="{% trans "Exact score (5 pts each)" %}">5️⃣</th>
+      <th title="{% trans "Correct goal difference (3 pts each)" %}">3️⃣</th>
+      <th title="{% trans "Correct result (1 pt each)" %}">1️⃣</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user, pts in standings.items %}
+      <tr class="{% if user == current_user %}fw-bold{% endif %}{% if forloop.counter == 1 %} table-warning{% elif forloop.counter == 2 %} table-secondary{% elif forloop.counter == 3 %} table-bronze{% endif %}">
+        <td>{% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}</td>
+        <td><a href="{% url 'results:user_results' user.id %}">{{ user.first_name }}</a>{% if user == current_user %} <span class="text-muted">({% trans "you" %})</span>{% endif %}</td>
+        <td>{{ pts.total }}</td>
+        <td>{{ pts.exact }}</td>
+        <td>{{ pts.correct_diff }}</td>
+        <td>{{ pts.correct_result }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

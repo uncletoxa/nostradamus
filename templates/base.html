@@ -47,8 +47,12 @@
                     <li class="nav-item">
                       <a class="nav-link{% if request.resolver_match.url_name == 'chat' %} active{% endif %}" href="{% url 'chat' %}">{% trans "Chat" %}</a>
                     </li>
-                    <li class="nav-item">
-                      <a class="nav-link{% if request.resolver_match.namespace == 'results' %} active{% endif %}" href="{% url 'results:results_index' %}">{% trans "Results" %}</a>
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle{% if request.resolver_match.namespace == 'results' %} active{% endif %}" href="#" data-bs-toggle="dropdown">{% trans "Results" %}</a>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'results:results_index' %}">{% trans "Cup Standings" %}</a>
+                        <a class="dropdown-item" href="{% url 'results:results_simple' %}">{% trans "Unofficial Standings" %}</a>
+                      </div>
                     </li>
                     <li class="nav-item dropdown">
                       <a class="nav-link dropdown-toggle{% if request.resolver_match.namespace == 'predictions' %} active{% endif %}" href="#" data-bs-toggle="dropdown">{% trans "Predictions" %}</a>

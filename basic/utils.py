@@ -131,6 +131,60 @@ def get_all_users_results_for_match(match, users):
     return users_results
 
 
+def simple_score_match(match, prediction):
+    """Return 5/3/1/0 points for exact score / correct diff / correct result / miss."""
+    if prediction is None:
+        return 0
+    if (match.home_score == prediction.home_score and
+            match.guest_score == prediction.guest_score):
+        return 5
+    actual_diff = match.home_score - match.guest_score
+    pred_diff = prediction.home_score - prediction.guest_score
+    if actual_diff == pred_diff:
+        return 3
+
+    def sign(x):
+        return 1 if x > 0 else (-1 if x < 0 else 0)
+    if sign(actual_diff) == sign(pred_diff):
+        return 1
+    return 0
+
+
+def get_simple_standings(users, matches_queryset):
+    """Compute simple 1/3/5 standings for all users."""
+    match_ids = [
+        m.match_id for m in matches_queryset
+        if m.home_score is not None and m.guest_score is not None]
+    matches = {m.match_id: m for m in matches_queryset if m.match_id in match_ids}
+
+    all_predictions = {}
+    for p in (Prediction.objects
+              .filter(match_id__in=match_ids)
+              .order_by('user_id_id', 'match_id_id', '-submit_time')
+              .distinct('user_id_id', 'match_id_id')):
+        all_predictions.setdefault(p.user_id_id, {})[p.match_id_id] = p
+
+    standings = {}
+    for user in users:
+        user_preds = all_predictions.get(user.id, {})
+        exact = correct_diff = correct_result = 0
+        for mid, match in matches.items():
+            pts = simple_score_match(match, user_preds.get(mid))
+            if pts == 5:
+                exact += 1
+            elif pts == 3:
+                correct_diff += 1
+            elif pts == 1:
+                correct_result += 1
+        total = exact * 5 + correct_diff * 3 + correct_result
+        standings[user] = {
+            'total': total,
+            'exact': exact,
+            'correct_diff': correct_diff,
+            'correct_result': correct_result}
+    return dict(sorted(standings.items(), key=lambda x: x[1]['total'], reverse=True))
+
+
 def load_matches(path):
     with open(path) as f:
         reader = csv.reader(f)
