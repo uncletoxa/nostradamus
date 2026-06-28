@@ -135,10 +135,27 @@
 
   var spinner = document.getElementById('chat-spinner');
 
-  requestAnimationFrame(function() {
-    scrollAfterImages(messagesDiv);
+  function revealChat() {
     spinner.style.display = 'none';
     messagesDiv.style.display = '';
+    scrollToBottom();
+  }
+
+  requestAnimationFrame(function() {
+    scrollToBottom(); // override browser scroll restoration on hidden div
+    var pending = Array.from(messagesDiv.querySelectorAll('img')).filter(function(img) {
+      return !img.complete;
+    });
+    if (pending.length === 0) {
+      requestAnimationFrame(revealChat); // nested RAF ensures spinner paints first
+    } else {
+      var remaining = pending.length;
+      pending.forEach(function(img) {
+        function done() { if (--remaining === 0) revealChat(); }
+        img.addEventListener('load', done);
+        img.addEventListener('error', done);
+      });
+    }
   });
 
   function escapeHtml(s) {
