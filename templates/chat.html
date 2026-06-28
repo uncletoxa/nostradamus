@@ -9,8 +9,16 @@
   <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
     <h3 class="mb-3">{% trans "Chat" %}</h3>
 
+    <div id="chat-spinner"
+         style="height: 520px; display: flex; align-items: center; justify-content: center;"
+         class="mb-3">
+      <div class="spinner-border text-secondary" role="status">
+        <span class="visually-hidden">Loading…</span>
+      </div>
+    </div>
+
     <div id="chat-messages"
-         style="height: 520px; overflow-y: auto; overflow-anchor: none; border: 1px solid #dee2e6; border-radius: 0.25rem; padding: 1rem; visibility: hidden;"
+         style="height: 520px; overflow-y: auto; overflow-anchor: none; border: 1px solid #dee2e6; border-radius: 0.25rem; padding: 1rem; display: none;"
          class="mb-3 bg-body">
       {% for msg in chat_messages %}
       <div class="d-flex mb-2 chat-msg" data-id="{{ msg.id }}">
@@ -125,9 +133,12 @@
     });
   }
 
+  var spinner = document.getElementById('chat-spinner');
+
   requestAnimationFrame(function() {
     scrollAfterImages(messagesDiv);
-    messagesDiv.style.visibility = '';
+    spinner.style.display = 'none';
+    messagesDiv.style.display = '';
   });
 
   function escapeHtml(s) {
