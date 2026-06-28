@@ -68,6 +68,87 @@ def write_odds(
 
 
 @mcp.tool()
+def write_knockout_odds(
+    match_id: int,
+    odds_1: float,
+    odds_x: float,
+    odds_2: float,
+    odds_home_qualify: float,
+    odds_away_qualify: float,
+    score: dict | None = None,
+) -> str:
+    """Calculate and save knockout-match odds from 1X2 and To Qualify markets.
+
+    Derives home_win, guest_win, tie_home_win, tie_guest_win from 5 market
+    values. Regular-time 1X2 gives the base result probabilities; To Qualify
+    captures who actually advances, so the penalty-shootout probability equals
+    P(team qualifies) − P(team wins in regular time). All probabilities are
+    normalised before arithmetic to remove the bookmaker margin. tie is always
+    saved as None for knockout matches. Saves with coef_ready=False.
+
+    Args:
+        match_id: Primary key of the Match.
+        odds_1: Regular-time home win odds (1X2 market).
+        odds_x: Regular-time draw odds (1X2 market).
+        odds_2: Regular-time away win odds (1X2 market).
+        odds_home_qualify: Home team to qualify (advance) odds.
+        odds_away_qualify: Away team to qualify (advance) odds.
+        score: JSON dict of score-line odds (e.g. {"1:0": 5.5, "0:0": 8.0}).
+    """
+    try:
+        match = Match.objects.get(pk=match_id)
+    except Match.DoesNotExist:
+        return f"Error: match with id={match_id} does not exist."
+
+    # Convert to probabilities
+    p1, px, p2 = 1 / odds_1, 1 / odds_x, 1 / odds_2
+    p_hq, p_aq = 1 / odds_home_qualify, 1 / odds_away_qualify
+
+    # Normalise to remove bookmaker margin
+    total_12 = p1 + px + p2
+    p1_n, p2_n = p1 / total_12, p2 / total_12
+
+    total_q = p_hq + p_aq
+    p_hq_n, p_aq_n = p_hq / total_q, p_aq / total_q
+
+    # Penalty-shootout probabilities = qualifier share minus regular-time win share
+    p_home_pen = p_hq_n - p1_n
+    p_away_pen = p_aq_n - p2_n
+
+    if p_home_pen <= 0 or p_away_pen <= 0:
+        return (
+            f"Error: implied penalty probability is non-positive "
+            f"(home={p_home_pen:.4f}, away={p_away_pen:.4f}). "
+            "Check that To Qualify odds are shorter than the 1X2 win odds."
+        )
+
+    home_win = round(1 / p1_n, 2)
+    guest_win = round(1 / p2_n, 2)
+    tie_home_win = round(1 / p_home_pen, 2)
+    tie_guest_win = round(1 / p_away_pen, 2)
+
+    coef, created = Coefficient.objects.update_or_create(
+        match_id=match,
+        defaults=dict(
+            home_win=home_win,
+            guest_win=guest_win,
+            tie=None,
+            tie_home_win=tie_home_win,
+            tie_guest_win=tie_guest_win,
+            score=score or {},
+            coef_ready=False,
+            update_time=datetime.now(timezone.utc)))
+
+    action = "Created" if created else "Updated"
+    return (
+        f"{action} knockout odds for match '{match}' (id={match_id}): "
+        f"home_win={home_win}, guest_win={guest_win}, "
+        f"tie_home_win={tie_home_win}, tie_guest_win={tie_guest_win}. "
+        f"Call publish_odds({match_id}) to make them visible."
+    )
+
+
+@mcp.tool()
 def publish_odds(match_id: int) -> str:
     """Publish odds for a match, making them visible to users.
 
