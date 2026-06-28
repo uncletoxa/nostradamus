@@ -6,7 +6,7 @@
 {% block content %}
   <div class="alert alert-light alert-dismissible small py-2 mb-3" role="alert" id="playoff-notice">
     ⚽ Турнир вышел в плей-офф — <a href="{% url 'how_odds_work' %}" class="alert-link">как считаются коэффициенты для матчей навылет</a>.
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+    <button type="button" class="btn-close" style="font-size:.65rem;" data-bs-dismiss="alert" aria-label="Закрыть"></button>
   </div>
   <script>
     if (localStorage.getItem('playoff-notice-dismissed')) {
