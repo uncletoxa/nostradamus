@@ -19,6 +19,8 @@ def get_result(home_team: int, guest_team: int) -> str:
 def get_playoff_result(home_team, guest_team, home_to_advance):
     res = home_team - guest_team
     if res == 0:
+        if home_to_advance is None:
+            return None
         return 'tie_home_win' if home_to_advance else 'tie_guest_win'
     return 'home_win' if res > 0 else 'guest_win'
 
@@ -53,7 +55,9 @@ def _score_match(match, prediction, coef):
         match_result = get_result(match.home_score, match.guest_score)
         prediction_result = get_result(prediction.home_score, prediction.guest_score)
 
-    result_bet = Decimal(str(getattr(coef, match_result))) if prediction_result == match_result else Decimal(0)
+    result_bet = (Decimal(str(getattr(coef, match_result)))
+                  if match_result is not None and prediction_result == match_result
+                  else Decimal(0))
     exact_score_match = (match.home_score == prediction.home_score and
                          match.guest_score == prediction.guest_score)
     score_bet = Decimal(str(coef.score[match_score])) if exact_score_match else Decimal(0)
