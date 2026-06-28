@@ -17,10 +17,10 @@
     <tr>
       <th>#</th>
       <th>{% trans "User" %}</th>
-      <th>{% trans "Total" %}</th>
-      <th>{% trans "Exact" %}</th>
-      <th>{% trans "Diff" %}</th>
-      <th>{% trans "Result" %}</th>
+      <th>{% trans "Total Points" %}</th>
+      <th>{% trans "Result Bet" %}</th>
+      <th>{% trans "Diff Bet" %}</th>
+      <th>{% trans "Score Bet" %}</th>
     </tr>
   </thead>
   <tbody>
@@ -29,9 +29,9 @@
         <td>{% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}</td>
         <td><a href="{% url 'results:user_results' user.id %}">{{ user.first_name }}</a>{% if user == current_user %} <span class="text-muted">({% trans "you" %})</span>{% endif %}</td>
         <td>{{ pts.total }}</td>
-        <td>{{ pts.exact }}</td>
-        <td>{{ pts.correct_diff }}</td>
         <td>{{ pts.correct_result }}</td>
+        <td>{{ pts.correct_diff }}</td>
+        <td>{{ pts.exact }}</td>
       </tr>
     {% endfor %}
   </tbody>

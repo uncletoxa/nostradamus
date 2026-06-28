@@ -122,14 +122,8 @@ msgstr "Турнирная таблица"
 msgid "Unofficial Standings"
 msgstr "Неофициальная таблица"
 
-msgid "Total"
-msgstr "Итого"
-
-msgid "Exact"
-msgstr "Точный счёт"
-
-msgid "Diff"
-msgstr "Разница"
+msgid "Diff Bet"
+msgstr "За разницу"
 
 msgid "5 pts — exact score · 3 pts — correct goal difference · 1 pt — correct result"
 msgstr "5 очков — точный счёт · 3 очка — правильная разница голов · 1 очко — правильный исход"
