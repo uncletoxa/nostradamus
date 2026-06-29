@@ -66,15 +66,31 @@ def main():
             continue
 
         api_status = STATUS_MAP.get(api_match['status'], Match.SCHEDULED)
-        full_time = api_match.get('score', {}).get('fullTime', {})
-        api_home_score = full_time.get('home')
-        api_away_score = full_time.get('away')
+        score_data = api_match.get('score', {})
+        duration = score_data.get('duration', 'REGULAR')
         api_minute = api_match.get('minute')
         api_injury_time = api_match.get('injuryTime')
         if api_status == Match.FINISHED:
             api_minute = None
         elif api_minute is not None and api_injury_time:
             api_minute = api_minute + api_injury_time
+
+        # For penalty shootouts, fullTime includes penalty goals; use regularTime+extraTime instead
+        if duration == 'PENALTY_SHOOTOUT':
+            regular = score_data.get('regularTime', {})
+            extra = score_data.get('extraTime', {})
+            reg_home = regular.get('home')
+            reg_away = regular.get('away')
+            if reg_home is not None and reg_away is not None:
+                api_home_score = reg_home + (extra.get('home') or 0)
+                api_away_score = reg_away + (extra.get('away') or 0)
+            else:
+                api_home_score = None
+                api_away_score = None
+        else:
+            full_time = score_data.get('fullTime', {})
+            api_home_score = full_time.get('home')
+            api_away_score = full_time.get('away')
 
         changed = []
 
@@ -90,6 +106,21 @@ def main():
                 match.home_score = api_home_score
                 match.guest_score = api_away_score
                 changed.extend(['home_score', 'guest_score'])
+
+        # Set home_to_advance for playoff matches decided by penalty shootout
+        if match.is_playoff and duration == 'PENALTY_SHOOTOUT':
+            winner = score_data.get('winner')
+            if winner == 'HOME_TEAM':
+                api_home_to_advance = True
+            elif winner == 'AWAY_TEAM':
+                api_home_to_advance = False
+            else:
+                api_home_to_advance = None
+            if match.home_to_advance != api_home_to_advance:
+                logging.info('{}: home_to_advance {} -> {}'.format(
+                    match, match.home_to_advance, api_home_to_advance))
+                match.home_to_advance = api_home_to_advance
+                changed.append('home_to_advance')
 
         if match.current_minute != api_minute:
             match.current_minute = api_minute
