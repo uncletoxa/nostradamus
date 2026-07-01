@@ -20,6 +20,9 @@
     <div id="chat-messages"
          style="height: 520px; overflow-y: auto; overflow-anchor: none; border: 1px solid #dee2e6; border-radius: 0.25rem; padding: 1rem; display: none;"
          class="mb-3 bg-body">
+      <div id="load-older-wrap" class="text-center mb-2"{% if not has_older %} style="display:none;"{% endif %}>
+        <button id="load-older-btn" class="btn btn-sm btn-outline-secondary">{% trans "Load older messages" %}</button>
+      </div>
       {% for msg in chat_messages %}
       <div class="d-flex mb-2 chat-msg" data-id="{{ msg.id }}">
         <div class="me-2" style="flex-shrink:0;">
@@ -119,6 +122,7 @@
 
   var messagesDiv = document.getElementById('chat-messages');
   var lastTs = '{{ last_ts|escapejs }}';
+  var firstTs = '{{ first_ts|escapejs }}';
 
   /* ── initial reaction data from server ──────────────────────── */
   var initReactions = {{ reactions_json|safe }};
@@ -374,6 +378,58 @@
     }
     if (atBottom) scrollAfterImages(row);
   }
+
+  /* ── load older messages ────────────────────────────────────── */
+  var loadOlderWrap = document.getElementById('load-older-wrap');
+  var loadOlderBtn = document.getElementById('load-older-btn');
+
+  function prependMessage(msg) {
+    var noMsg = document.getElementById('no-messages');
+    if (noMsg) noMsg.remove();
+    var row = document.createElement('div');
+    row.className = 'd-flex mb-2 chat-msg';
+    row.dataset.id = msg.id;
+    row.innerHTML =
+      '<div class="me-2" style="flex-shrink:0;">' + avatarHtml(msg) + '</div>' +
+      '<div class="flex-grow-1" style="min-width:0;">' +
+        '<div><strong>' + escapeHtml(msg.user) + '</strong>' +
+        '<small class="text-muted ms-2">' + escapeHtml(msg.time) + '</small>' +
+        matchHtml(msg.match) +
+        '<button class="btn btn-link btn-sm p-0 ms-2 reaction-add-btn" data-id="' + msg.id + '" ' +
+          'style="font-size:14px;line-height:1;opacity:0;transition:opacity .15s;text-decoration:none;" title="React">😊+</button>' +
+        '</div>' +
+        (msg.text ? '<div>' + linkify(msg.text) + '</div>' : '') +
+        imageHtml(msg.image_url) +
+        '<div class="reaction-bar mt-1" data-id="' + msg.id + '"></div>' +
+      '</div>';
+    loadOlderWrap.insertAdjacentElement('afterend', row);
+    if (msg.reactions && msg.reactions.length) {
+      renderReactionBar(row.querySelector('.reaction-bar'), msg.reactions);
+      initReactions[msg.id] = msg.reactions;
+    }
+  }
+
+  loadOlderBtn.addEventListener('click', function () {
+    if (!firstTs) return;
+    loadOlderBtn.disabled = true;
+    fetch(pollUrl + '?before=' + encodeURIComponent(firstTs))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data.messages || !data.messages.length) {
+          loadOlderWrap.style.display = 'none';
+          return;
+        }
+        var scrollBottom = messagesDiv.scrollHeight - messagesDiv.scrollTop;
+        firstTs = data.messages[0].created_at;
+        for (var i = data.messages.length - 1; i >= 0; i--) {
+          prependMessage(data.messages[i]);
+        }
+        messagesDiv.scrollTop = messagesDiv.scrollHeight - scrollBottom;
+        if (!data.has_more) loadOlderWrap.style.display = 'none';
+      })
+      .catch(function () {})
+      .finally(function () { loadOlderBtn.disabled = false; });
+  });
 
   /* ── polling ────────────────────────────────────────────────── */
   function poll() {

@@ -116,32 +116,50 @@ def chat(request):
             'mine': (row['message_id'], row['emoji']) in user_reacted_qs,
         })
     last_ts = chat_messages[-1].created_at.isoformat() if chat_messages else timezone.now().isoformat()
+    first_ts = chat_messages[0].created_at.isoformat() if chat_messages else ''
+    has_older = len(chat_messages) == 200
     reactions_json = json.dumps({str(k): v for k, v in reactions_by_msg.items()})
     return render(request, 'chat.html', {
         'chat_messages': chat_messages,
         'reactions_json': reactions_json,
         'last_ts': last_ts,
+        'first_ts': first_ts,
+        'has_older': has_older,
     })
 
 
 @login_required
 def chat_poll(request):
+    before_str = request.GET.get('before', '')
     since_str = request.GET.get('since', '')
-    if not since_str:
-        return JsonResponse({'messages': []})
-    since = parse_datetime(since_str)
-    if since is None:
-        return JsonResponse({'messages': []})
-    qs = (ChatMessage.objects
-          .filter(created_at__gt=since)
-          .select_related('user', 'user__profile',
-                          'match', 'match__home_team', 'match__guest_team'))
-    try:
-        limit = int(request.GET.get('limit', ''))
-        msgs = list(qs.order_by('-created_at')[:limit])
+    if before_str:
+        before = parse_datetime(before_str)
+        if before is None:
+            return JsonResponse({'messages': [], 'has_more': False})
+        msgs = list(ChatMessage.objects
+                    .filter(created_at__lt=before)
+                    .select_related('user', 'user__profile',
+                                    'match', 'match__home_team', 'match__guest_team')
+                    .order_by('-created_at')[:50])
+        has_more = len(msgs) == 50
         msgs.reverse()
-    except (ValueError, TypeError):
-        msgs = list(qs.order_by('created_at'))
+    elif since_str:
+        since = parse_datetime(since_str)
+        if since is None:
+            return JsonResponse({'messages': []})
+        qs = (ChatMessage.objects
+              .filter(created_at__gt=since)
+              .select_related('user', 'user__profile',
+                              'match', 'match__home_team', 'match__guest_team'))
+        try:
+            limit = int(request.GET.get('limit', ''))
+            msgs = list(qs.order_by('-created_at')[:limit])
+            msgs.reverse()
+        except (ValueError, TypeError):
+            msgs = list(qs.order_by('created_at'))
+        has_more = None
+    else:
+        return JsonResponse({'messages': []})
     msg_ids = [m.id for m in msgs]
     reactions_qs = (MessageReaction.objects
                     .filter(message_id__in=msg_ids)
@@ -177,7 +195,10 @@ def chat_poll(request):
             'match': _match_context(msg.match),
             'reactions': msg_reactions,
         })
-    return JsonResponse({'messages': data})
+    result = {'messages': data}
+    if has_more is not None:
+        result['has_more'] = has_more
+    return JsonResponse(result)
 
 
 @login_required
