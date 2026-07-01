@@ -17,7 +17,7 @@
         <tr>
           <td> <a href="{% url 'matches:single_match' match.match_id %}"> {{ match }} </a></td>
           <td class="align-middle"> {{ match.start_time|date:"d-m-Y H:i" }} </td>
-          <td class="align-middle"> {{ match.result }} </td>
+          <td class="align-middle"> {% if match.result %}{{ match.result }}{% else %}{% trans "Not started" %}{% endif %} </td>
         </tr>
       {% endfor %}
     </tbody>
