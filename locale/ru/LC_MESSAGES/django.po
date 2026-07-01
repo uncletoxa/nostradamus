@@ -566,3 +566,6 @@ msgstr "Загрузить старые сообщения"
 
 msgid "Not started"
 msgstr "Не начался"
+
+msgid "Per page:"
+msgstr "На странице:"

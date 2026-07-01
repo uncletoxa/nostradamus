@@ -4,6 +4,16 @@
 
 
 {% block content %}
+  <div class="mb-3 d-flex align-items-center gap-2">
+    <span class="text-muted">{% trans "Per page:" %}</span>
+    {% for size in allowed_page_sizes %}
+      {% if size == per_page %}
+        <span class="btn btn-sm btn-primary disabled">{{ size }}</span>
+      {% else %}
+        <a class="btn btn-sm btn-outline-secondary" href="?page=1&per_page={{ size }}">{{ size }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
   <table class="table">
     <thead class="table-dark">
       <tr>
