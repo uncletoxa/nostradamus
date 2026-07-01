@@ -563,3 +563,6 @@ msgstr "Счёт после 90 или 120 минут, без учёта пена
 
 msgid "Load older messages"
 msgstr "Загрузить старые сообщения"
+
+msgid "Not started"
+msgstr "Не начался"

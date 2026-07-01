@@ -59,7 +59,7 @@
             </a>
           </td>
           <td>
-            {{ coef.match_id.result }}
+            {% if coef.match_id.result %}{{ coef.match_id.result }}{% else %}{% trans "Not started" %}{% endif %}
           </td>
           <td>
             <a href="{% url 'predictions:details' coef.match_id.match_id %}">
