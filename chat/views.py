@@ -96,7 +96,8 @@ def chat(request):
     chat_messages = list(ChatMessage.objects
                          .select_related('user', 'user__profile',
                                          'match', 'match__home_team', 'match__guest_team')
-                         .order_by('created_at')[:200])
+                         .order_by('-created_at')[:200])
+    chat_messages.reverse()
     msg_ids = [m.id for m in chat_messages]
     reactions_qs = (MessageReaction.objects
                     .filter(message_id__in=msg_ids)
