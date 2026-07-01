@@ -560,3 +560,6 @@ msgstr "Счёт гостей"
 
 msgid "Score after 90 or 120 minutes, not including penalties"
 msgstr "Счёт после 90 или 120 минут, без учёта пенальти"
+
+msgid "Load older messages"
+msgstr "Загрузить старые сообщения"
