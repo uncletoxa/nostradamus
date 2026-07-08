@@ -59,7 +59,8 @@ def _score_match(match, prediction, coef):
                   if match_result is not None and prediction_result == match_result
                   else Decimal(0))
     exact_score_match = (match.home_score == prediction.home_score and
-                         match.guest_score == prediction.guest_score)
+                         match.guest_score == prediction.guest_score and
+                         prediction_result == match_result)
     score_bet = Decimal(str(coef.score[match_score])) if exact_score_match else Decimal(0)
     return prediction.score(), result_bet, score_bet
 
@@ -135,17 +136,26 @@ def simple_score_match(match, prediction):
     """Return 5/3/1/0 points for exact score / correct diff / correct result / miss."""
     if prediction is None:
         return 0
+    if match.is_playoff:
+        match_result = get_playoff_result(
+            match.home_score, match.guest_score, match.home_to_advance)
+        prediction_result = get_playoff_result(
+            prediction.home_score, prediction.guest_score, prediction.home_to_advance)
+    else:
+        match_result = get_result(match.home_score, match.guest_score)
+        prediction_result = get_result(prediction.home_score, prediction.guest_score)
     if (match.home_score == prediction.home_score and
-            match.guest_score == prediction.guest_score):
+            match.guest_score == prediction.guest_score and
+            prediction_result == match_result):
         return 5
     actual_diff = match.home_score - match.guest_score
     pred_diff = prediction.home_score - prediction.guest_score
-    if actual_diff == pred_diff:
+    if actual_diff == pred_diff and prediction_result == match_result:
         return 3
 
     def sign(x):
         return 1 if x > 0 else (-1 if x < 0 else 0)
-    if sign(actual_diff) == sign(pred_diff):
+    if sign(actual_diff) == sign(pred_diff) and prediction_result == match_result:
         return 1
     return 0
 
