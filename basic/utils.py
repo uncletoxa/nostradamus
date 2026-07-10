@@ -62,7 +62,7 @@ def _score_match(match, prediction, coef):
                          match.guest_score == prediction.guest_score and
                          prediction_result == match_result)
     score_bet = Decimal(str(coef.score[match_score])) if exact_score_match else Decimal(0)
-    return prediction.score(), result_bet, score_bet
+    return prediction.score(), round(result_bet, 2), round(score_bet, 2)
 
 
 def get_user_results_by_matches(user_id: int, matches: QuerySet) -> dict:
