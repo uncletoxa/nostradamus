@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}История ТП{% endblock %}
 
@@ -12,8 +13,26 @@
 <div class="card mb-4">
   <div class="card-header"><strong>Турнир прогнозистов ЧЕ-2004</strong></div>
   <div class="card-body">
-    <p class="text-muted fst-italic">Это было давно. Многое стёрло время. Информация по данному ТП уточняется.</p>
-    <p><strong>Победитель:</strong> Зураб</p>
+    <p><strong>Кол-во участников:</strong> 4</p>
+    <p><strong>Распределение мест:</strong></p>
+    <ol>
+      <li>Зураб</li>
+      <li>Котопёс</li>
+      <li>Don Pablo</li>
+    </ol>
+    <p class="text-muted"><em>Пояснения:</em> 22 года назад Don Pablo символично организуя тогда этот так называемый «тотализатор», ещё не знал какой долгой и богатой традиции даёт начало. Тогда подростки ставили символические деньги и, как могли, отбивали их. В итоге, всё это действо можно считать прародителем ТП.</p>
+    <div class="row g-2 mt-2">
+      <div class="col-12 col-md-6">
+        <a href="{% static 'img/history/euro2004_1.jpg' %}" target="_blank">
+          <img src="{% static 'img/history/euro2004_1.jpg' %}" class="img-fluid rounded" alt="Тотализатор ЧЕ-2004, страница 1">
+        </a>
+      </div>
+      <div class="col-12 col-md-6">
+        <a href="{% static 'img/history/euro2004_2.jpg' %}" target="_blank">
+          <img src="{% static 'img/history/euro2004_2.jpg' %}" class="img-fluid rounded" alt="Тотализатор ЧЕ-2004, итоги">
+        </a>
+      </div>
+    </div>
   </div>
 </div>
 

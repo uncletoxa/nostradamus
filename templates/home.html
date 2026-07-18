@@ -17,6 +17,19 @@
       });
     }
   </script>
+  <div class="alert alert-info alert-dismissible small py-2 mb-3" role="alert" id="history-euro2004-notice">
+    📖 Появились обновления по самому первому ТП в истории! <a href="{% url 'history' %}" class="alert-link">Заходи в «Историю» и почитай!</a>
+    <button type="button" class="btn-close" style="font-size:.65rem;" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+  </div>
+  <script>
+    if (localStorage.getItem('history-euro2004-notice-dismissed')) {
+      document.getElementById('history-euro2004-notice').remove();
+    } else {
+      document.getElementById('history-euro2004-notice').addEventListener('closed.bs.alert', function () {
+        localStorage.setItem('history-euro2004-notice-dismissed', '1');
+      });
+    }
+  </script>
   {% if latest_news %}
     <div class="card mb-4">
       {% if latest_news.photo %}
