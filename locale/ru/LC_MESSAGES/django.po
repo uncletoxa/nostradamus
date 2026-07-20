@@ -28,6 +28,9 @@ msgstr "Матчи"
 msgid "More"
 msgstr "Ещё"
 
+msgid "Fun Stats"
+msgstr "Весёлая статистика"
+
 msgid "Former Participants"
 msgstr "Незаявленные эксперты"
 
