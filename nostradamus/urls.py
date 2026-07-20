@@ -27,6 +27,7 @@ urlpatterns = [
     re_path(r'^intro/$', basic_views.intro, name='intro'),
     re_path(r'^install/$', basic_views.install_app, name='install_app'),
     re_path(r'^how-odds-work/$', basic_views.how_odds_work, name='how_odds_work'),
+    re_path(r'^funny-stats/$', basic_views.funny_stats, name='funny_stats'),
     re_path(r'^news/(?P<pk>\d+)/$', basic_views.news_detail, name='news_detail'),
     re_path(r'^participants/$', accounts_views.participants, name='participants'),
     re_path(r'^settings/account/$', accounts_views.my_account, name='my_account'),

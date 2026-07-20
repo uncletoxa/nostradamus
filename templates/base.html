@@ -64,6 +64,9 @@
                     <li class="nav-item">
                       <a class="nav-link{% if request.resolver_match.namespace == 'matches' %} active{% endif %}" href="{% url 'matches:matches_index' %}">{% trans "Matches" %}</a>
                     </li>
+                    <li class="nav-item">
+                      <a class="nav-link{% if request.resolver_match.url_name == 'funny_stats' %} active{% endif %}" href="{% url 'funny_stats' %}">🎭 {% trans "Fun Stats" %}</a>
+                    </li>
                     <li class="nav-item dropdown">
                       <a class="nav-link dropdown-toggle{% if request.resolver_match.url_name == 'participants' or request.resolver_match.url_name == 'history' or request.resolver_match.url_name == 'intro' or request.resolver_match.url_name == 'install_app' or request.resolver_match.url_name == 'how_odds_work' %} active{% endif %}" href="#" data-bs-toggle="dropdown">{% trans "More" %}</a>
                       <div class="dropdown-menu">

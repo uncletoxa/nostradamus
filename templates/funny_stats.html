@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Занимательная статистика — {{ block.super }}{% endblock %}
+
+{% block content %}
+<h3 class="mb-1">🎭 Занимательная статистика</h3>
+<p class="text-muted mb-4">Всё, что вы хотели знать о прогнозах участников, но боялись спросить.</p>
+
+<h5 class="mb-3">🏆 Личные достижения</h5>
+<div class="row g-3 mb-5">
+  {% for award in awards %}
+  <div class="col-12 col-sm-6 col-lg-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-start gap-3">
+          <span style="font-size: 2rem; line-height: 1;">{{ award.emoji }}</span>
+          <div>
+            <div class="text-muted small text-uppercase fw-semibold mb-1" style="letter-spacing: .05em;">{{ award.title }}</div>
+            <div class="fw-bold fs-5 mb-1">{{ award.winner }}</div>
+            <div class="text-muted small mb-1">{{ award.stat }}</div>
+            <div class="small">{{ award.desc }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<h5 class="mb-3">📊 Занимательные факты</h5>
+<div class="row g-3 mb-5">
+  <div class="col-12 col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">🎯 Самый популярный прогноз</div>
+        <p class="mb-0">Счёт <strong>{{ most_popular_score.0 }}:{{ most_popular_score.1 }}</strong> был поставлен <strong>{{ most_popular_count }} раз</strong> — любимый счёт всей компании.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">🙈 Непредсказуемые матчи</div>
+        <p class="mb-0">В <strong>{{ nobody_got_exact }} из {{ total_matches }}</strong> сыгранных матчей никто не угадал точный счёт. Матчей, где все угадали — <strong>0</strong>.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">😵 Когда все ошиблись в исходе</div>
+        <p class="mb-0">В <strong>{{ nobody_got_result }}</strong> матчах никто не угадал даже исход (победа / ничья). Зато в <strong>{{ all_got_result }}</strong> матчах угадали все.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">⚡ Коллективное чутьё на голы</div>
+        <p class="mb-0">В среднем участники прогнозировали <strong>{{ avg_predicted|floatformat:2 }}</strong> гола/матч. Реально забивали <strong>{{ avg_actual|floatformat:2 }}</strong>. Попали почти в яблочко.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h5 class="mb-3">🤔 А что если бы...</h5>
+<div class="row g-3 mb-2">
+  <div class="col-12 col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="fw-semibold mb-3">💎 Теоретический максимум очков</div>
+        <p class="text-muted small mb-3">Сколько мог бы набрать идеальный участник, угадавший каждый исход, каждый точный счёт и чемпиона.</p>
+        <table class="table table-sm mb-0">
+          <tbody>
+            <tr>
+              <td>Исходы (result_bet)</td>
+              <td class="text-end fw-semibold">{{ total_result_max|floatformat:2 }}</td>
+            </tr>
+            <tr>
+              <td>Точные счета (score_bet)</td>
+              <td class="text-end fw-semibold">{{ total_score_max|floatformat:2 }}</td>
+            </tr>
+            {% if winner_points %}
+            <tr>
+              <td>Чемпион{% if winner_team %} ({{ winner_team }}){% endif %}</td>
+              <td class="text-end fw-semibold">{{ winner_points|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            <tr class="table-active fw-bold">
+              <td>Итого максимум</td>
+              <td class="text-end">{{ total_max|floatformat:2 }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="text-muted small mt-2 mb-0">Score_bet — это <strong>{{ total_score_max|floatformat:0 }}</strong> из <strong>{{ total_max|floatformat:0 }}</strong> очков (86%). Именно там решается всё.</p>
+      </div>
+    </div>
+  </div>
+  {% if best_match %}
+  <div class="col-12 col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="fw-semibold mb-3">💥 Самый ценный матч</div>
+        <p class="text-muted small mb-3">Матч с наибольшим суммарным потенциалом очков за исход + точный счёт.</p>
+        <div class="fs-5 fw-bold mb-1">{{ best_match.match }}</div>
+        <div class="text-muted mb-3">Реальный счёт: <strong>{{ best_match.match.result }}</strong></div>
+        <table class="table table-sm mb-0">
+          <tbody>
+            <tr>
+              <td>Коэф за исход</td>
+              <td class="text-end">{{ best_match.result_odd|floatformat:2 }}</td>
+            </tr>
+            <tr>
+              <td>Коэф за точный счёт</td>
+              <td class="text-end">{{ best_match.score_odd|floatformat:2 }}</td>
+            </tr>
+            <tr class="table-active fw-bold">
+              <td>Потенциал очков</td>
+              <td class="text-end">{{ best_match.total|floatformat:2 }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="text-muted small mt-2 mb-0">Один матч — почти треть всего теоретического максимума турнира.</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
