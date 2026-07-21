@@ -19,7 +19,7 @@
             <div class="text-muted small text-uppercase fw-semibold mb-1" style="letter-spacing: .05em;">{{ award.title }}</div>
             <div class="fw-bold fs-5 mb-1">{{ award.winner }}</div>
             <div class="text-muted small mb-1">{{ award.stat }}</div>
-            <div class="small">{{ award.desc }}</div>
+            <div class="small">{{ award.desc|safe }}</div>
           </div>
         </div>
       </div>
@@ -73,8 +73,8 @@
         <p class="text-muted small mb-3">Сколько мог бы набрать идеальный участник, угадавший каждый исход, каждый точный счёт и чемпиона.</p>
         <table class="table table-sm mb-0">
           <tbody>
-            <tr><td>Исходы (result_bet)</td><td class="text-end fw-semibold">{{ total_result_max|floatformat:2 }}</td></tr>
-            <tr><td>Точные счета (score_bet)</td><td class="text-end fw-semibold">{{ total_score_max|floatformat:2 }}</td></tr>
+            <tr><td>Исходы</td><td class="text-end fw-semibold">{{ total_result_max|floatformat:2 }}</td></tr>
+            <tr><td>Точные счета</td><td class="text-end fw-semibold">{{ total_score_max|floatformat:2 }}</td></tr>
             {% if winner_points %}
             <tr><td>Чемпион{% if winner_team %} ({{ winner_team }}){% endif %}</td><td class="text-end fw-semibold">{{ winner_points|floatformat:2 }}</td></tr>
             {% endif %}

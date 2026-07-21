@@ -253,7 +253,7 @@ def get_xg_standings(users, matches_queryset):
 def get_funny_stats_context():
     from collections import Counter, defaultdict
     from django.contrib.auth.models import User
-    from predictions.models import WinnerPredictionCoef
+    from predictions.models import WinnerPredictionCoef, WinnerPrediction
 
     users = list(User.objects.filter(is_superuser=False).exclude(profile__previous_participant=True))
     finished_matches = list(Match.objects.filter(status='FINISHED'))
@@ -359,7 +359,6 @@ def get_funny_stats_context():
     draw_name, draw_val = _top(draws)
     nodraw_name, nodraw_val = _top(draws, reverse=False)
     home_name, home_val = _top(home_wins_pct)
-    oracle_name, oracle_val = _top(exact)
     brave_name, brave_val = _top(avg_odds)
     coward_name, coward_val = _top(avg_odds, reverse=False)
     lastmin_name, lastmin_val = _top(min_gap, reverse=False)
@@ -377,6 +376,39 @@ def get_funny_stats_context():
     else:
         onenote_score, onenote_cnt, onenote_pct = (0, 0), 0, 0
 
+    # Triple crown: who tops all three standings (official, simple, xG)
+    preds_by_user_match = {(p.user_id_id, p.match_id_id): p for p in last_preds}
+    winner_preds_map = {
+        wp.user_id_id: wp
+        for wp in WinnerPrediction.objects.filter(user_id__in=user_ids).select_related('prediction_id')}
+    official_totals = {}
+    for uid in user_ids:
+        total = Decimal(0)
+        for m in finished_matches:
+            if m.home_score is None or m.guest_score is None:
+                continue
+            p = preds_by_user_match.get((uid, m.match_id))
+            c = coefs.get(m.match_id)
+            if p and c:
+                _, rb, sb = _score_match(m, p, c)
+                total += rb + sb
+        wp = winner_preds_map.get(uid)
+        if wp and wp.prediction_id.is_winner:
+            total += Decimal(str(wp.prediction_id.coef))
+        official_totals[uid] = total
+    official_winner_uid = max(official_totals, key=official_totals.get) if official_totals else None
+
+    simple_std = get_simple_standings(users, finished_matches)
+    simple_winner_uid = next(iter(simple_std)).id if simple_std else None
+
+    xg_std = get_xg_standings(users, finished_matches)
+    xg_winner_uid = next(iter(xg_std)).id if xg_std else None
+
+    if official_winner_uid and official_winner_uid == simple_winner_uid == xg_winner_uid:
+        triple_winner_name = user_names[official_winner_uid]
+    else:
+        triple_winner_name = '—'
+
     awards = [
         {'emoji': '😶', 'title': 'Пессимист', 'winner': pess_name,
          'stat': f'{pess_val} прогнозов со счётом 0:0',
@@ -393,9 +425,12 @@ def get_funny_stats_context():
         {'emoji': '🏠', 'title': 'Домашний любимчик', 'winner': home_name,
          'stat': f'{home_val:.0f}% прогнозов на победу хозяев' if home_val else '—',
          'desc': 'Твёрдо верит в преимущество своего поля'},
-        {'emoji': '🔮', 'title': 'Оракул', 'winner': oracle_name,
-         'stat': f'{oracle_val} точных счётов',
-         'desc': 'Угадал точный счёт больше всех'},
+        {'emoji': '👑', 'title': 'Тройная корона', 'winner': triple_winner_name,
+         'stat': 'Победа во всех трёх таблицах',
+         'desc': 'Лучший сразу везде: '
+                 '<a href="/results/">официальная</a>, '
+                 '<a href="/results/simple/">простые очки</a> '
+                 'и <a href="/results/xg/">по xG</a>'},
         {'emoji': '🎵', 'title': 'Одна нота',
          'winner': user_names[onenote_uid] if onenote_uid else '—',
          'stat': f'{onenote_score[0]}:{onenote_score[1]} — {onenote_cnt} раз ({onenote_pct}%)',
