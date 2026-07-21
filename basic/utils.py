@@ -202,8 +202,9 @@ def _score_match_xg(match, prediction, coef):
     xg_score_key = f'{xg_home}-{xg_guest}'
     xg_result = get_result(xg_home, xg_guest)
     prediction_result = get_result(prediction.home_score, prediction.guest_score)
-    result_bet = (Decimal(str(getattr(coef, xg_result)))
-                  if prediction_result == xg_result
+    odds_val = getattr(coef, xg_result, None)
+    result_bet = (Decimal(str(odds_val))
+                  if prediction_result == xg_result and odds_val is not None
                   else Decimal(0))
     exact_score_match = (xg_home == prediction.home_score and
                          xg_guest == prediction.guest_score)
