@@ -281,6 +281,18 @@ def get_funny_stats_context():
     resubmits = {uid: sum(1 for cnt in user_match_counts[uid].values() if cnt > 1)
                  for uid in user_ids}
 
+    # Avg score distance from actual result (lower = closer)
+    avg_score_dist = {}
+    for uid, preds in preds_by_user.items():
+        dists = [abs(p.home_score - m.home_score) + abs(p.guest_score - m.guest_score)
+                 for p in preds if (m := match_by_id.get(p.match_id_id)) and m.home_score is not None]
+        if dists:
+            avg_score_dist[uid] = sum(dists) / len(dists)
+
+    # Number of unique scorelines predicted
+    unique_scores = {uid: len(set((p.home_score, p.guest_score) for p in preds))
+                     for uid, preds in preds_by_user.items() if preds}
+
     def _top(d, reverse=True):
         if not d:
             return '—', None
@@ -300,6 +312,8 @@ def get_funny_stats_context():
     change_name, change_val = _top(resubmits)
     nochange_names = [user_names[uid] for uid in user_ids
                       if resubmits.get(uid, 0) == 0]
+    telepat_name, telepat_val = _top(avg_score_dist, reverse=False)
+    artist_name, artist_val = _top(unique_scores)
 
     onenote_uid = (max(top_score_by_user, key=lambda uid: top_score_by_user[uid][2])
                    if top_score_by_user else None)
@@ -350,6 +364,12 @@ def get_funny_stats_context():
          'winner': ', '.join(nochange_names),
          'stat': '0 изменений за весь турнир',
          'desc': 'Поставил — и не оглядывался'},
+        {'emoji': '📐', 'title': 'Телепат', 'winner': telepat_name,
+         'stat': f'Средняя погрешность {telepat_val:.2f} гола' if telepat_val else '—',
+         'desc': 'Ближе всех к реальным счётам — пусть и без точных попаданий'},
+        {'emoji': '🌈', 'title': 'Художник', 'winner': artist_name,
+         'stat': f'{artist_val} разных счётов за турнир' if artist_val else '—',
+         'desc': 'Ни разу не повторился — каждый матч как чистый холст'},
     ]
 
     all_score_counter = Counter((p.home_score, p.guest_score) for p in last_preds)
