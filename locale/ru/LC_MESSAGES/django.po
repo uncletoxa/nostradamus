@@ -125,6 +125,12 @@ msgstr "Турнирная таблица"
 msgid "Unofficial Standings"
 msgstr "Неофициальная таблица"
 
+msgid "xG Standings"
+msgstr "Таблица xG"
+
+msgid "Predictions scored against Expected Goals (xG) instead of the real result. xG values are rounded to the nearest integer."
+msgstr "Прогнозы оцениваются по ожидаемым голам (xG), а не по реальному счёту. Значения xG округляются до целого числа."
+
 msgid "Diff Bet"
 msgstr "За разницу"
 
