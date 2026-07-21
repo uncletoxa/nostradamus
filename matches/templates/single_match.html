@@ -37,6 +37,13 @@
           <div class="fw-bold mt-1">{% trans match.guest_team.name %}</div>
         </div>
       </div>
+      {% if match.home_xg is not None and match.guest_xg is not None %}
+      <div class="d-flex align-items-center mt-3 pt-2 border-top">
+        <span class="fw-semibold flex-fill text-center">{{ match.home_xg }}</span>
+        <span class="text-muted small mx-3">xG</span>
+        <span class="fw-semibold flex-fill text-center">{{ match.guest_xg }}</span>
+      </div>
+      {% endif %}
     </div>
   </div>
 
