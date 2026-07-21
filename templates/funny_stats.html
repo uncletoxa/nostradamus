@@ -42,7 +42,7 @@
     <div class="card h-100">
       <div class="card-body">
         <div class="fw-semibold mb-2">🙈 Непредсказуемые матчи</div>
-        <p class="mb-0">В <strong>{{ nobody_got_exact }} из {{ total_matches }}</strong> сыгранных матчей никто не угадал точный счёт. Матчей, где все угадали — <strong>0</strong>.</p>
+        <p class="mb-0">В <strong>{{ nobody_got_exact }} из {{ total_matches }}</strong> сыгранных матчей никто не угадал точный счёт.</p>
       </div>
     </div>
   </div>
@@ -58,14 +58,14 @@
     <div class="card h-100">
       <div class="card-body">
         <div class="fw-semibold mb-2">⚡ Коллективное чутьё на голы</div>
-        <p class="mb-0">В среднем участники прогнозировали <strong>{{ avg_predicted|floatformat:2 }}</strong> гола/матч. Реально забивали <strong>{{ avg_actual|floatformat:2 }}</strong>. Попали почти в яблочко.</p>
+        <p class="mb-0">В среднем участники прогнозировали <strong>{{ avg_predicted|floatformat:2 }}</strong> гола/матч. Реально забивали <strong>{{ avg_actual|floatformat:2 }}</strong>.</p>
       </div>
     </div>
   </div>
 </div>
 
 <h5 class="mb-3">🤔 А что если бы...</h5>
-<div class="row g-3 mb-2">
+<div class="row g-3 mb-5">
   <div class="col-12 col-lg-6">
     <div class="card h-100">
       <div class="card-body">
@@ -73,27 +73,15 @@
         <p class="text-muted small mb-3">Сколько мог бы набрать идеальный участник, угадавший каждый исход, каждый точный счёт и чемпиона.</p>
         <table class="table table-sm mb-0">
           <tbody>
-            <tr>
-              <td>Исходы (result_bet)</td>
-              <td class="text-end fw-semibold">{{ total_result_max|floatformat:2 }}</td>
-            </tr>
-            <tr>
-              <td>Точные счета (score_bet)</td>
-              <td class="text-end fw-semibold">{{ total_score_max|floatformat:2 }}</td>
-            </tr>
+            <tr><td>Исходы (result_bet)</td><td class="text-end fw-semibold">{{ total_result_max|floatformat:2 }}</td></tr>
+            <tr><td>Точные счета (score_bet)</td><td class="text-end fw-semibold">{{ total_score_max|floatformat:2 }}</td></tr>
             {% if winner_points %}
-            <tr>
-              <td>Чемпион{% if winner_team %} ({{ winner_team }}){% endif %}</td>
-              <td class="text-end fw-semibold">{{ winner_points|floatformat:2 }}</td>
-            </tr>
+            <tr><td>Чемпион{% if winner_team %} ({{ winner_team }}){% endif %}</td><td class="text-end fw-semibold">{{ winner_points|floatformat:2 }}</td></tr>
             {% endif %}
-            <tr class="table-active fw-bold">
-              <td>Итого максимум</td>
-              <td class="text-end">{{ total_max|floatformat:2 }}</td>
-            </tr>
+            <tr class="table-active fw-bold"><td>Итого максимум</td><td class="text-end">{{ total_max|floatformat:2 }}</td></tr>
           </tbody>
         </table>
-        <p class="text-muted small mt-2 mb-0">Score_bet — это <strong>{{ total_score_max|floatformat:0 }}</strong> из <strong>{{ total_max|floatformat:0 }}</strong> очков (86%). Именно там решается всё.</p>
+        <p class="text-muted small mt-2 mb-0">Score_bet — {{ total_score_max|floatformat:0 }} из {{ total_max|floatformat:0 }} очков (86%). Именно там решается всё.</p>
       </div>
     </div>
   </div>
@@ -104,28 +92,218 @@
         <div class="fw-semibold mb-3">💥 Самый ценный матч</div>
         <p class="text-muted small mb-3">Матч с наибольшим суммарным потенциалом очков за исход + точный счёт.</p>
         <div class="fs-5 fw-bold mb-1">{{ best_match.match }}</div>
-        <div class="text-muted mb-3">Реальный счёт: <strong>{{ best_match.match.result }}</strong></div>
+        <div class="text-muted mb-3">Счёт: <strong>{{ best_match.match.result }}</strong></div>
         <table class="table table-sm mb-0">
           <tbody>
-            <tr>
-              <td>Коэф за исход</td>
-              <td class="text-end">{{ best_match.result_odd|floatformat:2 }}</td>
-            </tr>
-            <tr>
-              <td>Коэф за точный счёт</td>
-              <td class="text-end">{{ best_match.score_odd|floatformat:2 }}</td>
-            </tr>
-            <tr class="table-active fw-bold">
-              <td>Потенциал очков</td>
-              <td class="text-end">{{ best_match.total|floatformat:2 }}</td>
-            </tr>
+            <tr><td>Коэф за исход</td><td class="text-end">{{ best_match.result_odd|floatformat:2 }}</td></tr>
+            <tr><td>Коэф за точный счёт</td><td class="text-end">{{ best_match.score_odd|floatformat:2 }}</td></tr>
+            <tr class="table-active fw-bold"><td>Потенциал очков</td><td class="text-end">{{ best_match.total|floatformat:2 }}</td></tr>
           </tbody>
         </table>
-        <p class="text-muted small mt-2 mb-0">Один матч — почти треть всего теоретического максимума турнира.</p>
       </div>
     </div>
   </div>
   {% endif %}
 </div>
+
+<h5 class="mb-3">📋 Полные таблицы</h5>
+<p class="text-muted small mb-4">Все участники по каждому показателю. В каждой таблице — от большего к меньшему, если не указано иное.</p>
+
+<div class="row g-4 mb-4">
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">😶 Прогнозы 0:0 (пессимизм)</div>
+    <p class="text-muted small mb-2">
+      Ни разу не поставили 0:0:
+      {% if never_zeros %}
+        <strong>{{ never_zeros|join:", " }}</strong>
+      {% else %}
+        —
+      {% endif %}
+    </p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Участник</th><th class="text-end">Прогнозов 0:0</th></tr></thead>
+      <tbody>{% for r in zeros_ranks %}<tr><td>{{ r.name }}</td><td class="text-end">{{ r.value }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">🤝 Ничьи</div>
+    <p class="text-muted small mb-2">
+      Ни разу не поставили ничью:
+      {% if never_draws %}
+        <strong>{{ never_draws|join:", " }}</strong>
+      {% else %}
+        —
+      {% endif %}
+    </p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Участник</th><th class="text-end">Ничьих</th><th class="text-end">%</th></tr></thead>
+      <tbody>{% for r in draws_ranks %}<tr><td>{{ r.name }}</td><td class="text-end">{{ r.count }}</td><td class="text-end">{{ r.pct }}%</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">⚽ Голы в прогнозах (голов/матч)</div>
+    <p class="text-muted small mb-2">Кто прогнозировал самые результативные матчи</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Участник</th><th class="text-end">Голов/матч</th></tr></thead>
+      <tbody>{% for r in avg_goals_ranks %}<tr><td>{{ r.name }}</td><td class="text-end">{{ r.value|floatformat:2 }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">🏠 Победы хозяев</div>
+    <p class="text-muted small mb-2">Кто чаще всего ставил на победу домашней команды</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Участник</th><th class="text-end">Побед хозяев</th><th class="text-end">%</th></tr></thead>
+      <tbody>{% for r in home_wins_ranks %}<tr><td>{{ r.name }}</td><td class="text-end">{{ r.count }}</td><td class="text-end">{{ r.pct }}%</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">🔮 Точные счета</div>
+    <p class="text-muted small mb-2">Сколько раз каждый угадал точный счёт</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Участник</th><th class="text-end">Точных счётов</th></tr></thead>
+      <tbody>{% for r in exact_ranks %}<tr><td>{{ r.name }}</td><td class="text-end">{{ r.value }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">🎵 Любимый счёт (одна нота)</div>
+    <p class="text-muted small mb-2">Счёт, который каждый поставил чаще всего, и его доля</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Участник</th><th>Счёт</th><th class="text-end">Раз</th><th class="text-end">%</th></tr></thead>
+      <tbody>{% for r in onenote_ranks %}<tr><td>{{ r.name }}</td><td>{{ r.score }}</td><td class="text-end">{{ r.count }}</td><td class="text-end">{{ r.pct }}%</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">🦁↔️🐔 Смелость (средний коэф)</div>
+    <p class="text-muted small mb-2">Высокий коэф = ставил против фаворита; низкий = с фаворитом</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Участник</th><th class="text-end">Средний коэф</th></tr></thead>
+      <tbody>{% for r in avg_odds_ranks %}<tr><td>{{ r.name }}</td><td class="text-end">{{ r.value|floatformat:2 }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">⏰↔️🌅 Время подачи прогноза</div>
+    <p class="text-muted small mb-2">Минимальный зазор — самая поздняя правка; среднее — общая привычка</p>
+    <div class="row g-3">
+      <div class="col-12">
+        <div class="small text-muted text-uppercase mb-1">Минимальный зазор до матча ↑ позже всех</div>
+        <table class="table table-sm table-striped mb-0">
+          <thead><tr><th>Участник</th><th class="text-end">Мин до матча</th></tr></thead>
+          <tbody>{% for r in min_gap_ranks %}<tr><td>{{ r.name }}</td><td class="text-end">{{ r.value }} мин</td></tr>{% endfor %}</tbody>
+        </table>
+      </div>
+      <div class="col-12 mt-2">
+        <div class="small text-muted text-uppercase mb-1">Среднее время до матча ↑ раньше всех</div>
+        <table class="table table-sm table-striped mb-0">
+          <thead><tr><th>Участник</th><th class="text-end">Часов до матча</th></tr></thead>
+          <tbody>{% for r in avg_gap_ranks %}<tr><td>{{ r.name }}</td><td class="text-end">{{ r.value|floatformat:1 }}ч</td></tr>{% endfor %}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">🔄 Изменения прогнозов</div>
+    <p class="text-muted small mb-2">Количество матчей, в которых прогноз менялся хотя бы раз</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Участник</th><th class="text-end">Матчей с изменением</th></tr></thead>
+      <tbody>{% for r in resubmits_ranks %}<tr><td>{{ r.name }}</td><td class="text-end">{{ r.value }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">🚫 Пропущенные матчи</div>
+    <p class="text-muted small mb-2">Матчи, на которые участник не поставил прогноз вовсе</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Участник</th><th class="text-end">Пропущено матчей</th></tr></thead>
+      <tbody>{% for r in missed_matches_ranks %}<tr><td>{{ r.name }}</td><td class="text-end">{% if r.value == 0 %}<span class="text-success">0</span>{% else %}{{ r.value }}{% endif %}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">🎯 Топ-10 популярных счётов</div>
+    <p class="text-muted small mb-2">Самые часто встречающиеся прогнозы по турниру</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Счёт</th><th class="text-end">Раз поставлен</th></tr></thead>
+      <tbody>{% for r in top_scorelines %}<tr><td>{{ r.score.0 }}:{{ r.score.1 }}</td><td class="text-end">{{ r.count }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="row g-4 mb-4">
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">🙈 Матчи, где никто не угадал точный счёт</div>
+    <p class="text-muted small mb-2">{{ nobody_exact_examples|length }} из {{ total_matches }} матчей</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Матч</th><th class="text-end">Счёт</th></tr></thead>
+      <tbody>{% for m in nobody_exact_examples %}<tr><td>{{ m }}</td><td class="text-end">{{ m.result }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">🗺️ Наибольший разброс прогнозов</div>
+    <p class="text-muted small mb-2">Топ-5 матчей с наибольшим числом разных прогнозируемых счётов</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Матч</th><th class="text-end">Счёт</th><th class="text-end">Разных прогнозов</th></tr></thead>
+      <tbody>{% for r in most_diverse_matches %}<tr><td>{{ r.match }}</td><td class="text-end">{{ r.match.result }}</td><td class="text-end">{{ r.unique_scores }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+
+  {% if all_got_result_matches %}
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">✅ Матчи, где все угадали исход</div>
+    <p class="text-muted small mb-2">{{ all_got_result_matches|length }} матч(ей)</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Матч</th><th class="text-end">Счёт</th></tr></thead>
+      <tbody>{% for m in all_got_result_matches %}<tr><td>{{ m }}</td><td class="text-end">{{ m.result }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if nobody_got_result_matches %}
+  <div class="col-12 col-md-6">
+    <div class="fw-semibold mb-1">❌ Матчи, где никто не угадал исход</div>
+    <p class="text-muted small mb-2">{{ nobody_got_result_matches|length }} матч(ей)</p>
+    <table class="table table-sm table-striped">
+      <thead><tr><th>Матч</th><th class="text-end">Счёт</th></tr></thead>
+      <tbody>{% for m in nobody_got_result_matches %}<tr><td>{{ m }}</td><td class="text-end">{{ m.result }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  {% endif %}
+
+</div>
+
+{% if best_match_rows %}
+<div class="fw-semibold mb-1">💥 Топ-20 матчей по потенциалу очков</div>
+<p class="text-muted small mb-2">Если бы угадал точный счёт — вот сколько очков можно было взять</p>
+<div class="table-responsive mb-5">
+  <table class="table table-sm table-striped">
+    <thead class="table-dark">
+      <tr><th>#</th><th>Матч</th><th class="text-end">Счёт</th><th class="text-end">Коэф исход</th><th class="text-end">Коэф счёт</th><th class="text-end">Итого</th></tr>
+    </thead>
+    <tbody>
+      {% for r in best_match_rows %}
+      <tr>
+        <td class="text-muted">{{ forloop.counter }}</td>
+        <td>{{ r.match }}</td>
+        <td class="text-end">{{ r.match.result }}</td>
+        <td class="text-end">{{ r.result_odd|floatformat:2 }}</td>
+        <td class="text-end">{{ r.score_odd|floatformat:2 }}</td>
+        <td class="text-end fw-semibold">{{ r.total|floatformat:2 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
 
 {% endblock %}

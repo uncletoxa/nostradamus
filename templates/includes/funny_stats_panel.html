@@ -1,0 +1,22 @@
+{% load i18n %}
+<div class="row g-2">
+  {% for award in awards|slice:":5" %}
+  <div class="col-6">
+    <div class="card h-100">
+      <div class="card-body p-2">
+        <div class="d-flex align-items-start gap-2">
+          <span style="font-size: 1.4rem; line-height: 1; flex-shrink: 0;">{{ award.emoji }}</span>
+          <div style="min-width: 0;">
+            <div class="text-muted" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 600;">{{ award.title }}</div>
+            <div class="fw-bold" style="font-size: 0.9rem;">{{ award.winner }}</div>
+            <div class="text-muted" style="font-size: 0.75rem;">{{ award.stat }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<div class="text-center mt-3">
+  <a href="{% url 'funny_stats' %}" class="btn btn-sm btn-outline-secondary">Подробная статистика →</a>
+</div>

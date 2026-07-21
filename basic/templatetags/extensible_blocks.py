@@ -8,7 +8,7 @@ from matches.models import Match
 from predictions.models import Prediction, WinnerPrediction
 from django import template
 from django.contrib.auth.models import User
-from basic.utils import last_prediction, get_user_results_by_matches
+from basic.utils import last_prediction, get_user_results_by_matches, get_funny_stats_context
 
 register = template.Library()
 
@@ -80,6 +80,11 @@ def next_matches(cur_user):
 def live_matches():
     matches = Match.objects.filter(status__in=['IN_PLAY', 'PAUSED'])
     return {'live_matches': matches}
+
+
+@register.inclusion_tag('includes/funny_stats_panel.html')
+def funny_stats_panel():
+    return get_funny_stats_context()
 
 
 @register.simple_tag

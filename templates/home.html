@@ -47,14 +47,10 @@
         {% cup_standings False True %}
     </div>
     <div class="col-12 col-md-7">
-      <div class="row">
-        <div class="col">
-          <h3>
-            <small class="text-muted"><a href="{% url 'matches:matches_index' %}">{% trans "Next Matches" %}</a></small>
-          </h3>
-            {% next_matches user %}
-        </div>
-      </div>
+      <h3>
+        <small class="text-muted"><a href="{% url 'funny_stats' %}">🎭 Весёлая статистика</a></small>
+      </h3>
+      {% funny_stats_panel %}
     </div>
   </div>
 {% endblock %}
