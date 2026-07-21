@@ -31,6 +31,8 @@ class Match(models.Model):
     is_playoff = models.BooleanField(default=False)
     home_to_advance = models.BooleanField(default=None, null=True, blank=True)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=SCHEDULED)
+    home_xg = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    guest_xg = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return '{} — {}'.format(self.home_team, self.guest_team)
