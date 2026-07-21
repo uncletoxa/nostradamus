@@ -410,6 +410,12 @@ def get_funny_stats_context():
         triple_winner_name = '—'
 
     awards = [
+        {'emoji': '👑', 'title': 'Тройная корона', 'winner': triple_winner_name,
+         'stat': 'Победа во всех трёх таблицах',
+         'desc': 'Лучший сразу везде: '
+                 '<a href="/results/">официальная</a>, '
+                 '<a href="/results/simple/">простые очки</a> '
+                 'и <a href="/results/xg/">по xG</a>'},
         {'emoji': '😶', 'title': 'Пессимист', 'winner': pess_name,
          'stat': f'{pess_val} прогнозов со счётом 0:0',
          'desc': 'Чаще всех верил, что голов не будет вовсе'},
@@ -425,12 +431,6 @@ def get_funny_stats_context():
         {'emoji': '🏠', 'title': 'Домашний любимчик', 'winner': home_name,
          'stat': f'{home_val:.0f}% прогнозов на победу хозяев' if home_val else '—',
          'desc': 'Твёрдо верит в преимущество своего поля'},
-        {'emoji': '👑', 'title': 'Тройная корона', 'winner': triple_winner_name,
-         'stat': 'Победа во всех трёх таблицах',
-         'desc': 'Лучший сразу везде: '
-                 '<a href="/results/">официальная</a>, '
-                 '<a href="/results/simple/">простые очки</a> '
-                 'и <a href="/results/xg/">по xG</a>'},
         {'emoji': '🎵', 'title': 'Одна нота',
          'winner': user_names[onenote_uid] if onenote_uid else '—',
          'stat': f'{onenote_score[0]}:{onenote_score[1]} — {onenote_cnt} раз ({onenote_pct}%)',
