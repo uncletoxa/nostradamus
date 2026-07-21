@@ -195,6 +195,60 @@ def get_simple_standings(users, matches_queryset):
     return dict(sorted(standings.items(), key=lambda x: x[1]['total'], reverse=True))
 
 
+def _score_match_xg(match, prediction, coef):
+    xg_home = round(float(match.home_xg))
+    xg_guest = round(float(match.guest_xg))
+    _ensure_score_odd(coef, xg_home, xg_guest)
+    xg_score_key = f'{xg_home}-{xg_guest}'
+    xg_result = get_result(xg_home, xg_guest)
+    prediction_result = get_result(prediction.home_score, prediction.guest_score)
+    result_bet = (Decimal(str(getattr(coef, xg_result)))
+                  if prediction_result == xg_result
+                  else Decimal(0))
+    exact_score_match = (xg_home == prediction.home_score and
+                         xg_guest == prediction.guest_score)
+    score_bet = Decimal(str(coef.score[xg_score_key])) if exact_score_match else Decimal(0)
+    return round(result_bet, 2), round(score_bet, 2)
+
+
+def get_xg_standings(users, matches_queryset):
+    """Compute cup-style standings using rounded xG as the actual scores."""
+    match_ids = [
+        m.match_id for m in matches_queryset
+        if m.home_xg is not None and m.guest_xg is not None]
+    matches = {m.match_id: m for m in matches_queryset if m.match_id in match_ids}
+
+    all_predictions = {}
+    for p in (Prediction.objects
+              .filter(match_id__in=match_ids)
+              .order_by('user_id_id', 'match_id_id', '-submit_time')
+              .distinct('user_id_id', 'match_id_id')):
+        all_predictions.setdefault(p.user_id_id, {})[p.match_id_id] = p
+
+    coefficients = {
+        c.match_id_id: c
+        for c in Coefficient.objects.filter(match_id__in=match_ids)}
+
+    standings = {}
+    for user in users:
+        user_preds = all_predictions.get(user.id, {})
+        result_bet = Decimal(0)
+        score_bet = Decimal(0)
+        for mid, match in matches.items():
+            prediction = user_preds.get(mid)
+            coef = coefficients.get(mid)
+            if prediction is None or coef is None:
+                continue
+            rb, sb = _score_match_xg(match, prediction, coef)
+            result_bet += rb
+            score_bet += sb
+        standings[user] = {
+            'total_points': result_bet + score_bet,
+            'result_bet': result_bet,
+            'score_bet': score_bet}
+    return dict(sorted(standings.items(), key=lambda x: x[1]['total_points'], reverse=True))
+
+
 def get_funny_stats_context():
     from collections import Counter, defaultdict
     from django.contrib.auth.models import User

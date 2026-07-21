@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}
+    {% trans "xG Standings" %} — {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h4 class="mb-3"><small class="text-muted">{% trans "xG Standings" %}</small></h4>
+<p class="text-muted small mb-3">
+  {% trans "Predictions scored against Expected Goals (xG) instead of the real result. xG values are rounded to the nearest integer." %}
+</p>
+<div class="table-responsive">
+<table class="table table-hover">
+  <thead class="table-dark">
+    <tr>
+      <th>#</th>
+      <th>{% trans "User" %}</th>
+      <th>{% trans "Total Points" %}</th>
+      <th>{% trans "Result Bet" %}</th>
+      <th>{% trans "Score Bet" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user, pts in standings.items %}
+      <tr class="{% if user == current_user %}fw-bold{% endif %}{% if forloop.counter == 1 %} table-warning{% elif forloop.counter == 2 %} table-secondary{% elif forloop.counter == 3 %} table-bronze{% endif %}">
+        <td>{% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}</td>
+        <td><a href="{% url 'results:user_results' user.id %}">{{ user.first_name }}</a>{% if user == current_user %} <span class="text-muted">({% trans "you" %})</span>{% endif %}</td>
+        <td>{{ pts.total_points }}</td>
+        <td>{{ pts.result_bet }}</td>
+        <td>{{ pts.score_bet }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

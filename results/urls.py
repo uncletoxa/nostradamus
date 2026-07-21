@@ -10,6 +10,8 @@ urlpatterns = [
     path('simple/', views.simple_results, name='results_simple'),
     # /results/champions
     path('champions', TemplateView.as_view(template_name='champions.html'), name='results_champions'),
+    # /results/xg/
+    path('xg/', views.xg_results, name='results_xg'),
     # /results/1/
     path('<int:user_id>/', views.user_result, name='user_results')
 ]

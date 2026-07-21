@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from matches.models import Match, Team
 from predictions.models import WinnerPrediction
 from accounts.models import UserProfile
-from basic.utils import get_user_results_by_matches, get_simple_standings
+from basic.utils import get_user_results_by_matches, get_simple_standings, get_xg_standings
 
 
 def results(request):
@@ -17,6 +17,16 @@ def simple_results(request):
     matches = Match.objects.filter(status='FINISHED')
     standings = get_simple_standings(users, matches)
     return render(request, 'simple_results.html', {
+        'standings': standings,
+        'current_user': request.user})
+
+
+@login_required
+def xg_results(request):
+    users = User.objects.filter(is_superuser=False).exclude(profile__previous_participant=True)
+    matches = Match.objects.filter(status='FINISHED')
+    standings = get_xg_standings(users, matches)
+    return render(request, 'xg_results.html', {
         'standings': standings,
         'current_user': request.user})
 
